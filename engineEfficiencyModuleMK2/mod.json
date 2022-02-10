@@ -1,0 +1,10 @@
+﻿{
+    "Id": "engineEfficiencyMK2",
+    "DisplayName": "Engine Efficiency Module MK2",
+    "Author": "Akari The Sloth",
+    "Version": "1.0",
+    "Enable": true,
+    "AssemblyName": "engineEfficiencyModuleMK2.dll",
+    "Dependencies": ["SMLHelper"],
+    "Game": "Subnautica"
+}
