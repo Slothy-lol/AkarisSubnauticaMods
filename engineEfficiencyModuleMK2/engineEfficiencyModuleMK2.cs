@@ -88,7 +88,7 @@ namespace engineEfficiencyModuleMK2
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            new VehiclePowerUpgradeModuleMK2().Patch(); // Add on 10/2/2022
+            new VehiclePowerUpgradeModuleMK2().Patch();
         }
     }
 }
