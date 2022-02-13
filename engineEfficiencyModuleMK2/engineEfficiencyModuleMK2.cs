@@ -69,13 +69,14 @@ namespace engineEfficiencyModuleMK2
         [HarmonyPostfix]
         public static void PostUpgradeModuleChange(Vehicle __instance, TechType techType)
         {
-
-            if (techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == TechType.VehiclePowerUpgradeModule)
+            if (!QModServices.Main.ModPresent("UpgradedVehicles"))
             {
-                __instance.enginePowerRating += 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (2f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType)));
-                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
+                if (techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == TechType.VehiclePowerUpgradeModule)
+                {
+                    __instance.enginePowerRating += 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (2f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType)));
+                    ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
+                }
             }
-            
         }
     }
 
