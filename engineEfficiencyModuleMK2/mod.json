@@ -6,6 +6,6 @@
     "Enable": true,
     "AssemblyName": "engineEfficiencyModuleMK2.dll",
     "Dependencies": ["SMLHelper"],
-    "LoadAfter": [ "AnotherModID" ],
+    "LoadAfter": [ "UpgradedVehicles" ],
     "Game": "Subnautica"
 }
