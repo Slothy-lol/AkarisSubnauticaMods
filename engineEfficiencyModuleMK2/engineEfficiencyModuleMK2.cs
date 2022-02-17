@@ -60,9 +60,22 @@ namespace engineEfficiencyModuleMK2
             var obj = GameObject.Instantiate(prefab);
             return obj;
         }
-
-
     }
+    
+private static readonly Type VehicleUpgraderType = Type.GetType("UpgradedVehicles.VehicleUpgrader, UpgradedVehicles", false, false);
+private static readonly MethodInfo VehicleUpgraderAddEfficiencyBonus = VehicleUpgraderType?.GetMethod("AddEfficiencyBonus", BindingFlags.Public | BindingFlags.Static);
+
+public static bool AddUVEfficiencyBonus(TechType module = VehiclePowerUpgradeModuleMK2.thisTechType, float efficiencybonus = 2f, bool bForce = false)
+{
+    if (VehicleUpgraderAddEfficiencyBonus == null)
+        return false;
+
+    VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] {module, efficiencybonus, bForce});
+    return true;
+}
+        
+        
+       
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
     class Patch
     {
