@@ -95,60 +95,6 @@ namespace engineEfficiencyModuleMK2
             }
         }
     }
-
-    class UPPatchClass0
-    {
-        [HarmonyPostfix]
-        public static int UVPatch0(Vehicle __instance, ref int __result)
-        {
-            return __result += 2 * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType);
-        }
-    }
-    class PatchIfExistsClass
-    {
-        public static void PatchIfExists(Harmony harmony, string assemblyName, string typeName, string methodName, HarmonyMethod prefix, HarmonyMethod postfix, HarmonyMethod transpiler)
-        {
-            var assembly = FindAssembly(assemblyName);
-            if (assembly == null)
-            {
-                Logger.Log(Logger.Level.Debug, "Could not find assembly " + assemblyName + ", don't worry this probably just means you don't have the mod installed");
-                return;
-            }
-
-            Type targetType = assembly.GetType(typeName);
-            if (targetType == null)
-            {
-                Logger.Log(Logger.Level.Debug, "Could not find class/type " + typeName + ", the mod/assembly " + assemblyName + " might have changed");
-                return;
-            }
-
-            Logger.Log(Logger.Level.Debug, "Found targetClass " + typeName);
-            var targetMethod = AccessTools.Method(targetType, methodName);
-            if (targetMethod != null)
-            {
-                Logger.Log(Logger.Level.Debug, "Found targetMethod " + typeName + "." + methodName + ", Patching...");
-                harmony.Patch(targetMethod, prefix, postfix, transpiler);
-                Logger.Log(Logger.Level.Debug, "Patched " + typeName + "." + methodName);
-            }
-            else
-            {
-                Logger.Log(Logger.Level.Debug, "Could not find method " + typeName + "." + methodName + ", the mod/assembly " + assemblyName + " might have been changed");
-            }
-        }
-
-
-        private static Assembly FindAssembly(string assemblyName)
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                if (assembly.FullName.StartsWith(assemblyName + ","))
-                    return assembly;
-
-            return null;
-        }
-
-
-    }
-
         [QModCore]
         public static class QMod
         {
@@ -164,20 +110,4 @@ namespace engineEfficiencyModuleMK2
                 new VehiclePowerUpgradeModuleMK2().Patch();
             }
         }
-
-    
-    public static class UVPatch0
-    {
-        public static void UpVPatch0()
-        {
-            Logger.Log(Logger.Level.Debug, "Patching...");
-
-            var myPostfixMethod = new HarmonyMethod(AccessTools.Method(typeof(UPPatchClass0), "UPPatch0"));
-            var harmony = new Harmony("Akari.EngineEffModMK2");
-            PatchIfExistsClass.PatchIfExists(harmony, "UpgradedVehicles", "UpgradedVehicles.VehicleUpgrader", "GetEfficiencyBonus", null, myPostfixMethod, null);
-
-            Logger.Log(Logger.Level.Debug, "Patching complete");
-        }
-    }
-
 }
