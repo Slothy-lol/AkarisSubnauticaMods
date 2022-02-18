@@ -1,8 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SMLHelper.V2.Assets;
 using QModManager.API.ModLoading;
 using HarmonyLib;
@@ -25,7 +22,7 @@ namespace engineEfficiencyModuleMK2
             {
                 VehiclePowerUpgradeModuleMK2.thisTechType = this.TechType;
                 float efficiencybonus = 2f;
-                AddEfficiencyBonus(VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, false);
+                VehicleUpgraderFix.AddUVEfficiencyBonus(VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, false);
             };
         }
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
@@ -63,18 +60,20 @@ namespace engineEfficiencyModuleMK2
             return obj;
         }
     }
-    
-private static readonly Type VehicleUpgraderType = Type.GetType("UpgradedVehicles.VehicleUpgrader, UpgradedVehicles", false, false);
-private static readonly MethodInfo VehicleUpgraderAddEfficiencyBonus = VehicleUpgraderType?.GetMethod("AddEfficiencyBonus", BindingFlags.Public | BindingFlags.Static);
+    class VehicleUpgraderFix
+    {
+        private static readonly Type VehicleUpgraderType = Type.GetType("UpgradedVehicles.VehicleUpgrader, UpgradedVehicles", false, false);
+        private static readonly MethodInfo VehicleUpgraderAddEfficiencyBonus = VehicleUpgraderType?.GetMethod("AddEfficiencyBonus", BindingFlags.Public | BindingFlags.Static);
 
-public static bool AddUVEfficiencyBonus(TechType module, float efficiencybonus = 2f, bool bForce = false)
-{
-    if (VehicleUpgraderAddEfficiencyBonus == null)
-        return false;
+        public static bool AddUVEfficiencyBonus(TechType module, float efficiencybonus = 2f, bool bForce = false)
+        {
+            if (VehicleUpgraderAddEfficiencyBonus == null)
+                return false;
 
-    VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] {VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, bForce});
-    return true;
-}  
+            VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] { VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, bForce });
+            return true;
+        }
+    }
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
     class Patch
     {
@@ -92,21 +91,20 @@ public static bool AddUVEfficiencyBonus(TechType module, float efficiencybonus =
         }
     }
 
-    }
+}
 
-        [QModCore]
-        public static class QMod
-        {
-            [QModPatch]
-            public static void Patch()
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
-                Logger.Log(Logger.Level.Info, $"Patching {modName}");
-                Harmony harmony = new Harmony(modName);
-                harmony.PatchAll(assembly);
-                Logger.Log(Logger.Level.Info, "Patched successfully!");
-                new VehiclePowerUpgradeModuleMK2().Patch();
-            }
-        }
+[QModCore]
+public static class QMod
+{
+    [QModPatch]
+    public static void Patch()
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
+        Logger.Log(Logger.Level.Info, $"Patching {modName}");
+        Harmony harmony = new Harmony(modName);
+        harmony.PatchAll(assembly);
+        Logger.Log(Logger.Level.Info, "Patched successfully!");
+        new engineEfficiencyModuleMK2.VehiclePowerUpgradeModuleMK2().Patch();
+    }
 }
