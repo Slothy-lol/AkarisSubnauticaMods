@@ -24,6 +24,8 @@ namespace engineEfficiencyModuleMK2
             OnFinishedPatching += () =>
             {
                 VehiclePowerUpgradeModuleMK2.thisTechType = this.TechType;
+                float efficiencybonus = 2f;
+                AddEfficiencyBonus(VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, false);
             };
         }
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
@@ -73,7 +75,6 @@ public static bool AddUVEfficiencyBonus(TechType module = VehiclePowerUpgradeMod
     VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] {module, efficiencybonus, bForce});
     return true;
 }  
-       
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
     class Patch
     {
