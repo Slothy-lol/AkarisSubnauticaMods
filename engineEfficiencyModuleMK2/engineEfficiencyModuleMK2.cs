@@ -67,12 +67,12 @@ namespace engineEfficiencyModuleMK2
 private static readonly Type VehicleUpgraderType = Type.GetType("UpgradedVehicles.VehicleUpgrader, UpgradedVehicles", false, false);
 private static readonly MethodInfo VehicleUpgraderAddEfficiencyBonus = VehicleUpgraderType?.GetMethod("AddEfficiencyBonus", BindingFlags.Public | BindingFlags.Static);
 
-public static bool AddUVEfficiencyBonus(TechType module = VehiclePowerUpgradeModuleMK2.thisTechType, float efficiencybonus = 2f, bool bForce = false)
+public static bool AddUVEfficiencyBonus(TechType module, float efficiencybonus = 2f, bool bForce = false)
 {
     if (VehicleUpgraderAddEfficiencyBonus == null)
         return false;
 
-    VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] {module, efficiencybonus, bForce});
+    VehicleUpgraderAddEfficiencyBonus.Invoke(null, new object[] {VehiclePowerUpgradeModuleMK2.thisTechType, efficiencybonus, bForce});
     return true;
 }  
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
