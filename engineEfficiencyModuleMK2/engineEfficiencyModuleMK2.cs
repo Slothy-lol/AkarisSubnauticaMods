@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SMLHelper.V2.Assets;
 using QModManager.API.ModLoading;
@@ -10,12 +10,15 @@ using System.Reflection;
 using Sprite = Atlas.Sprite;
 using UnityEngine;
 using QModManager.API;
+using SMLHelper.V2.Utility;
+using System.IO;
 
 namespace engineEfficiencyModuleMK2
 {
     public class VehiclePowerUpgradeModuleMK2 : Equipable
     {
         public static TechType thisTechType;
+        public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
         public VehiclePowerUpgradeModuleMK2() : base("VehiclePowerUpgradeModuleMK2", "Engine Efficiency Module MK2", "Boosts engine efficiency by double the mark 1 variant.")
         {
             OnFinishedPatching += () =>
@@ -29,13 +32,13 @@ namespace engineEfficiencyModuleMK2
         public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
         public override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
-        public override CraftTree.Type FabricatorType => CraftTree.Type.SeamothUpgrades;
-        public override string[] StepsToFabricatorTab => new string[] { "CommonModules" };
-        public override float CraftingTime => 10f;
+        public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
+        public override string[] StepsToFabricatorTab => new[] { QMod.WorkBenchTab };
+        public override float CraftingTime => 3f;
         public override QuickSlotType QuickSlotType => QuickSlotType.Passive;
         protected override Sprite GetItemSprite()
         {
-            return SpriteManager.Get(TechType.VehiclePowerUpgradeModule);
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "EngineEfficiencyModuleMK2Sprite.png"));
         }
         protected override RecipeData GetBlueprintRecipe()
         {
@@ -45,8 +48,9 @@ namespace engineEfficiencyModuleMK2
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
                         new Ingredient(TechType.VehiclePowerUpgradeModule, 1),
-                        new Ingredient(TechType.AdvancedWiringKit, 1),
-                        new Ingredient(TechType.AluminumOxide, 2)
+                        new Ingredient(TechType.ComputerChip, 1),
+                        new Ingredient(TechType.Benzene, 2),
+                        new Ingredient(TechType.Nickel, 2)
 
                     }
                 )
@@ -96,9 +100,13 @@ namespace engineEfficiencyModuleMK2
 [QModCore]
 public static class QMod
 {
+
+    internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
+
     [QModPatch]
     public static void Patch()
     {
+        SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
         var assembly = Assembly.GetExecutingAssembly();
         var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
         Logger.Log(Logger.Level.Info, $"Patching {modName}");
