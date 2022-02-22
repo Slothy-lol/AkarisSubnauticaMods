@@ -45,22 +45,23 @@ namespace cyclopsVehiclebayHUDIcon
 
         public override bool ShowStatusIcon => ExosuitInBay || SeamothInBay;
 
+        string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override Sprite StatusSprite()
         {
             if (ExosuitInBay == true)
             {
-                return ImageUtils.LoadSpriteFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets", "ExosuitIcon.png"));
+                return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "ExosuitIcon.png"));
             }
             if (SeamothInBay == true)
             {
-                return ImageUtils.LoadSpriteFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets", "SeamothIcon.png"));
+                return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "SeamothIcon.png"));
             }
             else
             {
                 return null;
             }
-            
+
         }
 
         public override string StatusText()
