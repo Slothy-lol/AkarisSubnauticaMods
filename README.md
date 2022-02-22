@@ -8,3 +8,8 @@ Version on nexus is working version, version here is unfinished (will start to a
 
 This mod is NOT compatible with:
 Upgraded Vehicles (fix hopefully soonTM)
+
+
+Cyclops Vehicle Bay HUD Icon:
+Adds an icon on the Cyclops HUD that shows which vehicle is docked in the Vehicle Bay.
+Needs MoreCyclopsUpgrades Version 5.2 to work.
