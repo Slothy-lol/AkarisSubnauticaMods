@@ -15,45 +15,21 @@ namespace cyclopsVehiclebayHUDIcon
         {
 
         }
+
         private VehicleDockingBay dockingBay;
         private VehicleDockingBay DockingBay => dockingBay ?? (dockingBay = Cyclops.GetComponentInChildren<VehicleDockingBay>());
 
-        private SeaMoth seaMoth;
-        private Exosuit exosuit;
-
-        private SeaMoth DockedSeamoth => this.DockingBay?.dockedVehicle as SeaMoth;
-        private Exosuit DockedExosuit => this.DockingBay?.dockedVehicle as Exosuit;
-
-        public bool SeamothInBay
-        {
-            get
-            {
-                seaMoth = this.DockedSeamoth;
-                return seaMoth != null;
-            }
-        }
-
-        public bool ExosuitInBay
-        {
-            get
-            {
-                exosuit = this.DockedExosuit;
-                return exosuit != null;
-            }
-        }
-
-
-        public override bool ShowStatusIcon => ExosuitInBay || SeamothInBay;
+        public override bool ShowStatusIcon => DockingBay?.dockedVehicle is SeaMoth || DockingBay?.dockedVehicle is Exosuit;
 
         string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override Sprite StatusSprite()
         {
-            if (ExosuitInBay == true)
+            if (DockingBay?.dockedVehicle is Exosuit)
             {
                 return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "ExosuitIcon.png"));
             }
-            if (SeamothInBay == true)
+            else if (DockingBay?.dockedVehicle is SeaMoth)
             {
                 return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "SeamothIcon.png"));
             }
