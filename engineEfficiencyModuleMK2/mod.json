@@ -1,4 +1,4 @@
-﻿{
+{
     "Id": "engineEfficiencyMK2",
     "DisplayName": "Engine Efficiency Module MK2",
     "Author": "Akari The Sloth",
@@ -7,5 +7,8 @@
     "AssemblyName": "engineEfficiencyModuleMK2.dll",
     "Dependencies": [ "SMLHelper" ],
     "LoadAfter": [ "UpgradedVehicles" ],
+    "VersionChecker": { 
+	"LatestVersionURL": "https://github.com/Slothy-lol/AkarisSubnauticaMods/raw/main/engineEfficiencyModuleMK2/mod.json" 
+    },
     "Game": "Subnautica"
 }
