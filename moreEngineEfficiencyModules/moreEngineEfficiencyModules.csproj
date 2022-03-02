@@ -7,8 +7,8 @@
     <ProjectGuid>{61087F96-5DA7-4F39-988D-E69CA4B52981}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>engineEfficiencyModuleMK2</RootNamespace>
-    <AssemblyName>engineEfficiencyModuleMK2</AssemblyName>
+    <RootNamespace>MoreEngineEfficiencyModules</RootNamespace>
+    <AssemblyName>MoreEngineEfficiencyModules</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -66,7 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="engineEfficiencyModuleMK2.cs" />
+    <Compile Include="MoreEngineEffiencyModules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="EngineEfficiencyModuleMK2Sprite.png" />
+    <Content Include="EngineEfficiencyModuleMK3Sprite.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -82,6 +83,7 @@ mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetNa
 copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
 copy /Y "$(ProjectDir)\mod.json" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\mod.json"
 copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\EngineEfficiencyModuleMK3Sprite.png"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
