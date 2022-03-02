@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("engineEfficiencyModuleMK2")]
-[assembly: AssemblyDescription("Adds an engine efficiency module mk 2 for the seamoth and prawn suit")]
+[assembly: AssemblyTitle("moreEngineEfficiencyModules")]
+[assembly: AssemblyDescription("Adds 2 new engine efficiency modules for the seamoth and prawn suit")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("engineEfficiencyModuleMK2")]
+[assembly: AssemblyProduct("moreEngineEfficiencyModules")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
