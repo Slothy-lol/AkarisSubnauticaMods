@@ -18,7 +18,9 @@ namespace MoreEngineEfficiencyModules
     public class VehiclePowerUpgradeModuleMK2 : Equipable
     {
         public static TechType thisTechType;
+
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+
         public VehiclePowerUpgradeModuleMK2() : base("VehiclePowerUpgradeModuleMK2", "Engine Efficiency Module MK2", "Boosts engine efficiency by 1.75x the mark 1 variant.")
         {
             OnFinishedPatching += () =>
@@ -27,6 +29,7 @@ namespace MoreEngineEfficiencyModules
                 VehicleUpgraderFix.AddUVEfficiencyBonus(VehiclePowerUpgradeModuleMK2.thisTechType, bForce: false);
             };
         }
+
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
         public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
@@ -39,6 +42,7 @@ namespace MoreEngineEfficiencyModules
         {
             return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "EngineEfficiencyModuleMK2Sprite.png"));
         }
+        
         protected override RecipeData GetBlueprintRecipe()
         {
             return new RecipeData()
@@ -66,7 +70,9 @@ namespace MoreEngineEfficiencyModules
     public class VehiclePowerUpgradeModuleMK3 : Equipable
     {
         public static TechType thisTechType;
+
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+
         public VehiclePowerUpgradeModuleMK3() : base("VehiclePowerUpgradeModuleMK3", "Engine Efficiency Module MK3", "Boosts engine efficiency by 2.5x the mark 1 variant.")
         {
             OnFinishedPatching += () =>
@@ -75,6 +81,7 @@ namespace MoreEngineEfficiencyModules
                 VehicleUpgraderFix.AddUVEfficiencyBonus(VehiclePowerUpgradeModuleMK3.thisTechType ,bForce: false);
             };
         }
+
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
         public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
@@ -87,6 +94,7 @@ namespace MoreEngineEfficiencyModules
         {
             return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "EngineEfficiencyModuleMK3Sprite.png"));
         }
+
         protected override RecipeData GetBlueprintRecipe()
         {
             return new RecipeData()
@@ -111,6 +119,7 @@ namespace MoreEngineEfficiencyModules
             return obj;
         }
     }
+
     class VehicleUpgraderFix
     {
         private static readonly Type VehicleUpgraderType = Type.GetType("UpgradedVehicles.VehicleUpgrader, UpgradedVehicles", false, false);
@@ -131,6 +140,7 @@ namespace MoreEngineEfficiencyModules
             return true;
         }
     }
+
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
     class Patch
     {
