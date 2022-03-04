@@ -1,14 +1,19 @@
-# AkarisSubnauticaMods
+# Akari'sSubnauticaMods
 A repository of all of my subnautica mods.
 
-Engine Efficiency Module MK 2:
-A module for the seamoth and prawn suit that boosts engine efficiency by double the original. You craft it with an original module, computer chip, 2 benzene and 2 nickel at the modification station.
-Huge thanks to Nagorrogan and DaWrecka for helping me, since this was my first mod.
-Version on nexus is working version, version here is unfinished (will start to add new branches for updates unfinished when i finish this update and keep the working version here and nexus, at the moment just go to https://www.nexusmods.com/subnautica/mods/925.
+## More Engine Efficiency Modules
 
-This mod is NOT compatible with:
-Upgraded Vehicles (fix hopefully soonTM)
+This mod adds a Mark 2 and Mark 3 Engine Efficiency Module for the Seamoth and PRAWN Suit.<br>
+Huge thanks to those in the Subnautica Modding Server who helped me with this, since it was my first mod.
 
+    MK2 ID: VehiclePowerUpgradeModuleMK2<br>
+    MK3 ID: VehiclePowerUpgradeModuleMK3
+
+    Crafted at a modification station after unlocking the vehicle upgrade console.
+    
+    Needs: SMLHelper, QModManager.
+    
+    To use with Upgraded Vehicles, please go to the Subnautica Modding Server and ping me: "Akari - アカリ#1302" for more information.
 
 Cyclops Vehicle Bay HUD Icon:
 Adds an icon on the Cyclops HUD that shows which vehicle is docked in the Vehicle Bay.
