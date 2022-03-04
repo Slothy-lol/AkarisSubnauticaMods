@@ -15,6 +15,8 @@ Huge thanks to those in the Subnautica Modding Server who helped me with this, s
     
     To use with Upgraded Vehicles, please go to the Subnautica Modding Server and ping me: "Akari - アカリ#1302" for more information.
 
-Cyclops Vehicle Bay HUD Icon:
-Adds an icon on the Cyclops HUD that shows which vehicle is docked in the Vehicle Bay.
-Needs MoreCyclopsUpgrades Version 5.2 to work.
+## Cyclops Vehicle Bay HUD Icon
+
+This mod adds an icon to the Cyclops HUD that shows a docked Seamoth or PRAWN Suit, if one is within the vehicle bay.<br>
+
+    Needs: QModManager, MoreCyclopsUpgrades (and its own dependencies).
