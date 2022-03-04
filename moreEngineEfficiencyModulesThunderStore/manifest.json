@@ -1,0 +1,10 @@
+﻿{
+    "name": "More Engine Efficiency Modules",
+    "version_number": "2.0.0",
+    "website_url": "https://github.com/Slothy-lol/AkarisSubnauticaMods",
+    "description": "Adds a Mark 2 and Mark 3 Engine Efficiency Module for the Seamoth and PRAWN Suit. MK2 ID: VehiclePowerUpgradeModuleMK2; MK3 ID: VehiclePowerUpgradeModuleMK3; Unlocked with the vehicle upgrade console and crafted at a modification station.",
+    "dependencies": [
+        "Subnautica_Modding-QModManager-4.4.2",
+        "Subnautica_Modding-SMLHelper-2.13.0"
+    ]
+}

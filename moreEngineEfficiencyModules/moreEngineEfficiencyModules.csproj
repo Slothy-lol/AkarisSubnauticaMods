@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{61087F96-5DA7-4F39-988D-E69CA4B52981}</ProjectGuid>
+    <ProjectGuid>{436A248E-2C51-478F-A919-6B9576266EBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MoreEngineEfficiencyModules</RootNamespace>
@@ -66,7 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoreEngineEffiencyModules.cs" />
+    <Compile Include="MoreEngineEfficiencyModules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
