@@ -86,19 +86,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets"
-copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\mod.json"
-copy /Y "$(ProjectDir)\ExosuitSprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\ExosuitSprite.png"
-copy /Y "$(ProjectDir)\SeamothSprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\SeamothSprite.png"
-mkdir "C:\Users\snorl\Documents\$(TargetName)"
+    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
 mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods"
-mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\Assets"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\mod.json"
-copy /Y "$(ProjectDir)\SeamothSprite.png" "C:\Users\snorl\Documents\$(TargetName)\Qmods\Assets\SeamothSprite.png"
-copy /Y "$(ProjectDir)\ExosuitSprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\Assets\ExosuitSprite.png"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsVehicleBayHUDIcon"
+mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\CyclopsVehicleBayHUDIcon\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsVehicleBayHUDIcon"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsVehicleBayHUDIcon\mod.json"
+copy /Y "$(ProjectDir)\SeamothSprite.png" "C:\Users\snorl\Documents\$(TargetName)\Qmods\CyclopsVehicleBayHUDIcon\Assets\SeamothSprite.png"
+copy /Y "$(ProjectDir)\ExosuitSprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsVehicleBayHUDIcon\Assets\ExosuitSprite.png"
 copy /Y "$(ProjectDir)\manifest.json" "C:\Users\snorl\Documents\$(TargetName)\manifest.json"
 copy /Y "$(ProjectDir)\README.md" "C:\Users\snorl\Documents\$(TargetName)\README.md"
 copy /Y "$(ProjectDir)\icon.png" "C:\Users\snorl\Documents\$(TargetName)\icon.png"</PostBuildEvent>
