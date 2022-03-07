@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32106.194
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreEngineEfficiencyModulesThunderStore", "moreEngineEfficiencyModulesThunderStore\MoreEngineEfficiencyModulesThunderStore.csproj", "{61087F96-5DA7-4F39-988D-E69CA4B52981}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsVehicleBayHUDIconThunderStore", "CyclopsVehicleBayHUDIconThunder Store\CyclopsVehicleBayHUDIconThunderStore.csproj", "{102226A8-D540-454B-BBF8-C31CE7570F14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyclopsVehicleBayHUDIconThunderStore", "CyclopsVehicleBayHUDIconThunderStore\CyclopsVehicleBayHUDIconThunderStore.csproj", "{102226A8-D540-454B-BBF8-C31CE7570F14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreEngineEfficiencyModules", "moreEngineEfficiencyModules\MoreEngineEfficiencyModules.csproj", "{436A248E-2C51-478F-A919-6B9576266EBB}"
 EndProject
