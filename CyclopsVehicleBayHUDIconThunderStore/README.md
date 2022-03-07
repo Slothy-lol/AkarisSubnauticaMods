@@ -2,4 +2,4 @@
 
 This mod adds an icon to the Cyclops HUD that shows a docked Seamoth or PRAWN Suit, if one is within the vehicle bay.<br>
 
-    Needs: QModManager, MoreCyclopsUpgrades (and its own dependencies).
+    Needs: QModManager, MoreCyclopsUpgrades-5.2 (and its own dependencies).
