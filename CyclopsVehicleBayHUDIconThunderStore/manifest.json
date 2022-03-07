@@ -1,6 +1,6 @@
 ﻿{
     "name": "CyclopsVehicleBayHUDIcon",
-    "version_number": "1.0.0",
+    "version_number": "1.0.1",
     "website_url": "https://github.com/Slothy-lol/AkarisSubnauticaMods",
     "description": "Adds an icon to the Cyclops HUD that shows a docked Seamoth or PRAWN Suit, if one is within the vehicle bay.",
     "dependencies": [
