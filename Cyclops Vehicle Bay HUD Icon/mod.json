@@ -7,7 +7,7 @@
     "AssemblyName": "cyclopsVehiclebayHUDIcon.dll",
     "VersionDependencies": 
   {
-    "SMLHelper": "2.9.6",
+    "SMLHelper": "2.13.0",
     "MoreCyclopsUpgrades": "5.2.0"
   },
     "Game": "Subnautica"
