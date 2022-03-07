@@ -1,6 +1,7 @@
 */bin/*
 .vs
 */obj/*
+*/Debug
 */packages/*
 /Dependencies/Assembly-CSharp-firstpass.dll
 /Dependencies/Assembly-CSharp-firstpass_publicized.dll
