@@ -1,14 +1,13 @@
 {
-    "Id": "cyclopsVehiclebayHUDIcon",
-    "DisplayName": "Cyclops Vehicle Bay HUD Icon",
-    "Author": "Akari The Sloth",
-    "Version": "1.0.0",
-    "Enable": true,
-    "AssemblyName": "cyclopsVehiclebayHUDIcon.dll",
-    "VersionDependencies": 
-  {
-    "SMLHelper": "2.13.0",
+  "Id": "cyclopsVehiclebayHUDIcon",
+  "DisplayName": "Cyclops Vehicle Bay HUD Icon",
+  "Author": "Akari The Sloth",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "cyclopsVehiclebayHUDIcon.dll",
+  "Dependencies": [ "SMLHelper" ],
+  "VersionDependencies": {
     "MoreCyclopsUpgrades": "5.2.0"
   },
-    "Game": "Subnautica"
+  "Game": "Subnautica"
 }
