@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreEngineEfficiencyModules
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cyclopsVehiclebayHUDIcon", "Cyclops Vehicle Bay HUD Icon\cyclopsVehiclebayHUDIcon.csproj", "{A9F2F74E-C7C9-4082-8D71-EFA2D51FF59B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreEngineEfficiencyModulesBZ", "MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.csproj", "{777D7953-F1C3-444A-BC6C-F63E3012786B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A9F2F74E-C7C9-4082-8D71-EFA2D51FF59B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9F2F74E-C7C9-4082-8D71-EFA2D51FF59B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9F2F74E-C7C9-4082-8D71-EFA2D51FF59B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{777D7953-F1C3-444A-BC6C-F63E3012786B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{777D7953-F1C3-444A-BC6C-F63E3012786B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{777D7953-F1C3-444A-BC6C-F63E3012786B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{777D7953-F1C3-444A-BC6C-F63E3012786B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
