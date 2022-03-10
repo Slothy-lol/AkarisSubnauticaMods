@@ -1,14 +1,14 @@
 {
-    "Id": "moreEngineEfficiencyModulesBZ",
-    "DisplayName": "More Engine Efficiency Modules BZ",
-    "Author": "Akari The Sloth",
-    "Version": "1.0.0",
-    "Enable": true,
-    "AssemblyName": "moreEngineEfficiencyModulesBZ.dll",
-    "Dependencies": [ "SMLHelper" ],
-    "LoadAfter": [ "UpgradedVehicles" ],
-    "VersionChecker": { 
-	"LatestVersionURL": "https://github.com/Slothy-lol/AkarisSubnauticaMods/raw/main/moreEngineEfficiencyModules/mod.json" 
-    },
-    "Game": "BelowZero"
+  "Id": "moreEngineEfficiencyModulesBZ",
+  "DisplayName": "More Engine Efficiency Modules BZ",
+  "Author": "Akari The Sloth",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "moreEngineEfficiencyModulesBZ.dll",
+  "Dependencies": [ "SMLHelper" ],
+  "LoadAfter": [ "UpgradedVehicles" ],
+  "VersionChecker": {
+    "LatestVersionURL": "https://github.com/Slothy-lol/AkarisSubnauticaMods/raw/main/MoreEngineEfficiencyModulesBZ/mod.json"
+  },
+  "Game": "BelowZero"
 }

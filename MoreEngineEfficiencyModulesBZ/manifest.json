@@ -2,7 +2,7 @@
     "name": "More_Engine_Efficiency_Modules_BZ",
     "version_number": "1.0.0",
     "website_url": "https://github.com/Slothy-lol/AkarisSubnauticaMods",
-    "description": "Re-adds the Engine Efficiency Module, and adds a Mark 2 and Mark 3 Engine Efficiency Module for the Seatruck and PRAWN Suit.",
+    "description": "Re-adds the Engine Efficiency Module and adds a Seatruck Engine Efficiency Module, and also adds a Mark 2 and Mark 3 Engine Efficiency Module for the PRAWN Suit.",
   "dependencies": [
     "Subnautica_Modding-QModManager_BZ-4.4.2",
     "Subnautica_Modding-SMLHelper_BZ-2.13.1"

@@ -11,13 +11,11 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using Logger = QModManager.Utility.Logger;
+using SMLHelper.V2.Options.Attributes;
+using SMLHelper.V2.Json;
 
 namespace MoreEngineEfficiencyModules
 {
-    public class VehiclePowerUpgradeModule
-    {
-        
-    }
     public class VehiclePowerUpgradeModuleMK2 : Equipable
     {
         public static TechType thisTechType;
@@ -161,26 +159,77 @@ namespace MoreEngineEfficiencyModules
             }
         }
     }
-}
 
-[QModCore]
-public static class QMod
-{
-
-    internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
-
-    [QModPatch]
-    public static void Patch()
+    [HarmonyPatch(typeof(SeaTruckUpgrades), nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
+    class Patch2
     {
-        SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, "ExosuitUpgrades");
-        SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
-        var assembly = Assembly.GetExecutingAssembly();
-        var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
-        Logger.Log(Logger.Level.Info, $"Patching {modName}");
-        Harmony harmony = new Harmony(modName);
-        harmony.PatchAll(assembly);
-        Logger.Log(Logger.Level.Info, "Patched successfully!");
-        new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK2().Patch();
-        new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK3().Patch();
+        [HarmonyPostfix]
+        public static void PostUpgradeModuleChange2(SeaTruckUpgrades __instance, TechType techType, bool added)
+        {
+            if (!QModServices.Main.ModPresent("UpgradedVehicles"))
+            {
+                __instance.modules.GetCount(techType);
+                switch (techType)
+                {
+                    case TechType.SeaTruckUpgradeEnergyEfficiency:
+                        if (added)
+                        {
+                            if (Config.SeatruckEfficiencyBoost == true)
+                            {
+                                __instance.motor.powerEfficiencyFactor = 0.6f;
+                                break;
+                            }
+                            else
+                            {
+                                __instance.motor.powerEfficiencyFactor = 0.8f;
+                                break;
+                            }
+                        }
+                        if (Config.SeatruckEfficiencyBoost == true)
+                        {
+                            __instance.motor.powerEfficiencyFactor = 0.8f;
+                            break;
+                        }
+                        else
+                        {
+                            __instance.motor.powerEfficiencyFactor = 1f;
+                            break;
+                        }
+
+                    default:
+                        return;
+                }
+            }
+        }
+    }
+
+    [Menu("MoreEngineEfficiencyModulesBZ")]
+    public class Config : ConfigFile
+    {
+        [Toggle(Id = "SeatruckBaseEfficiencyBoost", Label = "Seatruck has extra base efficiency", Tooltip = "If enabled, the Seatruck will use less energy normally (even without the efficiency module).")]
+        public static bool SeatruckEfficiencyBoost = false;
+    }
+
+    [QModCore]
+    public static class QMod
+    {
+
+        internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
+
+        [QModPatch]
+        public static void Patch()
+        {
+            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitUpgrades" });
+            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.SeaTruckUpgradeEnergyEfficiency, new string[] { "SeatruckUpgrades" });
+            SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
+            var assembly = Assembly.GetExecutingAssembly();
+            var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
+            Logger.Log(Logger.Level.Info, $"Patching {modName}");
+            Harmony harmony = new Harmony(modName);
+            harmony.PatchAll(assembly);
+            Logger.Log(Logger.Level.Info, "Patched successfully!");
+            new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK2().Patch();
+            new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK3().Patch();
+        }
     }
 }

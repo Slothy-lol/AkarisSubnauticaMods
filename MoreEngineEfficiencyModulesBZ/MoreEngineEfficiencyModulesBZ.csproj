@@ -40,6 +40,9 @@
     <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SubnauticaZero\SubnauticaZero_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SubnauticaZero\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
     </Reference>
@@ -82,12 +85,12 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
 mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods"
-mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods\"
-mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\Assets"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModules"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\\MoreEngineEfficiencyModules\mod.json"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\Qmods\\MoreEngineEfficiencyModules\Assets\EngineEfficiencyModuleMK2Sprite.png"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModules\Assets\EngineEfficiencyModuleMK3Sprite.png"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ"
+mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.dll"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\mod.json"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK3Sprite.png"
 copy /Y "$(ProjectDir)\manifest.json" "C:\Users\snorl\Documents\$(TargetName)\manifest.json"
 copy /Y "$(ProjectDir)\README.md" "C:\Users\snorl\Documents\$(TargetName)\README.md"
 copy /Y "$(ProjectDir)\icon.png" "C:\Users\snorl\Documents\$(TargetName)\icon.png"
