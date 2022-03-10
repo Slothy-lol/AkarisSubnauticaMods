@@ -13,6 +13,7 @@ using UnityEngine;
 using Logger = QModManager.Utility.Logger;
 using SMLHelper.V2.Options.Attributes;
 using SMLHelper.V2.Json;
+using SMLHelper.V2.Handlers;
 
 namespace MoreEngineEfficiencyModules
 {
@@ -199,6 +200,10 @@ namespace MoreEngineEfficiencyModules
                     default:
                         return;
                 }
+                if (Config.DevMode == true)
+                {
+                    ErrorMessage.AddMessage($"Current Seatruck Multiplier: {__instance.motor.powerEfficiencyFactor}");
+                }
             }
         }
     }
@@ -206,8 +211,11 @@ namespace MoreEngineEfficiencyModules
     [Menu("MoreEngineEfficiencyModulesBZ")]
     public class Config : ConfigFile
     {
+        public Config() : base("config") { }
         [Toggle(Id = "SeatruckBaseEfficiencyBoost", Label = "Seatruck has extra base efficiency", Tooltip = "If enabled, the Seatruck will use less energy normally (even without the efficiency module).")]
         public static bool SeatruckEfficiencyBoost = false;
+        [Toggle(Id = "DevMode", Label = "Developer Mode", Tooltip = "If enabled, it will show the current multiplier for the Seatruck's efficiency.")]
+        public static bool DevMode = false;
     }
 
     [QModCore]
@@ -215,6 +223,7 @@ namespace MoreEngineEfficiencyModules
     {
 
         internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
+        internal static Config Config { get; private set; }
 
         [QModPatch]
         public static void Patch()
@@ -228,8 +237,10 @@ namespace MoreEngineEfficiencyModules
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK2().Patch();
-            new MoreEngineEfficiencyModules.VehiclePowerUpgradeModuleMK3().Patch();
+            Config = OptionsPanelHandler.Main.RegisterModOptions<Config>();
+            new VehiclePowerUpgradeModuleMK2().Patch();
+            new VehiclePowerUpgradeModuleMK3().Patch();
         }
+        
     }
 }
