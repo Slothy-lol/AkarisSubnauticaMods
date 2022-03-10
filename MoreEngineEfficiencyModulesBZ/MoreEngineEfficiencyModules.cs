@@ -211,10 +211,10 @@ namespace MoreEngineEfficiencyModules
     [Menu("MoreEngineEfficiencyModulesBZ")]
     public class Config : ConfigFile
     {
-        public Config() : base("config") { }
-        [Toggle(Id = "SeatruckBaseEfficiencyBoost", Label = "Seatruck has extra base efficiency", Tooltip = "If enabled, the Seatruck will use less energy normally (even without the efficiency module).")]
+        [Toggle(Label = "Seatruck Base Efficiency Boost", Tooltip = "Makes the Seatruck have a higher base efficiency (for if it feels like it runs out of battery too fast)", Order = 1)]
         public static bool SeatruckEfficiencyBoost = false;
-        [Toggle(Id = "DevMode", Label = "Developer Mode", Tooltip = "If enabled, it will show the current multiplier for the Seatruck's efficiency.")]
+
+        [Toggle(Id = "DeveloperModeMEEM", Label = "Developer Mode", Tooltip = "If enabled, it will show the current multiplier for the Seatruck's efficiency.", Order = 2)]
         public static bool DevMode = false;
     }
 
