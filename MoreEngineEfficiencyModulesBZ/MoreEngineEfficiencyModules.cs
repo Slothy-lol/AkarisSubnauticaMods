@@ -173,50 +173,62 @@ namespace MoreEngineEfficiencyModules
             }
         }
     }
+
     [HarmonyPatch(typeof(SeaTruckUpgrades), nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
     class Patch2
     {
         [HarmonyPostfix]
         public static void PostUpgradeModuleChange2(SeaTruckUpgrades __instance, TechType techType, bool added)
         {
-            if (!QModServices.Main.ModPresent("UpgradedVehicles"))
+            switch (techType)
             {
-                __instance.modules.GetCount(techType);
-                switch (techType)
-                {
-                    case TechType.SeaTruckUpgradeEnergyEfficiency:
-                        if (added)
-                        {
-                            if (QMod.Config.SeatruckEfficiencyBoost.Equals(true))
-                            {
-                                __instance.motor.powerEfficiencyFactor = 0.8f;
-                                break;
-                            }
-                            else
-                            {
-                                __instance.motor.powerEfficiencyFactor = 0.9f;
-                                break;
-                            }
-                        }
+                case TechType.SeaTruckUpgradeEnergyEfficiency:
+                    if (added)
+                    {
                         if (QMod.Config.SeatruckEfficiencyBoost.Equals(true))
                         {
-                            __instance.motor.powerEfficiencyFactor = 0.9f;
+                            __instance.motor.powerEfficiencyFactor = 0.8f;
                             break;
                         }
                         else
                         {
-                            __instance.motor.powerEfficiencyFactor = 1f;
+                            __instance.motor.powerEfficiencyFactor = 0.9f;
                             break;
                         }
-
-                    default:
-                        return;
-                }
-                if (QMod.Config.DevMode.Equals(true))
+                    }
+                    if (QMod.Config.SeatruckEfficiencyBoost.Equals(true))
                     {
-                    ErrorMessage.AddMessage($"Current Seatruck Energy use Multiplier: {__instance.motor.powerEfficiencyFactor}");
-                }
+                        __instance.motor.powerEfficiencyFactor = 0.9f;
+                        break;
+                    }
+                    else
+                    {
+                        __instance.motor.powerEfficiencyFactor = 1f;
+                        break;
+                    }
+
+                default:
+                    return;
             }
+            if (QMod.Config.DevMode.Equals(true))
+            {
+                ErrorMessage.AddMessage($"Current Seatruck Energy use Multiplier: {__instance.motor.powerEfficiencyFactor}");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(LanguageUtils), nameof(LanguageUtils.CheckTechType))]
+    class Prefix1
+    {
+        [HarmonyPrefix]
+        public static string TechTypeCheckPatch1(this ILanguage language, TechType techType)
+        {
+            if (techType == TechType.VehiclePowerUpgradeModule)
+            {
+                string key = techType.AsString(false);
+                return language.CheckKey(key, false);
+            }
+            return "";
         }
     }
 
@@ -240,8 +252,8 @@ namespace MoreEngineEfficiencyModules
         [QModPatch]
         public static void Patch()
         {
-            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitUpgrades" });
-            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.SeaTruckUpgradeEnergyEfficiency, new string[] { "SeatruckUpgrades" });
+            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitModules" });
+            
             SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
             var assembly = Assembly.GetExecutingAssembly();
             var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
