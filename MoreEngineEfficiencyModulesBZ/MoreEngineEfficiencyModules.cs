@@ -144,23 +144,35 @@ namespace MoreEngineEfficiencyModules
         }
     }
 
-    [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
+    [HarmonyPatch(typeof(Exosuit), nameof(Exosuit.OnUpgradeModuleChange))]
     class Patch
     {
         [HarmonyPostfix]
-        public static void PostUpgradeModuleChange(Vehicle __instance, TechType techType)
+        public static void PostUpgradeModuleChange(Exosuit __instance, bool added, TechType techType)
         {
             if (!QModServices.Main.ModPresent("UpgradedVehicles"))
             {
-                if (techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == TechType.VehiclePowerUpgradeModule)
+                if (techType == TechType.VehiclePowerUpgradeModule || techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == VehiclePowerUpgradeModuleMK3.thisTechType)
                 {
-                    __instance.enginePowerRating = 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (1.75f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType) + (2.5f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK3.thisTechType))));
-                    ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
+                    ExtraMethods.EfficiencyHandler(__instance, added, techType);
+                    return;
                 }
             }
         }
     }
 
+    public class ExtraMethods
+    {
+        public static void EfficiencyHandler(Exosuit __instance, bool added, TechType techType)
+        {
+            if (techType == TechType.VehiclePowerUpgradeModule || techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == VehiclePowerUpgradeModuleMK3.thisTechType)
+            {
+                __instance.enginePowerRating = 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (1.75f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType) + (2.5f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK3.thisTechType))));
+                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
+                return;
+            }
+        }
+    }
     [HarmonyPatch(typeof(SeaTruckUpgrades), nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
     class Patch2
     {
@@ -175,20 +187,20 @@ namespace MoreEngineEfficiencyModules
                     case TechType.SeaTruckUpgradeEnergyEfficiency:
                         if (added)
                         {
-                            if (Config.SeatruckEfficiencyBoost == true)
-                            {
-                                __instance.motor.powerEfficiencyFactor = 0.6f;
-                                break;
-                            }
-                            else
+                            if (QMod.Config.SeatruckEfficiencyBoost.Equals(true))
                             {
                                 __instance.motor.powerEfficiencyFactor = 0.8f;
                                 break;
                             }
+                            else
+                            {
+                                __instance.motor.powerEfficiencyFactor = 0.9f;
+                                break;
+                            }
                         }
-                        if (Config.SeatruckEfficiencyBoost == true)
+                        if (QMod.Config.SeatruckEfficiencyBoost.Equals(true))
                         {
-                            __instance.motor.powerEfficiencyFactor = 0.8f;
+                            __instance.motor.powerEfficiencyFactor = 0.9f;
                             break;
                         }
                         else
@@ -200,9 +212,9 @@ namespace MoreEngineEfficiencyModules
                     default:
                         return;
                 }
-                if (Config.DevMode == true)
-                {
-                    ErrorMessage.AddMessage($"Current Seatruck Multiplier: {__instance.motor.powerEfficiencyFactor}");
+                if (QMod.Config.DevMode.Equals(true))
+                    {
+                    ErrorMessage.AddMessage($"Current Seatruck Energy use Multiplier: {__instance.motor.powerEfficiencyFactor}");
                 }
             }
         }
@@ -211,11 +223,11 @@ namespace MoreEngineEfficiencyModules
     [Menu("MoreEngineEfficiencyModulesBZ")]
     public class Config : ConfigFile
     {
-        [Toggle(Label = "Seatruck Base Efficiency Boost", Tooltip = "Makes the Seatruck have a higher base efficiency (for if it feels like it runs out of battery too fast)", Order = 1)]
-        public static bool SeatruckEfficiencyBoost = false;
+        [Toggle("Seatruck Base Efficiency Boost", Tooltip = "Makes the Seatruck have a higher base efficiency (for if it feels like it runs out of battery too fast)")]
+        public bool SeatruckEfficiencyBoost = false;
 
-        [Toggle(Id = "DeveloperModeMEEM", Label = "Developer Mode", Tooltip = "If enabled, it will show the current multiplier for the Seatruck's efficiency.", Order = 2)]
-        public static bool DevMode = false;
+        [Toggle("View Seatruck Efficiency Multiplier", Tooltip = "If enabled, shows the multiplier for the Seatruck Energy use.")]
+        public bool DevMode = false;
     }
 
     [QModCore]
@@ -223,7 +235,7 @@ namespace MoreEngineEfficiencyModules
     {
 
         internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
-        internal static Config Config { get; private set; }
+        internal static Config Config { get; } = OptionsPanelHandler.Main.RegisterModOptions<Config>();
 
         [QModPatch]
         public static void Patch()
@@ -237,7 +249,6 @@ namespace MoreEngineEfficiencyModules
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            Config = OptionsPanelHandler.Main.RegisterModOptions<Config>();
             new VehiclePowerUpgradeModuleMK2().Patch();
             new VehiclePowerUpgradeModuleMK3().Patch();
         }
