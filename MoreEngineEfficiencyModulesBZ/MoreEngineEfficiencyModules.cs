@@ -218,17 +218,23 @@ namespace MoreEngineEfficiencyModules
     }
 
     [HarmonyPatch(typeof(LanguageUtils), nameof(LanguageUtils.CheckTechType))]
-    class Prefix1
+    static class Prefix1
     {
         [HarmonyPrefix]
         public static string TechTypeCheckPatch1(this ILanguage language, TechType techType)
         {
+            string key;
             if (techType == TechType.VehiclePowerUpgradeModule)
             {
-                string key = techType.AsString(false);
+                key = techType.AsString(false);
                 return language.CheckKey(key, false);
             }
-            return "";
+            if (techType.IsObsolete())
+            {
+                return null;
+            }
+            key = techType.AsString(false);
+            return language.CheckKey(key, false);
         }
     }
 
