@@ -1,6 +1,6 @@
 ﻿{
-    "name": "More Engine Efficiency Modules",
-    "version_number": "2.0.0",
+    "name": "More_Engine_Efficiency_Modules",
+    "version_number": "2.0.5",
     "website_url": "https://github.com/Slothy-lol/AkarisSubnauticaMods",
     "description": "Adds a Mark 2 and Mark 3 Engine Efficiency Module for the Seamoth and PRAWN Suit.",
     "dependencies": [

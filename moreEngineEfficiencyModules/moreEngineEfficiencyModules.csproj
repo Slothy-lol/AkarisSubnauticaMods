@@ -78,12 +78,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets"
-copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\mod.json"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\EngineEfficiencyModuleMK2Sprite.png"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\EngineEfficiencyModuleMK3Sprite.png"
+    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\mod.json"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\EngineEfficiencyModuleMK3Sprite.png"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

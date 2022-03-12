@@ -83,11 +83,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-mkdir "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets"
-copy /Y "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\mod.json"
-copy /Y "$(ProjectDir)\ExosuitSprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\ExosuitSprite.png"
-copy /Y "$(ProjectDir)\SeamothSprite.png" "C:\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\$(TargetName)\Assets\SeamothSprite.png"</PostBuildEvent>
+    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\mod.json"
+copy /Y "$(ProjectDir)\ExosuitSprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\ExosuitSprite.png"
+copy /Y "$(ProjectDir)\SeamothSprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\SeamothSprite.png"</PostBuildEvent>
   </PropertyGroup>
 </Project>

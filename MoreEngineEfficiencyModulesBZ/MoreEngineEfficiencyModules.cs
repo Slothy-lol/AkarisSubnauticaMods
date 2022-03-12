@@ -144,39 +144,46 @@ namespace MoreEngineEfficiencyModules
         }
     }
 
-    [HarmonyPatch(typeof(Exosuit), nameof(Exosuit.OnUpgradeModuleChange))]
-    class Patch
+    [HarmonyPatch]
+    class Prefixes
     {
-        [HarmonyPostfix]
-        public static void PostUpgradeModuleChange(Exosuit __instance, bool added, TechType techType)
+        [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
+        [HarmonyPrefix]
+        public static bool PostUpgradeModuleChange2(Vehicle __instance, TechType techType, bool added)
         {
             if (!QModServices.Main.ModPresent("UpgradedVehicles"))
             {
                 if (techType == TechType.VehiclePowerUpgradeModule || techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == VehiclePowerUpgradeModuleMK3.thisTechType)
                 {
-                    ExtraMethods.EfficiencyHandler(__instance, added, techType);
-                    return;
+                    __instance.enginePowerRating = 1f
+                        + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule)
+                        + (1.75f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType)
+                        + (2.5f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK3.thisTechType))));
+                    if (QMod.Config.DevMode.Equals(true))
+                    {
+                        ErrorMessage.AddMessage($"Current vehicle efficiency: {__instance.enginePowerRating}");
+                    }
+                    return false;
                 }
+                return true;
             }
+            return true;
         }
-    }
 
-    public class ExtraMethods
-    {
-        public static void EfficiencyHandler(Exosuit __instance, bool added, TechType techType)
+        [HarmonyPatch(typeof(TechTypeExtensions), nameof(TechTypeExtensions.IsObsolete))]
+        [HarmonyPrefix]
+        public static bool ObseleteStopper(ref bool __result)
         {
-            if (techType == TechType.VehiclePowerUpgradeModule || techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == VehiclePowerUpgradeModuleMK3.thisTechType)
-            {
-                __instance.enginePowerRating = 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (1.75f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType) + (2.5f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK3.thisTechType))));
-                ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
-                return;
-            }
+            __result = false;
+            return false;
         }
+
     }
 
-    [HarmonyPatch(typeof(SeaTruckUpgrades), nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
-    class Patch2
+    [HarmonyPatch]
+    class Postfixes
     {
+        [HarmonyPatch(typeof(SeaTruckUpgrades), nameof(SeaTruckUpgrades.OnUpgradeModuleChange))]
         [HarmonyPostfix]
         public static void PostUpgradeModuleChange2(SeaTruckUpgrades __instance, TechType techType, bool added)
         {
@@ -217,34 +224,13 @@ namespace MoreEngineEfficiencyModules
         }
     }
 
-    [HarmonyPatch(typeof(LanguageUtils), nameof(LanguageUtils.CheckTechType))]
-    static class Prefix1
-    {
-        [HarmonyPrefix]
-        public static string TechTypeCheckPatch1(this ILanguage language, TechType techType)
-        {
-            string key;
-            if (techType == TechType.VehiclePowerUpgradeModule)
-            {
-                key = techType.AsString(false);
-                return language.CheckKey(key, false);
-            }
-            if (techType.IsObsolete())
-            {
-                return null;
-            }
-            key = techType.AsString(false);
-            return language.CheckKey(key, false);
-        }
-    }
-
     [Menu("MoreEngineEfficiencyModulesBZ")]
     public class Config : ConfigFile
     {
         [Toggle("Seatruck Base Efficiency Boost", Tooltip = "Makes the Seatruck have a higher base efficiency (for if it feels like it runs out of battery too fast)")]
         public bool SeatruckEfficiencyBoost = false;
 
-        [Toggle("View Seatruck Efficiency Multiplier", Tooltip = "If enabled, shows the multiplier for the Seatruck Energy use.")]
+        [Toggle("View Efficiency", Tooltip = "Shows Seatruck and PRAWN Suit efficiency values.")]
         public bool DevMode = false;
     }
 
@@ -259,16 +245,17 @@ namespace MoreEngineEfficiencyModules
         public static void Patch()
         {
             SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitModules" });
-            
             SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
             var assembly = Assembly.GetExecutingAssembly();
             var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
             Logger.Log(Logger.Level.Info, $"Patching {modName}");
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
-            Logger.Log(Logger.Level.Info, "Patched successfully!");
+            LanguageHandler.SetTechTypeName(TechType.VehiclePowerUpgradeModule, "Engine Efficiency Module");
+            LanguageHandler.SetTechTypeTooltip(TechType.VehiclePowerUpgradeModule, "Recycles heat by-product to minimize power inefficiencies.");
             new VehiclePowerUpgradeModuleMK2().Patch();
             new VehiclePowerUpgradeModuleMK3().Patch();
+            Logger.Log(Logger.Level.Info, "Patched successfully!");
         }
         
     }

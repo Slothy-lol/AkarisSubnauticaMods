@@ -142,14 +142,14 @@ namespace MoreEngineEfficiencyModules
     }
 
     [HarmonyPatch(typeof(Vehicle), nameof(Vehicle.OnUpgradeModuleChange))]
-    class Patch
+    class Postfixes
     {
         [HarmonyPostfix]
         public static void PostUpgradeModuleChange(Vehicle __instance, TechType techType)
         {
             if (!QModServices.Main.ModPresent("UpgradedVehicles"))
             {
-                if (techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == TechType.VehiclePowerUpgradeModule)
+                if (techType == VehiclePowerUpgradeModuleMK2.thisTechType || techType == TechType.VehiclePowerUpgradeModule || techType == VehiclePowerUpgradeModuleMK3.thisTechType)
                 {
                     __instance.enginePowerRating = 1f + (__instance.modules.GetCount(TechType.VehiclePowerUpgradeModule) + (1.75f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK2.thisTechType) + (2.5f * __instance.modules.GetCount(VehiclePowerUpgradeModuleMK3.thisTechType))));
                     ErrorMessage.AddMessage(Language.main.GetFormat("PowerRatingNowFormat", __instance.enginePowerRating));
