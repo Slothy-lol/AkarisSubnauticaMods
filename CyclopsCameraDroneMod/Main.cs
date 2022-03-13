@@ -28,7 +28,12 @@ namespace CyclopsCameraDroneMod.Main
                 if (Input.GetKeyUp(KeyCode.P))
                 {
                     MapRoomScreen CyclopsCameraScreenObject = new MapRoomScreen();
+                    Vector3 Vector3Drone = Player.main.transform.position - new Vector3(0,12,0);
+                    Vector3 position = Vector3Drone;
                     MapRoomCamera CyclopsCameraDroneObject = new MapRoomCamera();
+                    Quaternion rotation = CyclopsCameraDroneObject.transform.rotation;
+                    GameObject.Instantiate(CyclopsCameraDroneObject, position: position, rotation);
+                    CyclopsCameraScreenObject.transform.position = Player.main.transform.position;
                     CyclopsCameraDroneObject.ControlCamera(Player.main, CyclopsCameraScreenObject);
                 }
                 __result = true;
@@ -40,7 +45,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 if (CyclopsCameraDroneObject != null)
                 {
-                    
+                    GameObject.Destroy(CyclopsCameraDroneObject);
                 }
             }
         }
