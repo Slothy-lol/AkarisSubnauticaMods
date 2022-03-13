@@ -32,6 +32,7 @@ namespace CyclopsCameraDroneMod.Main
                     Vector3 position = Vector3Drone;
                     MapRoomCamera CyclopsCameraDroneObject = new MapRoomCamera();
                     Quaternion rotation = CyclopsCameraDroneObject.transform.rotation;
+                    CyclopsCameraDroneObject.name = "CyclopsDroneCamera";
                     GameObject.Instantiate(CyclopsCameraDroneObject, position: position, rotation);
                     CyclopsCameraScreenObject.transform.position = Player.main.transform.position;
                     CyclopsCameraDroneObject.ControlCamera(Player.main, CyclopsCameraScreenObject);
@@ -39,13 +40,13 @@ namespace CyclopsCameraDroneMod.Main
                 __result = true;
             }
 
-            [HarmonyPatch(typeof(CyclopsExternalCams), nameof(CyclopsExternalCams.ExitCamera))]
+            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.FreeCamera))]
             [HarmonyPostfix]
-            public void ExitCameraPatch(MapRoomCamera CyclopsCameraDroneObject)
+            public void ExitCameraPatch(MapRoomCamera __instance)
             {
-                if (CyclopsCameraDroneObject != null)
+                if (__instance.name == "CyclopsDroneCamera")
                 {
-                    GameObject.Destroy(CyclopsCameraDroneObject);
+                    GameObject.Destroy(__instance);
                 }
             }
         }
