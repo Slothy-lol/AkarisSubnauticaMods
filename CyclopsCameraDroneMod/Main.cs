@@ -42,7 +42,7 @@ namespace CyclopsCameraDroneMod.Main
 
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.FreeCamera))]
             [HarmonyPostfix]
-            public void ExitCameraPatch(MapRoomCamera __instance)
+            public static void ExitCameraPatch(MapRoomCamera __instance)
             {
                 if (__instance.name == "CyclopsDroneCamera")
                 {
