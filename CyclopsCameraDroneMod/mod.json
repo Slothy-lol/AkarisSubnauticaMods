@@ -1,0 +1,11 @@
+{
+  "Id": "CyclopsCameraDroneMod",
+  "DisplayName": "Cyclops Camera Drone Mod",
+  "Author": "Akari The Sloth",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "CyclopsCameraDroneMod.dll",
+  "Dependencies": [ "" ],
+  "Game": "Subnautica"
+}
+
