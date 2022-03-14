@@ -23,16 +23,16 @@ namespace CyclopsCameraDroneMod.Main
         {
             [HarmonyPatch(typeof(CyclopsExternalCams), nameof(CyclopsExternalCams.HandleInput))]
             [HarmonyPostfix]
-            public static void HandleInputPatch(ref bool __result)
+            public static void HandleInputPatch(Player player)
             {
                 if (Input.GetKeyUp(KeyCode.P))
                 {
                     MapRoomScreen CyclopsCameraScreenObject = new MapRoomScreen();
                     Vector3 position = Player.main.transform.position - new Vector3(0,12,0);
-                    var CyclopsCameraDroneObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.MapRoomCamera, false), position, Player.main.transform.rotation);
-                    MapRoomCamera CyclopsCameraDrone = CyclopsCameraDroneObject.GetComponent<MapRoomCamera>();
-                    CyclopsCameraScreenObject.transform.position = Player.main.transform.position;
-                    CyclopsCameraDrone.ControlCamera(Player.main, CyclopsCameraScreenObject);
+                    MapRoomCamera CyclopsCameraDrone = new MapRoomCamera();
+                    CyclopsCameraDroneObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.MapRoomCamera, false), position, Player.main.transform.rotation); = player.transform.position;
+                    CyclopsCameraDroneObject = GameObject.Instantiate<>
+                    CyclopsCameraDroneObject.ControlCamera(Player.main, CyclopsCameraScreenObject);
                     CyclopsCameraDroneObject.gameObject.name = "CyclopsDroneCamera";
                 }
             }
