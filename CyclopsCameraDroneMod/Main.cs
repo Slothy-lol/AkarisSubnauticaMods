@@ -27,12 +27,16 @@ namespace CyclopsCameraDroneMod.Main
             {
                 if (Input.GetKeyUp(KeyCode.P))
                 {
-                    MapRoomScreen CyclopsCameraScreenObject = new MapRoomScreen();
-                    Vector3 position = Player.main.transform.position - new Vector3(0,12,0);
-                    MapRoomCamera CyclopsCameraDrone = new MapRoomCamera();
-                    CyclopsCameraDroneObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.MapRoomCamera, false), position, Player.main.transform.rotation); = player.transform.position;
-                    CyclopsCameraDroneObject = GameObject.Instantiate<>
-                    CyclopsCameraDroneObject.ControlCamera(Player.main, CyclopsCameraScreenObject);
+                    GameObject CyclopsCameraScreenObject = new GameObject("Cyclops Camera Screen");
+                    MapRoomScreen CyclopsMapRoomScreen = CyclopsCameraScreenObject.AddComponent<MapRoomScreen>();
+
+                    Vector3 position = Player.main.transform.position - new Vector3(0, 12, 0);
+
+                    GameObject CyclopsCameraDroneObject = GameObject.Instantiate(CraftData.GetPrefabForTechType(TechType.MapRoomCamera, false), position, Player.main.transform.rotation);
+                    MapRoomCamera CyclopsCameraDrone = CyclopsCameraDroneObject.GetComponent<MapRoomCamera>();
+
+                    CyclopsCameraScreenObject.transform.position = Player.main.transform.position;
+                    CyclopsCameraDrone.ControlCamera(Player.main, CyclopsMapRoomScreen);
                     CyclopsCameraDroneObject.gameObject.name = "CyclopsDroneCamera";
                 }
             }
