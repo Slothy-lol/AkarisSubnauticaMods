@@ -23,7 +23,7 @@ namespace CyclopsCameraDroneMod.Main
         {
             [HarmonyPatch(typeof(CyclopsExternalCams), nameof(CyclopsExternalCams.HandleInput))]
             [HarmonyPostfix]
-            public static void HandleInputPatch(Player player)
+            public static void HandleInputPatch()
             {
                 if (Input.GetKeyUp(KeyCode.P))
                 {
