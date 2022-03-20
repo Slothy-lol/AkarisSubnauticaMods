@@ -1,16 +1,7 @@
 ﻿using HarmonyLib;
-using SMLHelper.V2.Assets;
-using SMLHelper.V2.Crafting;
-using SMLHelper.V2.Handlers;
-using SMLHelper.V2.Options;
-using SMLHelper.V2.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Logger = QModManager.Utility.Logger;
 using UnityEngine;
+using UWE;
+using System.Collections;
 
 namespace CyclopsCameraDroneMod.Main
 {
@@ -25,21 +16,16 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void HandleInputPatch(CyclopsExternalCams __instance, ref bool __result)
             {
-                /*if (__instance.GetUsingCameras())
-                {
-                    Logger.Log(Logger.Level.Info, "Not using cameras");
-                    return;
-                }*/
                 if(Input.GetKeyUp(KeyCode.P))
                 {
                     __instance.ExitCamera();
 
-                    CoroutineHost.StartCoroutine(createAndControl(__instance));
+                    CoroutineHost.StartCoroutine(CreateAndControl(__instance));
 
                     __result = true;
                 }
             }
-            private static IEnumerator createAndControl(CyclopsExternalCams __instance)
+            private static IEnumerator CreateAndControl(CyclopsExternalCams __instance)
             {
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.MapRoomCamera, false);
                 yield return coroutineTask;
@@ -49,6 +35,7 @@ namespace CyclopsCameraDroneMod.Main
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
 
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
+                cyclopsCameraDrone.energyMixin.energy = 100f;
                 cyclopsCameraDrone.ControlCamera(Player.main, null);
             }
             static Vector3 GetSpawnPosition(GameObject cyclopsObject, GameObject playerObject)
@@ -67,7 +54,7 @@ namespace CyclopsCameraDroneMod.Main
                 combinedMatrix.SetRow(2, row3);
                 combinedMatrix.SetRow(3, row4);
 
-                return combinedMatrix.MultiplyPoint3x4(new Vector3(0, -12, 0)); // set the position relative to the Cyclops' Rotation and scale and the Player's Position
+                return combinedMatrix.MultiplyPoint3x4(new Vector3(0, -12, 0));
             }
 
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.FreeCamera))]
