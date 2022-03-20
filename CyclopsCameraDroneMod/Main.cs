@@ -8,7 +8,7 @@ namespace CyclopsCameraDroneMod.Main
     [HarmonyPatch]
     public class Main
     {
-
+        public static string CameraName = "CyclopsDroneCamera";
         [HarmonyPatch]
         public class Postfixes
         {
@@ -33,7 +33,8 @@ namespace CyclopsCameraDroneMod.Main
 
                 Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject, Player.main.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
-
+                cyclopsCameraDrone.gameObject.name = CameraName;
+                
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
                 cyclopsCameraDrone.energyMixin.energy = 100f;
                 cyclopsCameraDrone.ControlCamera(Player.main, null);
@@ -87,6 +88,11 @@ namespace CyclopsCameraDroneMod.Main
                 __instance.lightsParent.SetActive(false);
 
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
+                
+                if(__instance.name == CameraName)
+                {
+                    GameObject.Destroy(__instance.gameObject);
+                }
                 return false;
             }
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
