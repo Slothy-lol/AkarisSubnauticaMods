@@ -89,6 +89,15 @@ namespace CyclopsCameraDroneMod.Main
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
                 return false;
             }
+            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
+            [HarmonyPostfix]
+            public static void fixDistance(MapRoomCamera __instance, ref float __result)
+            {
+                if(__instance.name == CameraName/* && !QMod.Config.InfiniteDistance*/) //make config for infinite distance eventually
+                {
+                    __result = (Player.main.transform.position - __instance.transform.position).magnitude/* - QMod.Config.ExtraDistance*/; //make config for extra distance eventually
+                }
+            }
         }
     }
 }
