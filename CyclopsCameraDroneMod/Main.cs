@@ -52,5 +52,4 @@ namespace CyclopsCameraDroneMod.Main
             }
         }
     }
-
 }
