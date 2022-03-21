@@ -14,12 +14,17 @@ using UnityEngine;
 using UWE;
 using System.Collections;
 using CyclopsCameraDroneMod.QMods;
+using MoreCyclopsUpgrades.API;
 
 namespace CyclopsCameraDroneMod.Main
 {
     [HarmonyPatch]
     public class Main
     {
+        private ParticleSystem scaleParticleSystem;
+        private ParticleSystem laserEndParticleSystem;
+
+
         public static string CameraName = "CyclopsDroneCamera";
         [HarmonyPatch]
         public class Postfixes
@@ -28,13 +33,8 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void HandleInputPatch(CyclopsExternalCams __instance, ref bool __result)
             {
-                /*if (__instance.GetUsingCameras())
-                {
-                    Logger.Log(Logger.Level.Info, "Not using cameras");
-                    return;
-                }*/
                 KeyCode droneButton = QMod.Config.droneKey;
-                if(Input.GetKeyUp(droneButton))
+                if (Input.GetKeyUp(droneButton))
                 {
                     __instance.ExitCamera();
 
@@ -45,6 +45,10 @@ namespace CyclopsCameraDroneMod.Main
             }
             private static IEnumerator createAndControl(CyclopsExternalCams __instance)
             {
+                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+                {
+                    yield break;
+                }
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.MapRoomCamera, false);
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
@@ -81,14 +85,14 @@ namespace CyclopsCameraDroneMod.Main
                 combinedMatrix.SetRow(2, row3);
                 combinedMatrix.SetRow(3, row4);
 
-                return combinedMatrix.MultiplyPoint3x4(new Vector3(0, -12, 0)); // set the position relative to the Cyclops' Rotation and scale and the Player's Position
+                return combinedMatrix.MultiplyPoint3x4(new Vector3(0, -12, 0));
             }
 
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.FreeCamera))]
             [HarmonyPrefix]
             public static bool ExitCameraPatch(MapRoomCamera __instance, bool resetPlayerPosition)
             {
-                if(__instance.screen != null)
+                if (__instance.screen != null)
                 {
                     return true;
                 }
@@ -114,19 +118,20 @@ namespace CyclopsCameraDroneMod.Main
                 Player.main.SetHeadVisible(false);
                 __instance.lightsParent.SetActive(false);
 
-                if(__instance.name == CameraName)
+                if (__instance.name == CameraName)
                 {
                     GameObject.Destroy(__instance.gameObject);
                 }
                 return false;
             }
+
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
-                if(__instance.name == CameraName/* && !QMods.Config.InfiniteDistance*/) //make config for infinite distance eventually
+                if (__instance.name == CameraName && !QMod.Config.InfiniteDistance)
                 {
-                    __result = (Player.main.transform.position - __instance.transform.position).magnitude/* - QMods.Config.ExtraDistance*/; //make config for extra distance eventually
+                    __result = (Player.main.transform.position - __instance.transform.position).magnitude;
                 }
             }
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.StabilizeRoll))]
@@ -143,12 +148,14 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance)
             {
-                //Not sure which is better, probably gonna just use the hand one for now
-                //GameInput.GetButtonUp(GameInput.Button.RightHand)
-                //Input.GetKeyUp(QMod.Config.miningKey)
-                if (GameInput.GetButtonUp(GameInput.Button.LeftHand) && __instance.name == CameraName)
+                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
                 {
-                    Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
+                    return;
+                }
+                if ((GameInput.GetButtonUp(GameInput.Button.LeftHand) || Input.GetKeyUp(QMod.Config.miningKey)) && __instance.name == CameraName)
+                {
+                    // Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
+                    Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
                     {
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
@@ -158,65 +165,110 @@ namespace CyclopsCameraDroneMod.Main
                                 drillable.OnDrill(gameObject4.transform.position, null, out var _);
                         }
                     }
-                }else if (Input.GetKeyUp(QMod.Config.miningKey) && __instance.name == CameraName)
+                }
+                else if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
                 {
-                    //todo
-                    //instantiate beacon from prefab, USE IENUMERATOR OR WHATEVER. USE ASYNC METHOD NOT THE EASY VERSION.
-                    //Don't want this mod to break just because I was lazy
+                    SubRoot currentSub = Player.main.currentSub;
+                    if (currentSub == null) { return; }
+                    if (GameModeUtils.IsOptionActive(GameModeOption.NoCost))
+                    {
+                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                        return;
+                    }
+                    bool hasBeacon = false;
+                    ItemsContainer containerWithBeacon = null;
+
+                    foreach (CyclopsLocker locker in currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>())
+                    {
+                        ItemsContainer container = locker.gameObject.GetComponentInChildren<StorageContainer>().container;
+
+                        if (container != null && container.Contains(TechType.Beacon))
+                        {
+                            containerWithBeacon = container;
+                            hasBeacon = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasBeacon)
+                    {
+                        if (Inventory.Get().container.Contains(TechType.Beacon))
+                        {
+                            containerWithBeacon = Inventory.Get().container;
+                            hasBeacon = true;
+                        }
+                    }
+                    if (hasBeacon && containerWithBeacon != null)
+                    {
+                        containerWithBeacon.DestroyItem(TechType.Beacon);
+                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                    }
                 }
             }
-            [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
-            [HarmonyPostfix]
-            public static void itemsToCyclops(Drillable __instance)
+            public static IEnumerator createBeacon(Transform transform)
             {
-                SubRoot currentSub = Player.main.currentSub;
-                if (__instance.lootPinataObjects.Count > 0 && currentSub != null)
+                if (true/*check inventory somehow*/)
                 {
-                    List<GameObject> list = new List<GameObject>();
-                    foreach (GameObject gameObject in __instance.lootPinataObjects)
+                    //idk do stuffs
+                }
+                var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
+                yield return coroutineTask;
+                var prefab = coroutineTask.GetResult();
+
+                GameObject.Instantiate(prefab, transform.position + 5f * transform.forward, transform.rotation);
+            }
+        }
+        [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
+        [HarmonyPostfix]
+        public static void itemsToCyclops(Drillable __instance)
+        {
+            SubRoot currentSub = Player.main.currentSub;
+            if (__instance.lootPinataObjects.Count > 0 && currentSub != null)
+            {
+                List<GameObject> list = new List<GameObject>();
+                foreach (GameObject gameObject in __instance.lootPinataObjects)
+                {
+                    if (gameObject == null)
                     {
-                        if (gameObject == null)
+                        list.Add(gameObject);
+                    }
+                    else
+                    {
+                        Vector3 b = currentSub.transform.position;
+                        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, b, Time.deltaTime * 5f);
+                        if (Vector3.Distance(gameObject.transform.position, b) < 3f)
                         {
-                            list.Add(gameObject);
-                        }
-                        else
-                        {
-                            Vector3 b = currentSub.transform.position;
-                            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, b, Time.deltaTime * 5f);
-                            if (Vector3.Distance(gameObject.transform.position, b) < 3f)
+                            Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
+                            if (pickupable)
                             {
-                                Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
-                                if (pickupable)
+                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponentInChildren<StorageContainer>().container;
+                                if (!cyclopsContainer.HasRoomFor(pickupable))
                                 {
-                                    ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponentInChildren<StorageContainer>().container;
-                                    if (!cyclopsContainer.HasRoomFor(pickupable))
+                                    if (currentSub != null)
                                     {
-                                        if (currentSub != null)
-                                        {
-                                            ErrorMessage.AddMessage(Language.main.Get("ContainerCantFit"));
-                                        }
+                                        ErrorMessage.AddMessage(Language.main.Get("ContainerCantFit"));
                                     }
-                                    else
-                                    {
-                                        string arg = Language.main.Get(pickupable.GetTechName());
-                                        ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
-                                        uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
-                                        pickupable = pickupable.Initialize();
-                                        InventoryItem item = new InventoryItem(pickupable);
-                                        cyclopsContainer.UnsafeAdd(item);
-                                        pickupable.PlayPickupSound();
-                                    }
-                                    list.Add(gameObject);
                                 }
+                                else
+                                {
+                                    string arg = Language.main.Get(pickupable.GetTechName());
+                                    ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
+                                    uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
+                                    pickupable = pickupable.Initialize();
+                                    InventoryItem item = new InventoryItem(pickupable);
+                                    cyclopsContainer.UnsafeAdd(item);
+                                    pickupable.PlayPickupSound();
+                                }
+                                list.Add(gameObject);
                             }
                         }
                     }
-                    if (list.Count > 0)
+                }
+                if (list.Count > 0)
+                {
+                    foreach (GameObject item2 in list)
                     {
-                        foreach (GameObject item2 in list)
-                        {
-                            __instance.lootPinataObjects.Remove(item2);
-                        }
+                        __instance.lootPinataObjects.Remove(item2);
                     }
                 }
             }

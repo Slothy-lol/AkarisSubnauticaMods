@@ -35,17 +35,14 @@
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp-firstpass_publicized">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp_publicized">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreCyclopsUpgrades">
+      <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\QMods\MoreCyclopsUpgrades\MoreCyclopsUpgrades.dll</HintPath>
     </Reference>
     <Reference Include="QModInstaller">
       <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
@@ -73,6 +70,10 @@
     <Reference Include="UnityEngine.InputModule">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.InputModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
@@ -81,6 +82,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QMod.cs" />
@@ -90,8 +92,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\mod.json"</PostBuildEvent>
+    <PostBuildEvent>mkdir "D:\Mods\$(TargetName)"
+mkdir "D:\Mods\$(TargetName)\QMods"
+mkdir "D:\Mods\$(TargetName)\QMods\$(TargetName)"
+copy /Y "$(TargetPath)" "D:\Mods\$(TargetName)\QMods\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "D:\Mods\$(TargetName)\QMods\$(TargetName)\mod.json"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -5,6 +5,9 @@
   "Version": "1.0.0",
   "Enable": true,
   "AssemblyName": "CyclopsCameraDroneMod.dll",
+  "VersionChecker": {
+    "LatestVersionURL": "https://github.com/Slothy-lol/AkarisSubnauticaMods/raw/main/CyclopsCameraDroneMod/mod.json"
+  },
   "Game": "Subnautica"
 }
 
