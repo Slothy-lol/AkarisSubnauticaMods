@@ -97,7 +97,7 @@ namespace CyclopsCameraDroneMod.Main
             }
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
             [HarmonyPostfix]
-            public static void fixDistance(MapRoomCamera __instance, ref float __result)
+            public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
                 if(__instance.name == CameraName/* && !QMod.Config.InfiniteDistance*/) //make config for infinite distance eventually
                 {
