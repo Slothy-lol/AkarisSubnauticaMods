@@ -139,6 +139,87 @@ namespace CyclopsCameraDroneMod.Main
                     Player.main.EnterLockedMode(null);
                 }
             }
+            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
+            [HarmonyPostfix]
+            public static void GetLookingTarget(MapRoomCamera __instance)
+            {
+                //Not sure which is better, probably gonna just use the hand one for now
+                //GameInput.GetButtonUp(GameInput.Button.RightHand)
+                //Input.GetKeyUp(QMod.Config.miningKey)
+                if (GameInput.GetButtonUp(GameInput.Button.LeftHand) && __instance.name == CameraName)
+                {
+                    Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
+                    if (gameObject4 != null)
+                    {
+                        Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
+                        if (drillable != null)
+                        {
+                            while (drillable.health.Sum() > 0)
+                                drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                        }
+                    }
+                }else if (Input.GetKeyUp(QMod.Config.miningKey) && __instance.name == CameraName)
+                {
+                    //todo
+                    //instantiate beacon from prefab, USE IENUMERATOR OR WHATEVER. USE ASYNC METHOD NOT THE EASY VERSION.
+                    //Don't want this mod to break just because I was lazy
+                }
+            }
+            [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
+            [HarmonyPostfix]
+            public static void itemsToCyclops(Drillable __instance)
+            {
+                SubRoot currentSub = Player.main.currentSub;
+                if (__instance.lootPinataObjects.Count > 0 && currentSub != null)
+                {
+                    List<GameObject> list = new List<GameObject>();
+                    foreach (GameObject gameObject in __instance.lootPinataObjects)
+                    {
+                        if (gameObject == null)
+                        {
+                            list.Add(gameObject);
+                        }
+                        else
+                        {
+                            Vector3 b = currentSub.transform.position;
+                            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, b, Time.deltaTime * 5f);
+                            if (Vector3.Distance(gameObject.transform.position, b) < 3f)
+                            {
+                                Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
+                                if (pickupable)
+                                {
+                                    ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponentInChildren<StorageContainer>().container;
+                                    if (!cyclopsContainer.HasRoomFor(pickupable))
+                                    {
+                                        if (currentSub != null)
+                                        {
+                                            ErrorMessage.AddMessage(Language.main.Get("ContainerCantFit"));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string arg = Language.main.Get(pickupable.GetTechName());
+                                        ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
+                                        uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
+                                        pickupable = pickupable.Initialize();
+                                        InventoryItem item = new InventoryItem(pickupable);
+                                        cyclopsContainer.UnsafeAdd(item);
+                                        pickupable.PlayPickupSound();
+                                    }
+                                    list.Add(gameObject);
+                                }
+                            }
+                        }
+                    }
+                    if (list.Count > 0)
+                    {
+                        foreach (GameObject item2 in list)
+                        {
+                            __instance.lootPinataObjects.Remove(item2);
+                        }
+                    }
+                }
+            }
         }
     }
 }
