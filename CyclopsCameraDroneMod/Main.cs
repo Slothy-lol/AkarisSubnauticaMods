@@ -26,6 +26,8 @@ namespace CyclopsCameraDroneMod.Main
 
 
         public static string CameraName = "CyclopsDroneCamera";
+        public static float nextUse;
+        public static float cooldownTime = 0.5f;
         [HarmonyPatch]
         public class Postfixes
         {
@@ -154,15 +156,24 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if ((GameInput.GetButtonUp(GameInput.Button.LeftHand) || Input.GetKeyUp(QMod.Config.miningKey)) && __instance.name == CameraName)
                 {
-                    // Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
-                    Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
-                    if (gameObject4 != null)
+                    if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
                     {
-                        Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                        if (drillable != null)
+                        // Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
+                        Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
+                        if (gameObject4 != null)
                         {
-                            while (drillable.health.Sum() > 0)
-                                drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                            Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
+                            if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                            {
+                                nextUse = Time.time + cooldownTime;
+                                for (var i = 0; i < 26; i++)
+                                {
+                                    if (drillable.health.Sum() > 0)
+                                    {
+                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
