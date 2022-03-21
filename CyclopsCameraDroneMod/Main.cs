@@ -150,34 +150,7 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance)
             {
-                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
-                {
-                    return;
-                }
-                if ((GameInput.GetButtonUp(GameInput.Button.LeftHand) || Input.GetKeyUp(QMod.Config.miningKey)) && __instance.name == CameraName)
-                {
-                    if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
-                    {
-                        // Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
-                        Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
-                        if (gameObject4 != null)
-                        {
-                            Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                            if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
-                            {
-                                nextUse = Time.time + cooldownTime;
-                                for (var i = 0; i < 26; i++)
-                                {
-                                    if (drillable.health.Sum() > 0)
-                                    {
-                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
+                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
                 {
                     SubRoot currentSub = Player.main.currentSub;
                     if (currentSub == null) { return; }
@@ -215,13 +188,33 @@ namespace CyclopsCameraDroneMod.Main
                         CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
                     }
                 }
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                {
+                    return;
+                }
+                    if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
+                    {
+                        Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
+                        //Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
+                        if (gameObject4 != null)
+                        {
+                            Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
+                            if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                            {
+                                nextUse = Time.time + cooldownTime;
+                                for (var i = 0; i < 26; i++)
+                                {
+                                    if (drillable.health.Sum() > 0)
+                                    {
+                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                                    }
+                                }
+                            }
+                        }
+                    }
             }
             public static IEnumerator createBeacon(Transform transform)
             {
-                if (true/*check inventory somehow*/)
-                {
-                    //idk do stuffs
-                }
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
