@@ -30,5 +30,12 @@ namespace CyclopsCameraDroneMod.QMods
     {
         [Keybind("Drone Key", Tooltip = "When on the cyclops cameras, use this key to swap to a drone")]
         public KeyCode droneKey = KeyCode.P;
+        /*
+        * This was for the keybind, now we just use left click instead.
+        [Keybind("Mining Key", Tooltip = "When using the cyclops drone, press this key to mine the drillable being targeted")]
+        public KeyCode miningKey = KeyCode.Q;
+        */
+        //Make a toggle option for using a keybind or using mouse click
+        //Make a keybind for spawning a beacon
     }
 }
