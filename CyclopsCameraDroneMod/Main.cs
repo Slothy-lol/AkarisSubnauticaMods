@@ -38,6 +38,7 @@ namespace CyclopsCameraDroneMod.Main
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
         public static float cooldownTime = 1f;
+        public LineRenderer Laser = new LineRenderer;
         [HarmonyPatch]
         public class Postfixes
         {
@@ -210,6 +211,7 @@ namespace CyclopsCameraDroneMod.Main
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
                         if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
                         {
+                            LaserTesting(__instance.gameObject.transform, __instance);
                             __instance.energyMixin.ConsumeEnergy(5);
                             nextUse = Time.time + cooldownTime;
                             if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
@@ -295,6 +297,21 @@ namespace CyclopsCameraDroneMod.Main
                         __instance.lootPinataObjects.Remove(item2);
                     }
                 }
+            }
+        }
+        public static void LaserTesting(Transform transform, MapRoomCamera Camera) 
+        {
+            if(Targeting.GetTarget(Camera.gameObject, QMod.Config.drillRange, out _, out var num))
+            {
+                Laser.enabled = true;
+                Laser.SetPosition(0, transform.position + 2f * -transform.up);
+                Laser.SetPosition(1, (transform.forward * num) + transform.position);
+            }
+            else
+            {
+                Laser.enabled = true;
+                Laser.SetPosition(0, transform.position + 2f * -transform.up);
+                Laser.SetPosition(1, (transform.forward * QMod.Config.drillRange) + transform.position);
             }
         }
     }
