@@ -202,6 +202,8 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
                 {
+                    CameraDroneLaser.SetActive(true);
+                    SetBeamTarget(__instance);
                     Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
                     {
@@ -228,10 +230,9 @@ namespace CyclopsCameraDroneMod.Main
                                     drillable.OnDrill(gameObject4.transform.position, null, out var _);
                                 }
                             }
-                            Main.CameraDroneLaser.SetActive(false);
                         }
                     }
-                }
+                }else{ Main.CameraDroneLaser.SetActive(false); }
             }
             public static IEnumerator CreateBeacon(Transform transform)
             {
@@ -346,6 +347,25 @@ namespace CyclopsCameraDroneMod.Main
             CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, __instance.transform.position + 2f * -__instance.transform.up, __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
+        }
+        public static void SetBeamTarget(MapRoomCamera cameraDrone)
+        {
+            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out targetGameobject, out targetDist))
+            {
+                CalculateBeamVectors(targetDist, cameraDrone);
+            }
+            else
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillDistance * 2 : QMod.Config.drillDistance, cameraDrone);
+        }
+
+        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera cameraDrone)
+        {
+            Transform aimTransform = cmaeraDrone.transform;
+
+            targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
+
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position + 2f * -__instance.transform.up);
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
         }
     }
 }
