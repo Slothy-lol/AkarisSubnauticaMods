@@ -54,12 +54,12 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.ExitCamera();
 
-                    CoroutineHost.StartCoroutine(createAndControl(__instance));
+                    CoroutineHost.StartCoroutine(CreateAndControl(__instance));
 
                     __result = true;
                 }
             }
-            private static IEnumerator createAndControl(CyclopsExternalCams __instance)
+            private static IEnumerator CreateAndControl(CyclopsExternalCams __instance)
             {
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.MapRoomCamera, false);
                 yield return coroutineTask;
@@ -69,7 +69,7 @@ namespace CyclopsCameraDroneMod.Main
                 yield return coroutineTask;
                 var batteryPrefab = coroutineTask.GetResult();
 
-                Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject, Player.main.gameObject);
+                Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = CameraName;
 
@@ -81,7 +81,7 @@ namespace CyclopsCameraDroneMod.Main
                 Player.main.ExitLockedMode(false, false);
                 Player.main.EnterLockedMode(null);
             }
-            static Vector3 GetSpawnPosition(GameObject cyclopsObject, GameObject playerObject)
+            static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
                 Matrix4x4 cyclopsMatrix = cyclopsObject.transform.localToWorldMatrix;
                 Matrix4x4 playerMatrix = Player.main.transform.localToWorldMatrix;
@@ -166,7 +166,7 @@ namespace CyclopsCameraDroneMod.Main
                     if (currentSub == null) { return; }
                     if (GameModeUtils.IsOptionActive(GameModeOption.NoCost))
                     {
-                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
                         return;
                     }
                     bool hasBeacon = false;
@@ -195,7 +195,7 @@ namespace CyclopsCameraDroneMod.Main
                     if (hasBeacon && containerWithBeacon != null)
                     {
                         containerWithBeacon.DestroyItem(TechType.Beacon);
-                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
                     }
                 }
                 if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
@@ -233,7 +233,7 @@ namespace CyclopsCameraDroneMod.Main
                     }
                 }
             }
-            public static IEnumerator createBeacon(Transform transform)
+            public static IEnumerator CreateBeacon(Transform transform)
             {
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
                 yield return coroutineTask;
@@ -244,7 +244,7 @@ namespace CyclopsCameraDroneMod.Main
         }
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
         [HarmonyPostfix]
-        public static void itemsToCyclops(Drillable __instance)
+        public static void ItemsToCyclops(Drillable __instance)
         {
             SubRoot currentSub = Player.main.currentSub;
             if (__instance.lootPinataObjects.Count > 0 && currentSub != null)
