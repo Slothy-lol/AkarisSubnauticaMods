@@ -60,5 +60,13 @@ namespace CyclopsCameraDroneMod.QMods
 
         [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 7.0F, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
         public int drillRange = 10;
+
+        public int drill1RGB1 = 77;
+        public int drill1RGB2 = 166;
+        public int drill1RGB3 = 255;
+
+        public int drill2RGB1 = 0;
+        public int drill2RGB2 = 255;
+        public int drill2RGB3 = 42;
     }
 }
