@@ -15,19 +15,30 @@ using UWE;
 using System.Collections;
 using CyclopsCameraDroneMod.QMods;
 using MoreCyclopsUpgrades.API;
+//using MoreCyclopsUpgrades.API;
 
 namespace CyclopsCameraDroneMod.Main
 {
     [HarmonyPatch]
     public class Main
     {
+        //TODO
+        //make visual laser effects finally
+        //add scanning functionality
+        //add way to defend camera????? Maybe?
+        //add way to pick up items
+        //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
+        //add speed upgrades for all drones somehow, they too fuckin slow
+        //more shit I guess, idk
+        /*
         private ParticleSystem scaleParticleSystem;
         private ParticleSystem laserEndParticleSystem;
-
+        */
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
-        public static float cooldownTime = 0.5f;
+        public static float cooldownTime = 1f;
+        public LineRenderer Laser = new LineRenderer;
         [HarmonyPatch]
         public class Postfixes
         {
@@ -36,21 +47,21 @@ namespace CyclopsCameraDroneMod.Main
             public static void HandleInputPatch(CyclopsExternalCams __instance, ref bool __result)
             {
                 KeyCode droneButton = QMod.Config.droneKey;
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                {
+                    return;
+                }
                 if (Input.GetKeyUp(droneButton))
                 {
                     __instance.ExitCamera();
 
-                    CoroutineHost.StartCoroutine(createAndControl(__instance));
+                    CoroutineHost.StartCoroutine(CreateAndControl(__instance));
 
                     __result = true;
                 }
             }
-            private static IEnumerator createAndControl(CyclopsExternalCams __instance)
+            private static IEnumerator CreateAndControl(CyclopsExternalCams __instance)
             {
-                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
-                {
-                    yield break;
-                }
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.MapRoomCamera, false);
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
@@ -59,7 +70,7 @@ namespace CyclopsCameraDroneMod.Main
                 yield return coroutineTask;
                 var batteryPrefab = coroutineTask.GetResult();
 
-                Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject, Player.main.gameObject);
+                Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = CameraName;
 
@@ -71,7 +82,7 @@ namespace CyclopsCameraDroneMod.Main
                 Player.main.ExitLockedMode(false, false);
                 Player.main.EnterLockedMode(null);
             }
-            static Vector3 GetSpawnPosition(GameObject cyclopsObject, GameObject playerObject)
+            static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
                 Matrix4x4 cyclopsMatrix = cyclopsObject.transform.localToWorldMatrix;
                 Matrix4x4 playerMatrix = Player.main.transform.localToWorldMatrix;
@@ -148,42 +159,15 @@ namespace CyclopsCameraDroneMod.Main
             }
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
             [HarmonyPostfix]
-            public static void GetLookingTarget(MapRoomCamera __instance)
+            public static void GetLookingTarget(MapRoomCamera __instance) //no longer just get's target, now also works keybinds
             {
-                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || !MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
-                {
-                    return;
-                }
-                if ((GameInput.GetButtonUp(GameInput.Button.LeftHand) || Input.GetKeyUp(QMod.Config.miningKey)) && __instance.name == CameraName)
-                {
-                    if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
-                    {
-                        // Targeting.GetTarget(__instance.gameObject, 10, out var gameObject4, out _);
-                        Targeting.GetTarget(__instance.gameObject, 100, out var gameObject4, out _);
-                        if (gameObject4 != null)
-                        {
-                            Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                            if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
-                            {
-                                nextUse = Time.time + cooldownTime;
-                                for (var i = 0; i < 26; i++)
-                                {
-                                    if (drillable.health.Sum() > 0)
-                                    {
-                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
+                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
                 {
                     SubRoot currentSub = Player.main.currentSub;
                     if (currentSub == null) { return; }
                     if (GameModeUtils.IsOptionActive(GameModeOption.NoCost))
                     {
-                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
                         return;
                     }
                     bool hasBeacon = false;
@@ -212,16 +196,47 @@ namespace CyclopsCameraDroneMod.Main
                     if (hasBeacon && containerWithBeacon != null)
                     {
                         containerWithBeacon.DestroyItem(TechType.Beacon);
-                        CoroutineHost.StartCoroutine(createBeacon(__instance.transform));
+                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
+                    }
+                }
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                {
+                    return;
+                }
+                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
+                {
+                    Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
+                    if (gameObject4 != null)
+                    {
+                        Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
+                        if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                        {
+                            LaserTesting(__instance.gameObject.transform, __instance);
+                            __instance.energyMixin.ConsumeEnergy(5);
+                            nextUse = Time.time + cooldownTime;
+                            if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+                            {
+                                for (var i = 0; i < 26; i++)
+                                {
+                                    if (drillable.health.Sum() > 0)
+                                    {
+                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                while (drillable.health.Sum() > 0)
+                                {
+                                    drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                                }
+                            }
+                        }
                     }
                 }
             }
-            public static IEnumerator createBeacon(Transform transform)
+            public static IEnumerator CreateBeacon(Transform transform)
             {
-                if (true/*check inventory somehow*/)
-                {
-                    //idk do stuffs
-                }
                 var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
@@ -231,7 +246,7 @@ namespace CyclopsCameraDroneMod.Main
         }
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
         [HarmonyPostfix]
-        public static void itemsToCyclops(Drillable __instance)
+        public static void ItemsToCyclops(Drillable __instance)
         {
             SubRoot currentSub = Player.main.currentSub;
             if (__instance.lootPinataObjects.Count > 0 && currentSub != null)
@@ -282,6 +297,21 @@ namespace CyclopsCameraDroneMod.Main
                         __instance.lootPinataObjects.Remove(item2);
                     }
                 }
+            }
+        }
+        public static void LaserTesting(Transform transform, MapRoomCamera Camera) 
+        {
+            if(Targeting.GetTarget(Camera.gameObject, QMod.Config.drillRange, out _, out var num))
+            {
+                Laser.enabled = true;
+                Laser.SetPosition(0, transform.position + 2f * -transform.up);
+                Laser.SetPosition(1, (transform.forward * num) + transform.position);
+            }
+            else
+            {
+                Laser.enabled = true;
+                Laser.SetPosition(0, transform.position + 2f * -transform.up);
+                Laser.SetPosition(1, (transform.forward * QMod.Config.drillRange) + transform.position);
             }
         }
     }
