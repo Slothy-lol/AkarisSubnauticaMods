@@ -345,6 +345,7 @@ namespace CyclopsCameraDroneMod.Main
             lineRenderer.material.color = beamColour;
             CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, __instance.transform.position + 2f * -__instance.transform.up, __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
+            GameObject.DestroyImmediate(cannon_pylon_left);
         }
     }
 }
