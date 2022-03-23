@@ -313,8 +313,8 @@ namespace CyclopsCameraDroneMod.Main
             laserBeam.SetActive(false);
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.2f;
-            lineRenderer.endWidth = 0.2f;
+            lineRenderer.startWidth = 0.1f;
+            lineRenderer.endWidth = 0.9f;
             lineRenderer.positionCount = 2;
             Color defaultColour1 = new Color(77, 166, 255);
             Color defaultColour2 = new Color(0, 255, 42);
@@ -364,8 +364,8 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, aimTransform.position - new Vector3(0,5,0));
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(2, targetPosition);          
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position - new Vector3(0,5,0));
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
         }
     }
 }
