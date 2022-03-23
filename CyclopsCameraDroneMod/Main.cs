@@ -302,7 +302,7 @@ namespace CyclopsCameraDroneMod.Main
 
         [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Start))]
         [HarmonyPostfix]
-        public void CreateLaser(MapRoomCamera __instance)
+        public static void CreateLaser(MapRoomCamera __instance)
         {
 
             GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
