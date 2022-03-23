@@ -34,6 +34,7 @@ namespace CyclopsCameraDroneMod.Main
         public static float nextUse;
         public static float cooldownTime = 1f;
         public static GameObject CameraDroneLaser;
+        public static LineRenderer lineRenderer;
 
         [HarmonyPatch]
         public class Postfixes
@@ -364,8 +365,8 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position - new Vector3(0,5,0));
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
+            Vector3[] positions = new Vector3[2] { aimTransform.position - new Vector3(0, 5, 0), targetPosition };
+            lineRenderer.SetPositions(positions);
         }
     }
 }
