@@ -212,7 +212,6 @@ namespace CyclopsCameraDroneMod.Main
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
                         if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
                         {
-                            CameraDroneLaser.enabled = true;
                             __instance.energyMixin.ConsumeEnergy(5);
                             nextUse = Time.time + cooldownTime;
                             if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
