@@ -348,21 +348,21 @@ namespace CyclopsCameraDroneMod.Main
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
-        public static void SetBeamTarget(MapRoomCamera cameraDrone)
+        public static void SetBeamTarget(MapRoomCamera __instance)
         {
-            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out targetGameobject, out targetDist))
+            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
-                CalculateBeamVectors(targetDist, cameraDrone);
+                CalculateBeamVectors(targetDist, __instance);
             }
             else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillDistance * 2 : QMod.Config.drillDistance, cameraDrone);
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance);
         }
 
-        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera cameraDrone)
+        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance)
         {
-            Transform aimTransform = cmaeraDrone.transform;
+            Transform aimTransform = __instance.transform;
 
-            targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
+            Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
             CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position + 2f * -__instance.transform.up);
             CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
