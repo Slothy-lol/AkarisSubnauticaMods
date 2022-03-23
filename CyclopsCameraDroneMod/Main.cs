@@ -364,8 +364,8 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position - new Vector3(0,5,0));
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, aimTransform.position - new Vector3(0,5,0));
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(2, targetPosition);          
         }
     }
 }
