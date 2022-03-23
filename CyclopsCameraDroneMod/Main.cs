@@ -33,7 +33,7 @@ namespace CyclopsCameraDroneMod.Main
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
         public static float cooldownTime = 1f;
-        public static GameObject CameraDroneLaser;
+        public static LineRenderer CameraDroneLaser;
         public static LineRenderer lineRenderer;
 
         [HarmonyPatch]
@@ -130,6 +130,7 @@ namespace CyclopsCameraDroneMod.Main
 
                 if (__instance.name == CameraName)
                 {
+                    GameObject.Destroy(__instance.GetComponentInChildren<Battery>().gameObject);
                     GameObject.Destroy(__instance.gameObject);
                 }
                 return false;
@@ -203,7 +204,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
                 {
-                    CameraDroneLaser.SetActive(true);
+                    CameraDroneLaser.enabled = true;
                     SetBeamTarget(__instance);
                     Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
@@ -211,7 +212,7 @@ namespace CyclopsCameraDroneMod.Main
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
                         if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
                         {
-                            Main.CameraDroneLaser.SetActive(true);
+                            CameraDroneLaser.enabled = true;
                             __instance.energyMixin.ConsumeEnergy(5);
                             nextUse = Time.time + cooldownTime;
                             if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
@@ -233,7 +234,7 @@ namespace CyclopsCameraDroneMod.Main
                             }
                         }
                     }
-                }else{ Main.CameraDroneLaser.SetActive(false); }
+                }else { CameraDroneLaser.enabled = false; ; }
             }
             public static IEnumerator CreateBeacon(Transform transform)
             {
@@ -313,7 +314,7 @@ namespace CyclopsCameraDroneMod.Main
             GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 7, 0), __instance.transform.rotation);
             laserBeam.SetActive(false);
 
-            LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
+            lineRenderer = laserBeam.GetComponent<LineRenderer>();
             lineRenderer.startWidth = 0.1f;
             lineRenderer.endWidth = 0.9f;
             lineRenderer.positionCount = 2;
@@ -345,7 +346,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
             }
             lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, position: __instance.transform.position - new Vector3(0,5,0), rotation: __instance.transform.rotation);
+            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
@@ -361,11 +362,12 @@ namespace CyclopsCameraDroneMod.Main
 
         public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance)
         {
+
             Transform aimTransform = __instance.transform;
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            Vector3[] positions = new Vector3[2] { aimTransform.position - new Vector3(0, 5, 0), targetPosition };
+            Vector3[] positions = new Vector3[2] { aimTransform.position - new Vector3(0, 2, 0), targetPosition };
             lineRenderer.SetPositions(positions);
         }
     }

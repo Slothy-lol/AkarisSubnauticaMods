@@ -53,7 +53,7 @@ namespace CyclopsCameraDroneMod.QMods
         public KeyCode miningKey = KeyCode.Q;
 
         [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found..")]
-        public KeyCode beaconKey = KeyCode.E;
+        public KeyCode beaconKey = KeyCode.B;
 
         [Toggle("Infinite Distance", Tooltip = "When enabled, there will be no limit on the Cyclops Camera Drone's range.")]
         public bool InfiniteDistance = false;
