@@ -309,7 +309,7 @@ namespace CyclopsCameraDroneMod.Main
             cannon_pylon_left.transform.SetParent(__instance.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
 
-            GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 2, 0), __instance.transform.rotation);
+            GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 7, 0), __instance.transform.rotation);
             laserBeam.SetActive(false);
 
             LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
@@ -323,7 +323,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 if (!(QMod.Config.drill2RGB1 < 0 || QMod.Config.drill2RGB1 > 255 || QMod.Config.drill2RGB2 < 0 || QMod.Config.drill2RGB2 > 255 || QMod.Config.drill2RGB3 < 0 || QMod.Config.drill2RGB3 > 255))
                 {
-                    beamColour = new Color(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+                    beamColour = new Color(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
                 }
                 else
                 {
@@ -344,7 +344,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
             }
             lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, __instance.transform.position + 2f * -__instance.transform.up, __instance.transform.rotation);
+            CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, position: __instance.transform.position - new Vector3(0,5,0), rotation: __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
@@ -364,7 +364,7 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position + 2f * -__instance.transform.up);
+            CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(0, aimTransform.position - new Vector3(0,5,0));
             CameraDroneLaser.GetComponent<LineRenderer>().SetPosition(1, targetPosition);          
         }
     }
