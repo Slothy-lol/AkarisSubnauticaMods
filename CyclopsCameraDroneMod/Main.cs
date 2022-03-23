@@ -200,7 +200,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
+                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKeyHeld(QMod.Config.miningKey) && __instance.name == CameraName)
                 {
                     Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
