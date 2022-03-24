@@ -130,7 +130,6 @@ namespace CyclopsCameraDroneMod.Main
 
                 if (__instance.name == CameraName)
                 {
-                    GameObject.Destroy(__instance.GetComponentInChildren<Battery>().gameObject);
                     GameObject.Destroy(__instance.gameObject);
                 }
                 return false;
@@ -233,7 +232,7 @@ namespace CyclopsCameraDroneMod.Main
                             }
                         }
                     }
-                }else { CameraDroneLaser.enabled = false; ; }
+                }else { CameraDroneLaser.enabled = false; }
             }
             public static IEnumerator CreateBeacon(Transform transform)
             {
