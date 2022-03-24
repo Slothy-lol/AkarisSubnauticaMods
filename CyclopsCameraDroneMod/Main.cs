@@ -310,7 +310,7 @@ namespace CyclopsCameraDroneMod.Main
             cannon_pylon_left.transform.SetParent(__instance.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
 
-            GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 7, 0), __instance.transform.rotation);
+            GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 2, 0), __instance.transform.rotation);
             laserBeam.SetActive(false);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
