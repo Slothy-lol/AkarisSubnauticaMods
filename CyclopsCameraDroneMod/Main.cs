@@ -71,7 +71,9 @@ namespace CyclopsCameraDroneMod.Main
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = CameraName;
 
-                cyclopsCameraDrone.energyMixin.battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
+                Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
+                cyclopsCameraDrone.energyMixin.battery = battery;
+                battery.gameObject.transform.parent = cyclopsCameraDrone.gameObject.transform;
 
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
@@ -310,11 +312,11 @@ namespace CyclopsCameraDroneMod.Main
             Utils.ZeroTransform(cannon_pylon_left.transform);
 
             GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 2, 0), __instance.transform.rotation);
-            laserBeam.SetActive(false);
+            laserBeam.SetActive(true);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.9f;
+            lineRenderer.startWidth = 0.003f;
+            lineRenderer.endWidth = 0.003f;
             lineRenderer.positionCount = 2;
             Color defaultColour1 = new Color(77, 166, 255);
             Color defaultColour2 = new Color(0, 255, 42);
@@ -344,7 +346,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
             }
             lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
+            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0)/*transform.position + 2f * -transform.up*/, rotation: __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
@@ -365,7 +367,7 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
 
-            Vector3[] positions = new Vector3[2] { aimTransform.position - new Vector3(0, 2, 0), targetPosition };
+            Vector3[] positions = new Vector3[2] { aimTransform.position + 2f * -aimTransform.up, targetPosition };
             CameraDroneLaser.SetPositions(positions);
         }
     }
