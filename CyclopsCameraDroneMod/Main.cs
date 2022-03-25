@@ -346,7 +346,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
             }
             lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0)/*transform.position + 2f * -transform.up*/, rotation: __instance.transform.rotation);
+            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
