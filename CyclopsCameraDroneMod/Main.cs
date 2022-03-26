@@ -24,12 +24,18 @@ namespace CyclopsCameraDroneMod.Main
         //TODO
         //make visual laser effects finally
         //add scanning functionality
-        //add way to defend camera????? Maybe?
+        //add way to defend camera????? Maybe? Done, made laser damage enemy.
+            //^May also make stalkers release camera on taking damage, you wouldn't want *your* food to burn your mouth off with a laser
+            //maybe you would, idk, I won't judge
         //add way to pick up items
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
         //more shit I guess, idk
         //command for all modules
+        //TELEPORTATION! HELL YEA!
+        //No seriously, solves problem of being too slow and is more cool shit. Just do it
+
+        //finish lines 249-275
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
@@ -235,8 +241,45 @@ namespace CyclopsCameraDroneMod.Main
                                 }
                             }
                         }
+                        LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() != null ? gameObject4.GetComponent<LiveMixin>() : gameObject4.GetComponentInParent<LiveMixin>();
+                        if (liveMixin != null && Time.time > nextUse) 
+                        {
+                            __instance.energyMixin.ConsumeEnergy(5);
+                            nextUse = Time.time + cooldownTime;
+                            liveMixin.TakeDamage(30);
+                        }
+                        //to make laser also function as tractor beam thing for items
+                        //copy and paste the code from between the comments below to right here
+
+                        //in that blank line^
+                        //also delete the interact button keybind in QMod.cs
                     }
                 }else { CameraDroneLaser.enabled = false; }
+                if(Input.GetKeyUp(QMod.Config.interactKey)) //currently works based on hitting a key while looking at item, look at comment above to change
+                //if copying, delete this ^ entire if statement as it is no longer going to be used
+                {
+                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject4, out _);
+                    //copy from here
+                    Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
+                    if (pickupable != null)
+                    {
+                        if(true/*add a config for whether items go to player inventory or cyclops locker when picked up*/)
+                        {
+                            pickupable.OnHandClick(Player.main.armsController.guiHand);//acts as if the player picked up the item
+                        }
+                        else//may want to also resort to the other inventory if selected inventory is full. EX; player inventory selected in config but player inventory full, so items instead go to cyclops locker as backup.
+                        {
+                            //copy inventory.pickup in dnspy
+                            //change all references to `this.container` to the cyclops lockers
+                                //check drill patch below to find how to get cyclops lockers
+                            //remove unnecessary if statement at line 13 
+                            //remove return statement
+
+                            //steps above should be all, may need a bit more though
+                        }
+                    }
+                    //to here
+                }
             }
             public static IEnumerator CreateBeacon(Transform transform)
             {
@@ -342,7 +385,7 @@ namespace CyclopsCameraDroneMod.Main
 
             Vector3 targetPosition = aimTransform.position + (targetDistance + 1) * aimTransform.forward;
 
-            Vector3[] positions = new Vector3[2] { aimTransform.position + (2f * -aimTransform.up), targetPosition };
+            Vector3[] positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition };
             CameraDroneLaser.SetPositions(positions);
         }
         public static void workColors()
@@ -372,22 +415,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     beamColour = defaultColour1;
                 }
-<<<<<<< Updated upstream
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
-            }
-            lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
-            GameObject.DestroyImmediate(laserBeam);
-            GameObject.DestroyImmediate(cannon_pylon_left);
-        }
-        public static void SetBeamTarget(MapRoomCamera __instance)
-        {
-            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
-            {
-                CalculateBeamVectors(targetDist, __instance);
-=======
-                if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255f / 255, 38f / 255, 147f / 255); }
->>>>>>> Stashed changes
             }
             CameraDroneLaser.material.color = beamColour;
         }

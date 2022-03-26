@@ -50,10 +50,14 @@ namespace CyclopsCameraDroneMod.QMods
         public KeyCode droneKey = KeyCode.P;
 
         [Keybind("Mining Key", Tooltip = "When using the cyclops drone, press this key to mine the drillable being targeted")]
-        public KeyCode miningKey = KeyCode.Q;
+        public KeyCode miningKey = KeyCode.R;
 
         [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found..")]
         public KeyCode beaconKey = KeyCode.B;
+
+        //delete this config if we are going for tractor beam route instead
+        [Keybind("Interact Key", Tooltip = "When using the cyclops drone, press this key to pick up the object the drone is looking at")]
+        public KeyCode interactKey = KeyCode.Q;
 
         [Toggle("Infinite Distance", Tooltip = "When enabled, there will be no limit on the Cyclops Camera Drone's range.")]
         public bool InfiniteDistance = false;
