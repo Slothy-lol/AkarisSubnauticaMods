@@ -23,12 +23,15 @@ namespace CyclopsCameraDroneMod.Main
         //No seriously, solves problem of being too slow and is more cool shit. Just do it
         //sonar for drones
 
-        public static string CameraName = "CyclopsDroneCamera";
-        public static float nextUse;
-        public static float cooldownTime = 1f;
+        public static string cameraObjectName = "CyclopsDroneCamera";
+
+        public static float drillCooldownLength = 1f;
+        public static float useDroneCooldownLength = 2f;
+        public static float timeNextDrill;
+        public static float timeNextUseDrone;
+
         public static LineRenderer cameraDroneLaser;
         public static LineRenderer lineRenderer;
-        public static float nextUseDrone;
 
         [HarmonyPatch]
         public class Postfixes
@@ -42,7 +45,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if (Input.GetKeyUp(droneButton) && Time.time >= nextUseDrone)
+                if (Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
                 {
                     __instance.ExitCamera();
 
@@ -63,7 +66,7 @@ namespace CyclopsCameraDroneMod.Main
 
                 Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
-                cyclopsCameraDrone.gameObject.name = CameraName;
+                cyclopsCameraDrone.gameObject.name = cameraObjectName;
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
@@ -124,10 +127,10 @@ namespace CyclopsCameraDroneMod.Main
                 Player.main.SetHeadVisible(false);
                 __instance.lightsParent.SetActive(false);
 
-                if (__instance.name == CameraName)
+                if (__instance.name == cameraObjectName)
                 {
                     GameObject.Destroy(__instance.gameObject);
-                    nextUseDrone = Time.time + 150;
+                    timeNextUseDrone = Time.time + useDroneCooldownLength;
                 }
                 return false;
             }
@@ -136,7 +139,7 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
-                if (__instance.name == CameraName && !QMod.Config.InfiniteDistance)
+                if (__instance.name == cameraObjectName && !QMod.Config.InfiniteDistance)
                 {
                     __result = (Player.main.transform.position - __instance.transform.position).magnitude;
                 }
@@ -145,7 +148,7 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void FixPlayerMovement(MapRoomCamera __instance)
             {
-                if (__instance.name == CameraName)
+                if (__instance.name == cameraObjectName)
                 {
                     Player.main.ExitLockedMode(false, false);
                     Player.main.EnterLockedMode(null);
@@ -158,7 +161,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 bool hasDrill2 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType);
                 bool hasDrill1 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType);
-                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
+                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == cameraObjectName)
                 {
                     SubRoot currentSub = Player.main.currentSub;
                     if (currentSub == null) { return; }
@@ -200,7 +203,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == CameraName)
+                if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
                 {
                     if(hasDrill2)
                     {
@@ -216,10 +219,10 @@ namespace CyclopsCameraDroneMod.Main
                     if (gameObject4 != null)
                     {
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                        if (drillable != null && (Time.time > nextUse || hasDrill2))
+                        if (drillable != null && (Time.time > timeNextDrill || hasDrill2))
                         {
                             __instance.energyMixin.ConsumeEnergy(5);
-                            nextUse = Time.time + cooldownTime;
+                            timeNextDrill = Time.time + drillCooldownLength;
                             if (!hasDrill2)
                             {
                                 for (var i = 0; i < 26; i++)
@@ -239,10 +242,10 @@ namespace CyclopsCameraDroneMod.Main
                             }
                         }
                         LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() != null ? gameObject4.GetComponent<LiveMixin>() : gameObject4.GetComponentInParent<LiveMixin>();
-                        if (liveMixin != null && Time.time > nextUse) 
+                        if (liveMixin != null && Time.time > timeNextDrill) 
                         {
                             __instance.energyMixin.ConsumeEnergy(5);
-                            nextUse = Time.time + cooldownTime;
+                            timeNextDrill = Time.time + drillCooldownLength;
                             liveMixin.TakeDamage(30);
                         }
                         BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
