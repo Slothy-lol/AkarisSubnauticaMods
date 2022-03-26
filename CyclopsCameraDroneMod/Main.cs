@@ -27,11 +27,16 @@ namespace CyclopsCameraDroneMod.Main
 
         public static float drillCooldownLength = 1f;
         public static float useDroneCooldownLength = 2f;
+
+        public static float timeLastDrill;
+        public static float timeLastMineResource;
+
         public static float timeNextDrill;
         public static float timeNextUseDrone;
 
         public static LineRenderer cameraDroneLaser;
         public static LineRenderer lineRenderer;
+        public static CyclopsDroneInstance droneInstance; // stores references to components on the camera itself and has most audio-related code
 
         [HarmonyPatch]
         public class Postfixes
@@ -67,6 +72,7 @@ namespace CyclopsCameraDroneMod.Main
                 Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = cameraObjectName;
+                droneInstance = cyclopsCameraDrone.gameObject.AddComponent<CyclopsDroneInstance>();
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
@@ -161,43 +167,9 @@ namespace CyclopsCameraDroneMod.Main
             {
                 bool hasDrill2 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType);
                 bool hasDrill1 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType);
-                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == cameraObjectName)
+                if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == cameraObjectName) // Beacon placement
                 {
-                    SubRoot currentSub = Player.main.currentSub;
-                    if (currentSub == null) { return; }
-                    if (GameModeUtils.IsOptionActive(GameModeOption.NoCost))
-                    {
-                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
-                        return;
-                    }
-                    bool hasBeacon = false;
-                    ItemsContainer containerWithBeacon = null;
-
-                    foreach (CyclopsLocker locker in currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>())
-                    {
-                        ItemsContainer container = locker.gameObject.GetComponentInChildren<StorageContainer>().container;
-
-                        if (container != null && container.Contains(TechType.Beacon))
-                        {
-                            containerWithBeacon = container;
-                            hasBeacon = true;
-                            break;
-                        }
-                    }
-
-                    if (!hasBeacon)
-                    {
-                        if (Inventory.Get().container.Contains(TechType.Beacon))
-                        {
-                            containerWithBeacon = Inventory.Get().container;
-                            hasBeacon = true;
-                        }
-                    }
-                    if (hasBeacon && containerWithBeacon != null)
-                    {
-                        containerWithBeacon.DestroyItem(TechType.Beacon);
-                        CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
-                    }
+                    BeaconFunctionality(__instance);
                 }
                 if (!(hasDrill1 || hasDrill2))
                 {
@@ -214,6 +186,8 @@ namespace CyclopsCameraDroneMod.Main
                         WorkColors(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
                     }
                     cameraDroneLaser.enabled = true;
+                    timeLastDrill = Time.time;
+                    droneInstance.StartDrillSound();
                     SetBeamTarget(__instance);
                     Targeting.GetTarget(__instance.gameObject, hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
@@ -223,6 +197,7 @@ namespace CyclopsCameraDroneMod.Main
                         {
                             __instance.energyMixin.ConsumeEnergy(5);
                             timeNextDrill = Time.time + drillCooldownLength;
+                            timeLastMineResource = Time.time;
                             if (!hasDrill2)
                             {
                                 for (var i = 0; i < 26; i++)
@@ -249,6 +224,10 @@ namespace CyclopsCameraDroneMod.Main
                             liveMixin.TakeDamage(30);
                         }
                         BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
+                        if (resource)
+                        {
+                            resource.BreakIntoResources();
+                        }
                         //do later. Make drill damage/destroy resource outcrops
                     }
                 }
@@ -256,16 +235,70 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     TractorBeamFunctionality(__instance);
                 }
-                else { cameraDroneLaser.enabled = false; }
+                else 
+                { 
+                    cameraDroneLaser.enabled = false;
+                }
+                if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
+                {
+                    droneInstance.StopDrillSound();
+                }
+                if (Time.time < timeLastMineResource + 1f) // if you recently mined a resource, play the mining sound
+                {
+                    droneInstance.StartMineSound();
+                }
+                else // otherwise, make sure it isn't playing
+                {
+                    droneInstance.StopMineSound();
+                }
             }
         }
 
-        public static void TractorBeamFunctionality(MapRoomCamera __instance, bool hasDrill2 = false)
+        public static void BeaconFunctionality(MapRoomCamera mapRoomCamera)
         {
-            Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
+            SubRoot currentSub = Player.main.currentSub;
+            if (currentSub == null) { return; }
+            if (GameModeUtils.IsOptionActive(GameModeOption.NoCost))
+            {
+                CoroutineHost.StartCoroutine(CreateBeacon(mapRoomCamera.transform));
+                return;
+            }
+            bool hasBeacon = false;
+            ItemsContainer containerWithBeacon = null;
+
+            foreach (CyclopsLocker locker in currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>())
+            {
+                ItemsContainer container = locker.gameObject.GetComponentInChildren<StorageContainer>().container;
+
+                if (container != null && container.Contains(TechType.Beacon))
+                {
+                    containerWithBeacon = container;
+                    hasBeacon = true;
+                    break;
+                }
+            }
+
+            if (!hasBeacon)
+            {
+                if (Inventory.Get().container.Contains(TechType.Beacon))
+                {
+                    containerWithBeacon = Inventory.Get().container;
+                    hasBeacon = true;
+                }
+            }
+            if (hasBeacon && containerWithBeacon != null)
+            {
+                containerWithBeacon.DestroyItem(TechType.Beacon);
+                CoroutineHost.StartCoroutine(CreateBeacon(mapRoomCamera.transform));
+            }
+        }
+
+        public static void TractorBeamFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill2 = false)
+        {
+            Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
             WorkColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
             cameraDroneLaser.enabled = true;
-            SetBeamTarget(__instance, true);
+            SetBeamTarget(mapRoomCamera, true);
             if(gameObject4 == null)
             {
                 return;
@@ -300,11 +333,15 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static IEnumerator CreateBeacon(Transform transform)
         {
+            droneInstance.PlayBeaconSound();
+
             var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
             yield return coroutineTask;
             var prefab = coroutineTask.GetResult();
 
             GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+
+            ErrorMessage.AddMessage("Beacon deployed!");
         }
 
         public static bool CyclopsLockerPickup(ItemsContainer container, Pickupable pickupable)
