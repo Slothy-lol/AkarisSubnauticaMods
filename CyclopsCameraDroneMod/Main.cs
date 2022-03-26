@@ -29,6 +29,7 @@ namespace CyclopsCameraDroneMod.Main
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
         //more shit I guess, idk
+        //command for all modules
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
@@ -205,6 +206,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) && __instance.name == CameraName)
                 {
+                    workColors();
                     CameraDroneLaser.enabled = true;
                     SetBeamTarget(__instance);
                     Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
@@ -242,7 +244,7 @@ namespace CyclopsCameraDroneMod.Main
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
 
-                GameObject.Instantiate(prefab, transform.position + 5f * transform.forward, transform.rotation);
+                GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
             }
         }
 
@@ -301,12 +303,12 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
-
+        
         [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Start))]
         [HarmonyPostfix]
         public static void CreateLaser(MapRoomCamera __instance)
         {
-
+            if (CameraDroneLaser != null) return;
             GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
             cannon_pylon_left.transform.SetParent(__instance.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
@@ -315,37 +317,10 @@ namespace CyclopsCameraDroneMod.Main
             laserBeam.SetActive(true);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.003f;
-            lineRenderer.endWidth = 0.003f;
+            lineRenderer.startWidth = 0.15f;
+            lineRenderer.endWidth = 0.15f;
             lineRenderer.positionCount = 2;
-            Color defaultColour1 = new Color(77, 166, 255);
-            Color defaultColour2 = new Color(0, 255, 42);
-            Color beamColour;
-            if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
-            {
-                if (!(QMod.Config.drill2RGB1 < 0 || QMod.Config.drill2RGB1 > 255 || QMod.Config.drill2RGB2 < 0 || QMod.Config.drill2RGB2 > 255 || QMod.Config.drill2RGB3 < 0 || QMod.Config.drill2RGB3 > 255))
-                {
-                    beamColour = new Color(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
-                }
-                else
-                {
-                    beamColour = defaultColour2;
-                }
-                if (QMod.Config.drill2RGB1 == 0 && QMod.Config.drill2RGB2 == 0 && QMod.Config.drill2RGB3 == 0) { beamColour = new Color(255, 38, 147); }
-            }
-            else
-            {
-                if (!(QMod.Config.drill1RGB1 < 0 || QMod.Config.drill1RGB1 > 255 || QMod.Config.drill1RGB2 < 0 || QMod.Config.drill1RGB2 > 255 || QMod.Config.drill1RGB3 < 0 || QMod.Config.drill1RGB3 > 255))
-                {
-                    beamColour = new Color(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
-                }
-                else
-                {
-                    beamColour = defaultColour1;
-                }
-                if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
-            }
-            lineRenderer.material.color = beamColour;
+            
             CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
@@ -365,10 +340,56 @@ namespace CyclopsCameraDroneMod.Main
 
             Transform aimTransform = __instance.transform;
 
-            Vector3 targetPosition = aimTransform.position + targetDistance * aimTransform.forward;
+            Vector3 targetPosition = aimTransform.position + (targetDistance + 1) * aimTransform.forward;
 
-            Vector3[] positions = new Vector3[2] { aimTransform.position + 2f * -aimTransform.up, targetPosition };
+            Vector3[] positions = new Vector3[2] { aimTransform.position + (2f * -aimTransform.up), targetPosition };
             CameraDroneLaser.SetPositions(positions);
+        }
+        public static void workColors()
+        {
+            Color defaultColour1 = new Color(77f / 255, 166f / 255, 255f / 255);
+            Color defaultColour2 = new Color(0f, 255f / 255, 42f / 255);
+            Color beamColour;
+            if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+            {
+                if (!(QMod.Config.drill2RGB1 < 0 || QMod.Config.drill2RGB1 > 255 || QMod.Config.drill2RGB2 < 0 || QMod.Config.drill2RGB2 > 255 || QMod.Config.drill2RGB3 < 0 || QMod.Config.drill2RGB3 > 255))
+                {
+                    beamColour = new Color(QMod.Config.drill2RGB1 / 255f, QMod.Config.drill2RGB2 / 255f, QMod.Config.drill2RGB3 / 255f);
+                }
+                else
+                {
+                    beamColour = defaultColour2;
+                }
+                if (QMod.Config.drill2RGB1 == 0 && QMod.Config.drill2RGB2 == 0 && QMod.Config.drill2RGB3 == 0) { beamColour = new Color(255f / 255, 38f / 255, 147 / 255f); }
+            }
+            else
+            {
+                if (!(QMod.Config.drill1RGB1 < 0 || QMod.Config.drill1RGB1 > 255 || QMod.Config.drill1RGB2 < 0 || QMod.Config.drill1RGB2 > 255 || QMod.Config.drill1RGB3 < 0 || QMod.Config.drill1RGB3 > 255))
+                {
+                    beamColour = new Color(QMod.Config.drill1RGB1 / 255f, QMod.Config.drill1RGB2 / 255f, QMod.Config.drill1RGB3 / 255f);
+                }
+                else
+                {
+                    beamColour = defaultColour1;
+                }
+<<<<<<< Updated upstream
+                if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
+            }
+            lineRenderer.material.color = beamColour;
+            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
+            GameObject.DestroyImmediate(laserBeam);
+            GameObject.DestroyImmediate(cannon_pylon_left);
+        }
+        public static void SetBeamTarget(MapRoomCamera __instance)
+        {
+            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            {
+                CalculateBeamVectors(targetDist, __instance);
+=======
+                if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255f / 255, 38f / 255, 147f / 255); }
+>>>>>>> Stashed changes
+            }
+            CameraDroneLaser.material.color = beamColour;
         }
     }
 }
