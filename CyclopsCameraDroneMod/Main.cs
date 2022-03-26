@@ -1,15 +1,6 @@
 using HarmonyLib;
-using SMLHelper.V2.Assets;
-using SMLHelper.V2.Crafting;
-using SMLHelper.V2.Handlers;
-using SMLHelper.V2.Options;
-using SMLHelper.V2.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Logger = QModManager.Utility.Logger;
 using UnityEngine;
 using UWE;
 using System.Collections;
@@ -22,11 +13,7 @@ namespace CyclopsCameraDroneMod.Main
     public class Main
     {
         //TODO
-        //make visual laser effects finally
         //add scanning functionality
-        //add way to defend camera????? Maybe? Done, made laser damage enemy.
-            //^May also make stalkers release camera on taking damage, you wouldn't want *your* food to burn your mouth off with a laser
-            //maybe you would, idk, I won't judge
         //add way to pick up items
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
