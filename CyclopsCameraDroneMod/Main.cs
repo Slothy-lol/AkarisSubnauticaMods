@@ -24,16 +24,24 @@ namespace CyclopsCameraDroneMod.Main
         //TODO
         //make visual laser effects finally
         //add scanning functionality
-        //add way to defend camera????? Maybe?
+        //add way to defend camera????? Maybe? Done, made laser damage enemy.
+            //^May also make stalkers release camera on taking damage, you wouldn't want *your* food to burn your mouth off with a laser
+            //maybe you would, idk, I won't judge
         //add way to pick up items
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
         //more shit I guess, idk
+        //command for all modules
+        //TELEPORTATION! HELL YEA!
+        //No seriously, solves problem of being too slow and is more cool shit. Just do it
+
+        //finish lines 249-275
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
         public static float cooldownTime = 1f;
-        public static GameObject CameraDroneLaser;
+        public static LineRenderer CameraDroneLaser;
+        public static LineRenderer lineRenderer;
 
         [HarmonyPatch]
         public class Postfixes
@@ -70,7 +78,9 @@ namespace CyclopsCameraDroneMod.Main
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = CameraName;
 
-                cyclopsCameraDrone.energyMixin.battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
+                Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
+                cyclopsCameraDrone.energyMixin.battery = battery;
+                battery.gameObject.transform.parent = cyclopsCameraDrone.gameObject.transform;
 
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
@@ -202,13 +212,15 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKeyHeld(QMod.Config.miningKey) && __instance.name == CameraName)
                 {
+                    workColors();
+                    CameraDroneLaser.enabled = true;
+                    SetBeamTarget(__instance);
                     Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
                     {
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
                         if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
                         {
-                            Main.CameraDroneLaser.SetActive(true);
                             __instance.energyMixin.ConsumeEnergy(5);
                             nextUse = Time.time + cooldownTime;
                             if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
@@ -228,9 +240,45 @@ namespace CyclopsCameraDroneMod.Main
                                     drillable.OnDrill(gameObject4.transform.position, null, out var _);
                                 }
                             }
-                            Main.CameraDroneLaser.SetActive(false);
+                        }
+                        LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() != null ? gameObject4.GetComponent<LiveMixin>() : gameObject4.GetComponentInParent<LiveMixin>();
+                        if (liveMixin != null && Time.time > nextUse) 
+                        {
+                            __instance.energyMixin.ConsumeEnergy(5);
+                            nextUse = Time.time + cooldownTime;
+                            liveMixin.TakeDamage(30);
+                        }
+                        //to make laser also function as tractor beam thing for items
+                        //copy and paste the code from between the comments below to right here
+
+                        //in that blank line^
+                        //also delete the interact button keybind in QMod.cs
+                    }
+                }else { CameraDroneLaser.enabled = false; }
+                if(Input.GetKeyUp(QMod.Config.interactKey)) //currently works based on hitting a key while looking at item, look at comment above to change
+                //if copying, delete this ^ entire if statement as it is no longer going to be used
+                {
+                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject4, out _);
+                    //copy from here
+                    Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
+                    if (pickupable != null)
+                    {
+                        if(true/*add a config for whether items go to player inventory or cyclops locker when picked up*/)
+                        {
+                            pickupable.OnHandClick(Player.main.armsController.guiHand);//acts as if the player picked up the item
+                        }
+                        else//may want to also resort to the other inventory if selected inventory is full. EX; player inventory selected in config but player inventory full, so items instead go to cyclops locker as backup.
+                        {
+                            //copy inventory.pickup in dnspy
+                            //change all references to `this.container` to the cyclops lockers
+                                //check drill patch below to find how to get cyclops lockers
+                            //remove unnecessary if statement at line 13 
+                            //remove return statement
+
+                            //steps above should be all, may need a bit more though
                         }
                     }
+                    //to here
                 }
             }
             public static IEnumerator CreateBeacon(Transform transform)
@@ -239,7 +287,7 @@ namespace CyclopsCameraDroneMod.Main
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
 
-                GameObject.Instantiate(prefab, transform.position + 5f * transform.forward, transform.rotation);
+                GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
             }
         }
 
@@ -298,43 +346,70 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
-
+        
         [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Start))]
         [HarmonyPostfix]
-        public void CreateLaser(MapRoomCamera __instance)
+        public static void CreateLaser(MapRoomCamera __instance)
         {
-
+            if (CameraDroneLaser != null) return;
             GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
             cannon_pylon_left.transform.SetParent(__instance.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
 
             GameObject laserBeam = GameObject.Instantiate(cannon_pylon_left.GetComponent<PowerFX>().vfxPrefab, __instance.transform.position - new Vector3(0, 2, 0), __instance.transform.rotation);
-            laserBeam.SetActive(false);
+            laserBeam.SetActive(true);
 
-            LineRenderer lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.2f;
-            lineRenderer.endWidth = 0.2f;
+            lineRenderer = laserBeam.GetComponent<LineRenderer>();
+            lineRenderer.startWidth = 0.15f;
+            lineRenderer.endWidth = 0.15f;
             lineRenderer.positionCount = 2;
-            Color defaultColour1 = new Color(77, 166, 255);
-            Color defaultColour2 = new Color(0, 255, 42);
+            
+            CameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
+            GameObject.DestroyImmediate(laserBeam);
+            GameObject.DestroyImmediate(cannon_pylon_left);
+        }
+        public static void SetBeamTarget(MapRoomCamera __instance)
+        {
+            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            {
+                CalculateBeamVectors(targetDist, __instance);
+            }
+            else
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance);
+        }
+
+        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance)
+        {
+
+            Transform aimTransform = __instance.transform;
+
+            Vector3 targetPosition = aimTransform.position + (targetDistance + 1) * aimTransform.forward;
+
+            Vector3[] positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition };
+            CameraDroneLaser.SetPositions(positions);
+        }
+        public static void workColors()
+        {
+            Color defaultColour1 = new Color(77f / 255, 166f / 255, 255f / 255);
+            Color defaultColour2 = new Color(0f, 255f / 255, 42f / 255);
             Color beamColour;
             if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
             {
                 if (!(QMod.Config.drill2RGB1 < 0 || QMod.Config.drill2RGB1 > 255 || QMod.Config.drill2RGB2 < 0 || QMod.Config.drill2RGB2 > 255 || QMod.Config.drill2RGB3 < 0 || QMod.Config.drill2RGB3 > 255))
                 {
-                    beamColour = new Color(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+                    beamColour = new Color(QMod.Config.drill2RGB1 / 255f, QMod.Config.drill2RGB2 / 255f, QMod.Config.drill2RGB3 / 255f);
                 }
                 else
                 {
                     beamColour = defaultColour2;
                 }
-                if (QMod.Config.drill2RGB1 == 0 && QMod.Config.drill2RGB2 == 0 && QMod.Config.drill2RGB3 == 0) { beamColour = new Color(255, 38, 147); }
+                if (QMod.Config.drill2RGB1 == 0 && QMod.Config.drill2RGB2 == 0 && QMod.Config.drill2RGB3 == 0) { beamColour = new Color(255f / 255, 38f / 255, 147 / 255f); }
             }
             else
             {
                 if (!(QMod.Config.drill1RGB1 < 0 || QMod.Config.drill1RGB1 > 255 || QMod.Config.drill1RGB2 < 0 || QMod.Config.drill1RGB2 > 255 || QMod.Config.drill1RGB3 < 0 || QMod.Config.drill1RGB3 > 255))
                 {
-                    beamColour = new Color(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+                    beamColour = new Color(QMod.Config.drill1RGB1 / 255f, QMod.Config.drill1RGB2 / 255f, QMod.Config.drill1RGB3 / 255f);
                 }
                 else
                 {
@@ -342,10 +417,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
             }
-            lineRenderer.material.color = beamColour;
-            CameraDroneLaser = UnityEngine.Object.Instantiate(laserBeam, __instance.transform.position + 2f * -__instance.transform.up, __instance.transform.rotation);
-            GameObject.DestroyImmediate(laserBeam);
-            GameObject.DestroyImmediate(cannon_pylon_left);
+            CameraDroneLaser.material.color = beamColour;
         }
     }
 }
