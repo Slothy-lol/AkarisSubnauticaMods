@@ -72,5 +72,9 @@ namespace CyclopsCameraDroneMod.QMods
         public int drill2RGB1 = 0;
         public int drill2RGB2 = 255;
         public int drill2RGB3 = 42;
+
+        public int tractorBeamRGB1 = 179;
+        public int tractorBeamRGB2 = 0;
+        public int tractorBeamRGB3 = 179;
     }
 }
