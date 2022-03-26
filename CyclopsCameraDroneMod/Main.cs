@@ -200,11 +200,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-<<<<<<< HEAD
-                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey) && __instance.name == CameraName)
-=======
                 if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == CameraName)
->>>>>>> pr/14
                 {
                     if(hasDrill2)
                     {
