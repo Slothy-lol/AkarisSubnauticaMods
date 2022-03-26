@@ -52,7 +52,7 @@ namespace CyclopsCameraDroneMod.QMods
         [Keybind("Mining Key", Tooltip = "When using the cyclops drone, press this key to mine the drillable being targeted")]
         public KeyCode miningKey = KeyCode.R;
 
-        [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found..")]
+        [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found.")]
         public KeyCode beaconKey = KeyCode.B;
 
         //delete this config if we are going for tractor beam route instead
@@ -61,7 +61,10 @@ namespace CyclopsCameraDroneMod.QMods
 
         [Toggle("Infinite Distance", Tooltip = "When enabled, there will be no limit on the Cyclops Camera Drone's range.")]
         public bool InfiniteDistance = false;
-
+        /*Too lazy to make this. Shouldn't be hard, just more work than I care to put in for something I don't care about.
+        [Toggle("Prioritize Player Inventory", Tooltip = "If checked, will priotize putting items into the players inventory first and then the cyclops lockers second. if unchecked, uses cyclops lockers first.")]
+        public bool useInventory = false;
+        */
         [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 7.0F, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
         public int drillRange = 10;
 

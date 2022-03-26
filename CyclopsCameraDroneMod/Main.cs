@@ -34,8 +34,7 @@ namespace CyclopsCameraDroneMod.Main
         //command for all modules
         //TELEPORTATION! HELL YEA!
         //No seriously, solves problem of being too slow and is more cool shit. Just do it
-
-        //finish lines 249-275
+        //sonar for drones
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
@@ -257,45 +256,86 @@ namespace CyclopsCameraDroneMod.Main
                             nextUse = Time.time + cooldownTime;
                             liveMixin.TakeDamage(30);
                         }
+                        BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
+                        //do later. Make drill damage/destroy resource outcrops
                     }
                 }
                 else if(Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2)) 
                 {
-                    CameraDroneLaser.startWidth = 0.3f;
-                    CameraDroneLaser.endWidth = 0.3f;
-                    Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
-                    workColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
-                    CameraDroneLaser.enabled = true;
-                    SetBeamTarget(__instance, true);
-                    Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
-                    if (pickupable != null)
-                    {
-                        if(true/*add a config for whether items go to player inventory or cyclops locker when picked up*/)
-                        {
-                            pickupable.OnHandClick(Player.main.armsController.guiHand);//acts as if the player picked up the item
-                        }
-                        else
-                        {
-                            //copy inventory.pickup in dnspy
-                            //change all references to `this.container` to the cyclops lockers
-                                //check drill patch below to find how to get cyclops lockers
-                            //remove unnecessary if statement at line 13 
-                            //remove return statement
-
-                            //steps above should be all, may need a bit more though
-                        }
-                    }
+                    tractorBeamFunctionality(__instance);
                 }
                 else { CameraDroneLaser.enabled = false; }
             }
-            public static IEnumerator CreateBeacon(Transform transform)
-            {
-                var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
-                yield return coroutineTask;
-                var prefab = coroutineTask.GetResult();
+        }
 
-                GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+        public static void tractorBeamFunctionality(MapRoomCamera __instance, bool hasDrill2 = false)
+        {
+            Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
+            workColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
+            CameraDroneLaser.enabled = true;
+            SetBeamTarget(__instance, true);
+            if(gameObject4 == null)
+            {
+                return;
             }
+            Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
+            if (pickupable != null)
+            {
+                SubRoot currentSub = Player.main.currentSub;
+                if (currentSub != null)
+                {
+                    CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
+                    ItemsContainer emptyContainer = null;
+                    foreach (CyclopsLocker locker in cyclopsLockers)
+                    {
+                        ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
+                        if (cyclopsContainer != null && cyclopsContainer.HasRoomFor(pickupable))
+                        {
+                            emptyContainer = cyclopsContainer;
+                            break;
+                        }
+                    }
+                    if (emptyContainer != null)
+                    {
+                        cyclopsLockerPickup(emptyContainer, pickupable);
+                    }
+                    else
+                    {
+                        pickupable.OnHandClick(Player.main.armsController.guiHand);
+                    }
+                }
+            }
+        }
+        public static IEnumerator CreateBeacon(Transform transform)
+        {
+            var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
+            yield return coroutineTask;
+            var prefab = coroutineTask.GetResult();
+
+            GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+        }
+
+        public static bool cyclopsLockerPickup(ItemsContainer container, Pickupable pickupable)
+        {
+            if (!container.HasRoomFor(pickupable))
+            {
+                return false;
+            }
+            Vector3 position = pickupable.gameObject.transform.position;
+            TechType techType = pickupable.GetTechType();
+            pickupable = pickupable.Pickup(true);
+            InventoryItem item = new InventoryItem(pickupable);
+            if (!((IItemsContainer)container).AddItem(item)) //I don't know what the fuck this line does, but it was in inventory.pickup so I'm keeping it
+            {
+                container.UnsafeAdd(item);
+            }
+            KnownTech.Analyze(pickupable.GetTechType(), true);
+            if (Utils.GetSubRoot() != null)
+            {
+                pickupable.destroyOnDeath = false;
+            }
+            SkyEnvironmentChanged.Send(pickupable.gameObject, Player.main.GetSkyEnvironment());
+            return true;
         }
 
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
@@ -321,7 +361,7 @@ namespace CyclopsCameraDroneMod.Main
                             Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
                             if (pickupable)
                             {
-                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponentInChildren<StorageContainer>().container;
+                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponent<StorageContainer>().container;
                                 if (!cyclopsContainer.HasRoomFor(pickupable))
                                 {
                                     if (currentSub != null)
