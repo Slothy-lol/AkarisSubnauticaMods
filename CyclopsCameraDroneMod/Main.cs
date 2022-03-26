@@ -21,14 +21,14 @@ namespace CyclopsCameraDroneMod.Main
         //command for all modules
         //TELEPORTATION! HELL YEA!
         //No seriously, solves problem of being too slow and is more cool shit. Just do it
-
-        //finish lines 249-275
+        //sonar for drones
 
         public static string CameraName = "CyclopsDroneCamera";
         public static float nextUse;
         public static float cooldownTime = 1f;
         public static LineRenderer CameraDroneLaser;
         public static LineRenderer lineRenderer;
+        public static float nextUseDrone;
 
         [HarmonyPatch]
         public class Postfixes
@@ -42,7 +42,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if (Input.GetKeyUp(droneButton))
+                if (Input.GetKeyUp(droneButton) && Time.time >= nextUseDrone)
                 {
                     __instance.ExitCamera();
 
@@ -127,6 +127,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (__instance.name == CameraName)
                 {
                     GameObject.Destroy(__instance.gameObject);
+                    nextUseDrone = Time.time + 150;
                 }
                 return false;
             }
@@ -155,6 +156,8 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance) //no longer just get's target, now also works keybinds
             {
+                bool hasDrill2 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType);
+                bool hasDrill1 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType);
                 if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == CameraName)
                 {
                     SubRoot currentSub = Player.main.currentSub;
@@ -193,24 +196,35 @@ namespace CyclopsCameraDroneMod.Main
                         CoroutineHost.StartCoroutine(CreateBeacon(__instance.transform));
                     }
                 }
-                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                if (!(hasDrill1 || hasDrill2))
                 {
                     return;
                 }
+<<<<<<< HEAD
                 if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey) && __instance.name == CameraName)
+=======
+                if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == CameraName)
+>>>>>>> pr/14
                 {
-                    workColors();
+                    if(hasDrill2)
+                    {
+                        workColors(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
+                    }
+                    else
+                    {
+                        workColors(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+                    }
                     CameraDroneLaser.enabled = true;
                     SetBeamTarget(__instance);
-                    Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
+                    Targeting.GetTarget(__instance.gameObject, hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
                     if (gameObject4 != null)
                     {
                         Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                        if (drillable != null && (Time.time > nextUse || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                        if (drillable != null && (Time.time > nextUse || hasDrill2))
                         {
                             __instance.energyMixin.ConsumeEnergy(5);
                             nextUse = Time.time + cooldownTime;
-                            if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+                            if (!hasDrill2)
                             {
                                 for (var i = 0; i < 26; i++)
                                 {
@@ -235,47 +249,86 @@ namespace CyclopsCameraDroneMod.Main
                             nextUse = Time.time + cooldownTime;
                             liveMixin.TakeDamage(30);
                         }
-                        //to make laser also function as tractor beam thing for items
-                        //copy and paste the code from between the comments below to right here
-
-                        //in that blank line^
-                        //also delete the interact button keybind in QMod.cs
+                        BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
+                        //do later. Make drill damage/destroy resource outcrops
                     }
-                }else { CameraDroneLaser.enabled = false; }
-                if(Input.GetKeyUp(QMod.Config.interactKey)) //currently works based on hitting a key while looking at item, look at comment above to change
-                //if copying, delete this ^ entire if statement as it is no longer going to be used
+                }
+                else if(Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2)) 
                 {
-                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject4, out _);
-                    //copy from here
-                    Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
-                    if (pickupable != null)
-                    {
-                        if(true/*add a config for whether items go to player inventory or cyclops locker when picked up*/)
-                        {
-                            pickupable.OnHandClick(Player.main.armsController.guiHand);//acts as if the player picked up the item
-                        }
-                        else//may want to also resort to the other inventory if selected inventory is full. EX; player inventory selected in config but player inventory full, so items instead go to cyclops locker as backup.
-                        {
-                            //copy inventory.pickup in dnspy
-                            //change all references to `this.container` to the cyclops lockers
-                                //check drill patch below to find how to get cyclops lockers
-                            //remove unnecessary if statement at line 13 
-                            //remove return statement
+                    tractorBeamFunctionality(__instance);
+                }
+                else { CameraDroneLaser.enabled = false; }
+            }
+        }
 
-                            //steps above should be all, may need a bit more though
+        public static void tractorBeamFunctionality(MapRoomCamera __instance, bool hasDrill2 = false)
+        {
+            Targeting.GetTarget(__instance.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
+            workColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
+            CameraDroneLaser.enabled = true;
+            SetBeamTarget(__instance, true);
+            if(gameObject4 == null)
+            {
+                return;
+            }
+            Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
+            if (pickupable != null)
+            {
+                SubRoot currentSub = Player.main.currentSub;
+                if (currentSub != null)
+                {
+                    CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
+                    ItemsContainer emptyContainer = null;
+                    foreach (CyclopsLocker locker in cyclopsLockers)
+                    {
+                        ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
+                        if (cyclopsContainer != null && cyclopsContainer.HasRoomFor(pickupable))
+                        {
+                            emptyContainer = cyclopsContainer;
+                            break;
                         }
                     }
-                    //to here
+                    if (emptyContainer != null)
+                    {
+                        cyclopsLockerPickup(emptyContainer, pickupable);
+                    }
+                    else
+                    {
+                        pickupable.OnHandClick(Player.main.armsController.guiHand);
+                    }
                 }
             }
-            public static IEnumerator CreateBeacon(Transform transform)
-            {
-                var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
-                yield return coroutineTask;
-                var prefab = coroutineTask.GetResult();
+        }
+        public static IEnumerator CreateBeacon(Transform transform)
+        {
+            var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
+            yield return coroutineTask;
+            var prefab = coroutineTask.GetResult();
 
-                GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+            GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+        }
+
+        public static bool cyclopsLockerPickup(ItemsContainer container, Pickupable pickupable)
+        {
+            if (!container.HasRoomFor(pickupable))
+            {
+                return false;
             }
+            Vector3 position = pickupable.gameObject.transform.position;
+            TechType techType = pickupable.GetTechType();
+            pickupable = pickupable.Pickup(true);
+            InventoryItem item = new InventoryItem(pickupable);
+            if (!((IItemsContainer)container).AddItem(item)) //I don't know what the fuck this line does, but it was in inventory.pickup so I'm keeping it
+            {
+                container.UnsafeAdd(item);
+            }
+            KnownTech.Analyze(pickupable.GetTechType(), true);
+            if (Utils.GetSubRoot() != null)
+            {
+                pickupable.destroyOnDeath = false;
+            }
+            SkyEnvironmentChanged.Send(pickupable.gameObject, Player.main.GetSkyEnvironment());
+            return true;
         }
 
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
@@ -301,7 +354,7 @@ namespace CyclopsCameraDroneMod.Main
                             Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
                             if (pickupable)
                             {
-                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponentInChildren<StorageContainer>().container;
+                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponent<StorageContainer>().container;
                                 if (!cyclopsContainer.HasRoomFor(pickupable))
                                 {
                                     if (currentSub != null)
@@ -355,55 +408,36 @@ namespace CyclopsCameraDroneMod.Main
             GameObject.DestroyImmediate(laserBeam);
             GameObject.DestroyImmediate(cannon_pylon_left);
         }
-        public static void SetBeamTarget(MapRoomCamera __instance)
+        public static void SetBeamTarget(MapRoomCamera __instance, bool inverted = false)
         {
             if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
-                CalculateBeamVectors(targetDist, __instance);
+                CalculateBeamVectors(targetDist, __instance, inverted);
             }
             else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance);
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
         }
 
-        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance)
+        public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance, bool inverted)
         {
 
             Transform aimTransform = __instance.transform;
 
             Vector3 targetPosition = aimTransform.position + (targetDistance + 1) * aimTransform.forward;
 
-            Vector3[] positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition };
+            Vector3[] positions;
+            if (inverted) { positions = new Vector3[2] { targetPosition, aimTransform.position + (1f * -aimTransform.up) }; }
+            else { positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition }; }
             CameraDroneLaser.SetPositions(positions);
         }
-        public static void workColors()
+        public static void workColors(float red = 77, float green = 166, float blue = 255)
         {
-            Color defaultColour1 = new Color(77f / 255, 166f / 255, 255f / 255);
-            Color defaultColour2 = new Color(0f, 255f / 255, 42f / 255);
-            Color beamColour;
-            if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+            Color beamColour = new Color(77 / 255, 166 / 255, 1);
+            if (!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
             {
-                if (!(QMod.Config.drill2RGB1 < 0 || QMod.Config.drill2RGB1 > 255 || QMod.Config.drill2RGB2 < 0 || QMod.Config.drill2RGB2 > 255 || QMod.Config.drill2RGB3 < 0 || QMod.Config.drill2RGB3 > 255))
-                {
-                    beamColour = new Color(QMod.Config.drill2RGB1 / 255f, QMod.Config.drill2RGB2 / 255f, QMod.Config.drill2RGB3 / 255f);
-                }
-                else
-                {
-                    beamColour = defaultColour2;
-                }
-                if (QMod.Config.drill2RGB1 == 0 && QMod.Config.drill2RGB2 == 0 && QMod.Config.drill2RGB3 == 0) { beamColour = new Color(255f / 255, 38f / 255, 147 / 255f); }
+                beamColour = new Color(red / 255f, green / 255f, blue / 255f);
             }
-            else
-            {
-                if (!(QMod.Config.drill1RGB1 < 0 || QMod.Config.drill1RGB1 > 255 || QMod.Config.drill1RGB2 < 0 || QMod.Config.drill1RGB2 > 255 || QMod.Config.drill1RGB3 < 0 || QMod.Config.drill1RGB3 > 255))
-                {
-                    beamColour = new Color(QMod.Config.drill1RGB1 / 255f, QMod.Config.drill1RGB2 / 255f, QMod.Config.drill1RGB3 / 255f);
-                }
-                else
-                {
-                    beamColour = defaultColour1;
-                }
-                if (QMod.Config.drill1RGB1 == 0 && QMod.Config.drill1RGB2 == 0 && QMod.Config.drill1RGB3 == 0) { beamColour = new Color(255, 38, 147); }
-            }
+            if (red == 0 && green == 0 && blue == 0) { beamColour = new Color(1, 38f / 255, 147 / 255f); }
             CameraDroneLaser.material.color = beamColour;
         }
     }
