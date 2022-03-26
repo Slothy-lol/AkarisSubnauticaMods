@@ -41,6 +41,7 @@ namespace CyclopsCameraDroneMod.Main
         public static float cooldownTime = 1f;
         public static LineRenderer CameraDroneLaser;
         public static LineRenderer lineRenderer;
+        public static float nextUseDrone;
 
         [HarmonyPatch]
         public class Postfixes
@@ -54,7 +55,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if (Input.GetKeyUp(droneButton))
+                if (Input.GetKeyUp(droneButton) && Time.time >= nextUseDrone)
                 {
                     __instance.ExitCamera();
 
@@ -139,6 +140,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (__instance.name == CameraName)
                 {
                     GameObject.Destroy(__instance.gameObject);
+                    nextUseDrone = Time.time + 150;
                 }
                 return false;
             }
