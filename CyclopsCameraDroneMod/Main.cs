@@ -210,7 +210,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKeyHeld(QMod.Config.miningKey) && __instance.name == CameraName)
+                if (GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey) && __instance.name == CameraName)
                 {
                     workColors();
                     CameraDroneLaser.enabled = true;
