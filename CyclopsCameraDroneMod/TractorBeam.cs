@@ -29,26 +29,15 @@ namespace CyclopsCameraDroneMod
         public static void Attract(Transform cameraTransform, Collider collider)
         {
             var rb = collider.attachedRigidbody;
-            if (rb == null || hitRigidbodies.Contains(rb))
+            if (rb == null || hitRigidbodies.Contains(rb)) // make sure the object has a rigidbody
             {
                 return;
             }
-            if (rb.mass > massLimit)
+            if (rb.mass > massLimit) // if the object is too heavy, give up
             {
                 return;
             }
             var pickupable = rb.gameObject.GetComponent<Pickupable>();
-            if (rb.isKinematic)
-            {
-                if (pickupable == null || !pickupable.isPickupable)
-                {
-                    return;
-                }
-            }
-            if (pickupable != null && !pickupable.isPickupable)
-            {
-                return;
-            }
             bool hasComponentInWhitelist = false;
             for (int i = 0; i < whitelistedComponents.Length; i++)
             {
@@ -58,7 +47,11 @@ namespace CyclopsCameraDroneMod
                     break;
                 }
             }
-            if (pickupable == null && hasComponentInWhitelist == false)
+            if (pickupable == null && hasComponentInWhitelist == false) // if the object doesn't have any of the correct components, give up
+            {
+                return;
+            }
+            if (pickupable != null && !pickupable.isPickupable) // if the object is pickupable but not pickupable, give up
             {
                 return;
             }
