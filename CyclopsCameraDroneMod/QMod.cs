@@ -65,8 +65,8 @@ namespace CyclopsCameraDroneMod.QMods
         [Toggle("Prioritize Player Inventory", Tooltip = "If checked, will priotize putting items into the players inventory first and then the cyclops lockers second. if unchecked, uses cyclops lockers first.")]
         public bool useInventory = false;
         */
-        [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 7.0F, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
-        public int drillRange = 10;
+        [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 15, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
+        public int drillRange = 15;
 
         public int drill1RGB1 = 77;
         public int drill1RGB2 = 166;

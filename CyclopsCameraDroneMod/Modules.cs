@@ -22,7 +22,7 @@ namespace CyclopsCameraDroneMod.Modules
         {
             OnFinishedPatching += () =>
             {
-                CyclopsCameraDroneModule.thisTechType = this.TechType;
+                thisTechType = TechType;
             };
         }
 
@@ -73,7 +73,7 @@ namespace CyclopsCameraDroneMod.Modules
         {
             OnFinishedPatching += () =>
             {
-                CyclopsCameraDroneModuleDrill.thisTechType = this.TechType;
+                thisTechType = TechType;
             };
         }
 
@@ -124,7 +124,7 @@ namespace CyclopsCameraDroneMod.Modules
         {
             OnFinishedPatching += () =>
             {
-                CyclopsCameraDroneModuleDrillMK2.thisTechType = this.TechType;
+                thisTechType = TechType;
             };
         }
 
