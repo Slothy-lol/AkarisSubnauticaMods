@@ -52,8 +52,6 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
                 {
-                    __instance.ExitCamera();
-
                     CoroutineHost.StartCoroutine(CreateAndControl(__instance));
 
                     __result = true;
@@ -83,6 +81,7 @@ namespace CyclopsCameraDroneMod.Main
                 cyclopsCameraDrone.ControlCamera(Player.main, null);
                 Player.main.ExitLockedMode(false, false);
                 Player.main.EnterLockedMode(null);
+                __instance.ExitCamera();
             }
             static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
@@ -177,59 +176,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
                 {
-                    if(hasDrill2)
-                    {
-                        WorkColors(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
-                    }
-                    else
-                    {
-                        WorkColors(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
-                    }
-                    cameraDroneLaser.enabled = true;
-                    timeLastDrill = Time.time;
-                    droneInstance.StartDrillSound();
-                    SetBeamTarget(__instance);
-                    Targeting.GetTarget(__instance.gameObject, hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
-                    if (gameObject4 != null)
-                    {
-                        Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
-                        if (drillable != null && (Time.time > timeNextDrill || hasDrill2))
-                        {
-                            __instance.energyMixin.ConsumeEnergy(5);
-                            timeNextDrill = Time.time + drillCooldownLength;
-                            timeLastMineResource = Time.time;
-                            if (!hasDrill2)
-                            {
-                                for (var i = 0; i < 26; i++)
-                                {
-                                    if (drillable.health.Sum() > 0)
-                                    {
-                                        drillable.OnDrill(gameObject4.transform.position, null, out var _);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                while (drillable.health.Sum() > 0)
-                                {
-                                    drillable.OnDrill(gameObject4.transform.position, null, out var _);
-                                }
-                            }
-                        }
-                        LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() != null ? gameObject4.GetComponent<LiveMixin>() : gameObject4.GetComponentInParent<LiveMixin>();
-                        if (liveMixin != null && Time.time > timeNextDrill) 
-                        {
-                            __instance.energyMixin.ConsumeEnergy(5);
-                            timeNextDrill = Time.time + drillCooldownLength;
-                            liveMixin.TakeDamage(30);
-                        }
-                        BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
-                        if (resource)
-                        {
-                            resource.BreakIntoResources();
-                        }
-                        //do later. Make drill damage/destroy resource outcrops
-                    }
+                    DrillFunctionality(__instance, hasDrill1, hasDrill2);
                 }
                 else if(Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2)) 
                 {
@@ -250,6 +197,62 @@ namespace CyclopsCameraDroneMod.Main
                 else // otherwise, make sure it isn't playing
                 {
                     droneInstance.StopMineSound();
+                }
+            }
+        }
+
+        public static void DrillFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill1, bool hasDrill2)
+        {
+            if (hasDrill2)
+            {
+                WorkColors(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
+            }
+            else
+            {
+                WorkColors(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+            }
+            cameraDroneLaser.enabled = true;
+            timeLastDrill = Time.time;
+            droneInstance.StartDrillSound();
+            SetBeamTarget(mapRoomCamera);
+            Targeting.GetTarget(mapRoomCamera.gameObject, hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
+            if (gameObject4 != null)
+            {
+                Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
+                if (drillable != null && (Time.time > timeNextDrill || hasDrill2))
+                {
+                    mapRoomCamera.energyMixin.ConsumeEnergy(5);
+                    timeNextDrill = Time.time + drillCooldownLength;
+                    timeLastMineResource = Time.time;
+                    if (!hasDrill2)
+                    {
+                        for (var i = 0; i < 26; i++)
+                        {
+                            if (drillable.health.Sum() > 0)
+                            {
+                                drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (drillable.health.Sum() > 0)
+                        {
+                            drillable.OnDrill(gameObject4.transform.position, null, out var _);
+                        }
+                    }
+                }
+                LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() != null ? gameObject4.GetComponent<LiveMixin>() : gameObject4.GetComponentInParent<LiveMixin>();
+                if (liveMixin != null && Time.time > timeNextDrill)
+                {
+                    mapRoomCamera.energyMixin.ConsumeEnergy(5);
+                    timeNextDrill = Time.time + drillCooldownLength;
+                    liveMixin.TakeDamage(30);
+                }
+                BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
+                if (resource)
+                {
+                    resource.BreakIntoResources();
                 }
             }
         }
