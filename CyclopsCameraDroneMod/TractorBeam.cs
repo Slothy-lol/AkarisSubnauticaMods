@@ -15,7 +15,7 @@ namespace CyclopsCameraDroneMod
         public static float lineWidth = 1f;
         public static RaycastHit[] tractorBeamHit = new RaycastHit[32];
         public static List<Rigidbody> hitRigidbodies = new List<Rigidbody>();
-        public static LayerMask tractorBeamLayerMask = LayerID.Default;
+        public static LayerMask tractorBeamLayerMask = -1;
 
         public static void Reset()
         {
@@ -37,7 +37,7 @@ namespace CyclopsCameraDroneMod
             var creature = rb.gameObject.GetComponent<Creature>();
             if (rb.isKinematic)
             {
-                if (pickupable == null || !pickupable.isPickupable)
+                if ((pickupable == null || !pickupable.isPickupable))
                 {
                     return;
                 }
