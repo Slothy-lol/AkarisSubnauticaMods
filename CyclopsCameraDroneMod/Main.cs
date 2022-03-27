@@ -337,6 +337,34 @@ namespace CyclopsCameraDroneMod.Main
             {
                 if (Vector3.Distance(TractorBeam.tractorBeamHit[i].point, camTransform.position) < TractorBeam.pickupRange)
                 {
+                    GameObject gameObject = TractorBeam.tractorBeamHit[i].transform.gameObject;
+                    Pickupable pickupable = gameObject.GetComponent<Pickupable>() != null ? gameObject.GetComponent<Pickupable>() : gameObject.GetComponentInParent<Pickupable>();
+                    if (pickupable != null)
+                    {
+                        SubRoot currentSub = Player.main.currentSub;
+                        if (currentSub != null)
+                        {
+                            CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
+                            ItemsContainer emptyContainer = null;
+                            foreach (CyclopsLocker locker in cyclopsLockers)
+                            {
+                                ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
+                                if (cyclopsContainer != null && cyclopsContainer.HasRoomFor(pickupable))
+                                {
+                                    emptyContainer = cyclopsContainer;
+                                    break;
+                                }
+                            }
+                            if (emptyContainer != null)
+                            {
+                                CyclopsLockerPickup(emptyContainer, pickupable);
+                            }
+                            else
+                            {
+                                pickupable.OnHandClick(Player.main.armsController.guiHand);
+                            }
+                        }
+                    }
 
                 }
                 else
@@ -346,39 +374,6 @@ namespace CyclopsCameraDroneMod.Main
             }
 
             return;
-            // OLD CODE:
-            Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
-            if(gameObject4 == null)
-            {
-                return;
-            }
-            Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
-            if (pickupable != null)
-            {
-                SubRoot currentSub = Player.main.currentSub;
-                if (currentSub != null)
-                {
-                    CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
-                    ItemsContainer emptyContainer = null;
-                    foreach (CyclopsLocker locker in cyclopsLockers)
-                    {
-                        ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
-                        if (cyclopsContainer != null && cyclopsContainer.HasRoomFor(pickupable))
-                        {
-                            emptyContainer = cyclopsContainer;
-                            break;
-                        }
-                    }
-                    if (emptyContainer != null)
-                    {
-                        CyclopsLockerPickup(emptyContainer, pickupable);
-                    }
-                    else
-                    {
-                        pickupable.OnHandClick(Player.main.armsController.guiHand);
-                    }
-                }
-            }
         }
         public static IEnumerator CreateBeacon(Transform transform)
         {
