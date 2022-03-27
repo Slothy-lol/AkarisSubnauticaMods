@@ -178,6 +178,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
+                    droneInstance.PlaySonarSound();
                 }
                 if (hasDrill1 || hasDrill2)
                 {
