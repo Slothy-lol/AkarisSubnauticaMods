@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -17,6 +18,8 @@ namespace CyclopsCameraDroneMod
         public static RaycastHit[] tractorBeamHit = new RaycastHit[32];
         public static List<Rigidbody> hitRigidbodies = new List<Rigidbody>();
         public static LayerMask tractorBeamLayerMask = -1;
+        
+        public static Type[] whitelistedComponents = new Type[] { typeof(Creature), typeof(BreakableResource), };
 
         public static void Reset()
         {
@@ -35,19 +38,27 @@ namespace CyclopsCameraDroneMod
                 return;
             }
             var pickupable = rb.gameObject.GetComponent<Pickupable>();
-            var creature = rb.gameObject.GetComponent<Creature>();
             if (rb.isKinematic)
             {
-                if ((pickupable == null || !pickupable.isPickupable))
+                if (pickupable == null || !pickupable.isPickupable)
                 {
                     return;
                 }
             }
-            if (creature == null && pickupable == null)
+            if (pickupable != null && !pickupable.isPickupable)
             {
                 return;
             }
-            if (pickupable != null && !pickupable.isPickupable)
+            bool hasComponentInWhitelist = false;
+            for (int i = 0; i < whitelistedComponents.Length; i++)
+            {
+                if (rb.gameObject.GetComponent(whitelistedComponents[i]) != null)
+                {
+                    hasComponentInWhitelist = true;
+                    break;
+                }
+            }
+            if (pickupable == null && hasComponentInWhitelist == false)
             {
                 return;
             }
