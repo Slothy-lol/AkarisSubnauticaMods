@@ -82,10 +82,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CyclopsDroneInstance.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Modules.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QMod.cs" />
+    <Compile Include="TractorBeam.cs" />
+    <Compile Include="TractorBeamedObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mod.json" />
