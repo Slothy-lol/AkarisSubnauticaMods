@@ -35,7 +35,7 @@ namespace CyclopsCameraDroneMod
             }
             var pickupable = rb.gameObject.GetComponent<Pickupable>();
             var creature = rb.gameObject.GetComponent<Creature>();
-            if (rb.isKinematic && (pickupable == null || (pickupable != null && !pickupable.isPickupable) || creature == null))
+            if (rb.isKinematic || (pickupable == null || (pickupable != null && !pickupable.isPickupable) || creature == null))
             {
                 return;
             }

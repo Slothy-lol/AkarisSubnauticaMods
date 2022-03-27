@@ -38,7 +38,7 @@ namespace CyclopsCameraDroneMod
         {
             var normalized = (targetTransform.position - transform.position).normalized;
             var strength = Mathf.Clamp(TractorBeam.force * rb.mass, TractorBeam.force, TractorBeam.maxForce);
-            return normalized * TractorBeam.force;
+            return normalized * strength;
         }
     }
 }
