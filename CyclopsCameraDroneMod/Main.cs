@@ -320,7 +320,7 @@ namespace CyclopsCameraDroneMod.Main
             UpdateAppearance(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3, TractorBeam.lineWidth, TractorBeam.lineWidth);
             cameraDroneLaser.enabled = true;
             timeLastTractorBeam = Time.time;
-            SetBeamTarget(mapRoomCamera, true);
+            CalculateBeamVectors(TractorBeam.maxDistance, mapRoomCamera, true);
 
             var camTransform = Camera.current.transform;
             int colliders = Physics.SphereCastNonAlloc(new Ray(camTransform.position, camTransform.forward), TractorBeam.radius, TractorBeam.tractorBeamHit, TractorBeam.maxDistance, TractorBeam.tractorBeamLayerMask, QueryTriggerInteraction.Ignore);
