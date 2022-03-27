@@ -174,47 +174,53 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     BeaconFunctionality(__instance);
                 }
-                if (Input.GetKeyUp(KeyCode.Z) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule))
+                if (Input.GetKeyUp(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule)) // Sonar
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
                 }
-                if (!(hasDrill1 || hasDrill2))
+                if (hasDrill1 || hasDrill2)
                 {
-                    return;
+                    if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
+                    {
+                        DrillFunctionality(__instance, hasDrill1, hasDrill2);
+                    }
+                    else if (Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2))
+                    {
+                        TractorBeamFunctionality(__instance);
+                    }
+                    else
+                    {
+                        cameraDroneLaser.enabled = false;
+                    }
                 }
-                if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
-                {
-                    DrillFunctionality(__instance, hasDrill1, hasDrill2);
-                }
-                else if(Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2)) 
-                {
-                    TractorBeamFunctionality(__instance);
-                }
-                else 
-                { 
-                    cameraDroneLaser.enabled = false;
-                }
-                if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
-                {
-                    droneInstance.StopDrillSound();
-                }
-                if (Time.time < timeLastMineResource + 1f) // if you recently mined a resource, play the mining sound
-                {
-                    droneInstance.StartMineSound();
-                }
-                else // otherwise, make sure it isn't playing
-                {
-                    droneInstance.StopMineSound();
-                }
-                if (Time.time < timeLastTractorBeam + 1f) // if you recently fired the tractor beam, play its sound
-                {
-                    droneInstance.StartTractorBeamSound();
-                }
-                else // otherwise, make sure it isn't playing
-                {
-                    droneInstance.StopTractorBeamSound();
-                }
+                HandleSFX();
+            }
+        }
+
+        public static void HandleSFX()
+        {
+            if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
+            {
+                droneInstance.StopDrillSound();
+            }
+
+            if (Time.time < timeLastMineResource + 0.5f) // if you recently mined a resource, play the mining sound
+            {
+                droneInstance.StartMineSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopMineSound();
+            }
+
+            if (Time.time < timeLastTractorBeam + 1f) // if you recently fired the tractor beam, play its sound
+            {
+                droneInstance.StartTractorBeamSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopTractorBeamSound();
             }
         }
 
