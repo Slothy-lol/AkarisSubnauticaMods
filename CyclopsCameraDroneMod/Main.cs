@@ -143,8 +143,36 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 return false;
             }
+            /*
+            LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
+			if (liveMixin)
+			{
+				if (liveMixin.IsWeldable())
+				{
+					liveMixin.AddHealth(5);
+				}
+				else
+				{
+					WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
+					if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
+					{
+						liveMixin.AddHealth(5);
+					}
+				}
+			}
 
-            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
+            Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject4, out float distance);
+            PDAScanner.scanTarget.gameObject = gameObject4;
+            PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
+            PDAScanner.Scan();
+            */
+            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.StabilizeRoll))]
+            [HarmonyPrefix]
+            public static bool StabilizeRolePatch(MapRoomCamera __instance)
+            {
+                return false;
+            }
+                [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
@@ -174,10 +202,37 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     BeaconFunctionality(__instance);
                 }
-                if (Input.GetKeyUp(KeyCode.Z) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule))
+                if (Input.GetKeyUp(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule))
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
+                }
+                if(Input.GetKey(QMod.Config.repairKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule))
+                {
+                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
+                    LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
+                    if (liveMixin)
+                    {
+                        if (liveMixin.IsWeldable())
+                        {
+                            liveMixin.AddHealth(5);
+                        }
+                        else
+                        {
+                            WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
+                            if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
+                            {
+                                liveMixin.AddHealth(5);
+                            }
+                        }
+                    }
+                }
+                if (Input.GetKey(QMod.Config.scanKey))
+                {
+                    Targeting.GetTarget(__instance.gameObject, 20, out var gameObject4, out float distance);
+                    PDAScanner.scanTarget.gameObject = gameObject4;
+                    PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
+                    PDAScanner.Scan();
                 }
                 if (!(hasDrill1 || hasDrill2))
                 {
@@ -195,6 +250,7 @@ namespace CyclopsCameraDroneMod.Main
                 { 
                     cameraDroneLaser.enabled = false;
                 }
+                if(Input.GetKeyUp(QMod.Config.teleportKey) && hasDrill2) { __instance.transform.position += 10 * __instance.transform.forward; }
                 if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
                 {
                     droneInstance.StopDrillSound();
@@ -326,6 +382,12 @@ namespace CyclopsCameraDroneMod.Main
             int colliders = Physics.SphereCastNonAlloc(new Ray(camTransform.position, camTransform.forward), TractorBeam.radius, TractorBeam.tractorBeamHit, TractorBeam.maxDistance, TractorBeam.tractorBeamLayerMask, QueryTriggerInteraction.Ignore);
 
             TractorBeam.Reset();
+
+            if(Targeting.GetTarget(mapRoomCamera.gameObject, 10, out var gameObject2, out float distance))
+            {
+                StarshipDoor door = gameObject2.GetComponent<StarshipDoor>();
+                if (door != null) { door.OnHandClick(Player.main.armsController.guiHand); }
+            }
 
             for (int i = 0; i < colliders; i++)
             {

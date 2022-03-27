@@ -79,5 +79,10 @@ namespace CyclopsCameraDroneMod.QMods
         public int tractorBeamRGB1 = 179;
         public int tractorBeamRGB2 = 0;
         public int tractorBeamRGB3 = 179;
+
+        public KeyCode teleportKey = KeyCode.P;
+        public KeyCode scanKey = KeyCode.F;
+        public KeyCode sonarKey = KeyCode.Z;
+        public KeyCode repairKey = KeyCode.X;
     }
 }
