@@ -27,6 +27,7 @@ namespace CyclopsCameraDroneMod.Main
 
         public static float drillCooldownLength = 1f;
         public static float useDroneCooldownLength = 2f;
+        public static float defaultBeamWidth = 0.15f;
 
         public static float timeLastDrill;
         public static float timeLastMineResource;
@@ -72,6 +73,7 @@ namespace CyclopsCameraDroneMod.Main
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = cameraObjectName;
                 droneInstance = cyclopsCameraDrone.gameObject.AddComponent<CyclopsDroneInstance>();
+                cyclopsCameraDrone.GetComponent<Pickupable>().isPickupable = false;
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
@@ -214,11 +216,11 @@ namespace CyclopsCameraDroneMod.Main
         {
             if (hasDrill2)
             {
-                WorkColors(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3);
+                UpdateAppearance(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3, defaultBeamWidth, defaultBeamWidth);
             }
             else
             {
-                WorkColors(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3);
+                UpdateAppearance(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3, defaultBeamWidth, defaultBeamWidth);
             }
             cameraDroneLaser.enabled = true;
             timeLastDrill = Time.time;
@@ -309,11 +311,31 @@ namespace CyclopsCameraDroneMod.Main
 
         public static void TractorBeamFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill2 = false)
         {
-            Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
-            WorkColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
+            UpdateAppearance(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3, TractorBeam.lineWidth, TractorBeam.lineWidth);
             cameraDroneLaser.enabled = true;
             timeLastTractorBeam = Time.time;
             SetBeamTarget(mapRoomCamera, true);
+
+            var camTransform = Camera.current.transform;
+            int colliders = Physics.SphereCastNonAlloc(new Ray(camTransform.position, camTransform.forward), TractorBeam.radius, TractorBeam.tractorBeamHit, TractorBeam.maxDistance, TractorBeam.tractorBeamLayerMask, QueryTriggerInteraction.Ignore);
+
+            TractorBeam.Reset();
+
+            for (int i = 0; i < colliders; i++)
+            {
+                if (Vector3.Distance(TractorBeam.tractorBeamHit[i].point, camTransform.position) < TractorBeam.pickupRange)
+                {
+
+                }
+                else
+                {
+                    TractorBeam.Attract(camTransform, TractorBeam.tractorBeamHit[i].collider);
+                }
+            }
+
+            return;
+            // OLD CODE:
+            Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
             if(gameObject4 == null)
             {
                 return;
@@ -481,7 +503,7 @@ namespace CyclopsCameraDroneMod.Main
             else { positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition }; }
             cameraDroneLaser.SetPositions(positions);
         }
-        public static void WorkColors(float red = 77, float green = 166, float blue = 255)
+        public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.15f, float endWidth = 0.15f)
         {
             Color beamColour = new Color(77 / 255, 166 / 255, 1);
             if (!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
@@ -490,6 +512,8 @@ namespace CyclopsCameraDroneMod.Main
             }
             if (red == 0 && green == 0 && blue == 0) { beamColour = new Color(1, 38f / 255, 147 / 255f); }
             cameraDroneLaser.material.color = beamColour;
+            cameraDroneLaser.startWidth = startWidth;
+            cameraDroneLaser.endWidth = endWidth;
         }
     }
 }
