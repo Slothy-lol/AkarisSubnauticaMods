@@ -11,7 +11,7 @@ namespace CyclopsCameraDroneMod
         public static float pickupRange = 2f;
         public static float massLimit = 2500f;
         public static float force = 10f;
-        public static float maxForce = 500f;
+        public static float maxForce = 3000f;
         public static float lineWidth = 1f;
         public static RaycastHit[] tractorBeamHit = new RaycastHit[32];
         public static List<Rigidbody> hitRigidbodies = new List<Rigidbody>();
