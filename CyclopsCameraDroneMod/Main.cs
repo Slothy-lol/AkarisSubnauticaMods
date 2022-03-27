@@ -30,6 +30,7 @@ namespace CyclopsCameraDroneMod.Main
 
         public static float timeLastDrill;
         public static float timeLastMineResource;
+        public static float timeLastTractorBeam;
 
         public static float timeNextDrill;
         public static float timeNextUseDrone;
@@ -198,6 +199,14 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     droneInstance.StopMineSound();
                 }
+                if (Time.time < timeLastTractorBeam + 1f) // if you recently fired the tractor beam, play its sound
+                {
+                    droneInstance.StartTractorBeamSound();
+                }
+                else // otherwise, make sure it isn't playing
+                {
+                    droneInstance.StopTractorBeamSound();
+                }
             }
         }
 
@@ -301,6 +310,7 @@ namespace CyclopsCameraDroneMod.Main
             Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
             WorkColors(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3);
             cameraDroneLaser.enabled = true;
+            timeLastTractorBeam = Time.time;
             SetBeamTarget(mapRoomCamera, true);
             if(gameObject4 == null)
             {
