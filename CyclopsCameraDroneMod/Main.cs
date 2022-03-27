@@ -73,6 +73,7 @@ namespace CyclopsCameraDroneMod.Main
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = cameraObjectName;
                 droneInstance = cyclopsCameraDrone.gameObject.AddComponent<CyclopsDroneInstance>();
+                LargeWorldStreamer.main.cellManager.UnregisterEntity(cyclopsCameraDrone.gameObject);
                 cyclopsCameraDrone.GetComponent<Pickupable>().isPickupable = false;
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
@@ -80,11 +81,11 @@ namespace CyclopsCameraDroneMod.Main
                 battery.gameObject.transform.parent = cyclopsCameraDrone.gameObject.transform;
 
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
+                __instance.ExitCamera(); //happy Lee?
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
                 cyclopsCameraDrone.ControlCamera(Player.main, null);
                 Player.main.ExitLockedMode(false, false);
                 Player.main.EnterLockedMode(null);
-                __instance.ExitCamera();
             }
             static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
@@ -172,6 +173,11 @@ namespace CyclopsCameraDroneMod.Main
                 if (Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == cameraObjectName) // Beacon placement
                 {
                     BeaconFunctionality(__instance);
+                }
+                if (Input.GetKeyUp(KeyCode.Z) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule))
+                {
+                    __instance.energyMixin.ConsumeEnergy(2);
+                    SNCameraRoot.main.SonarPing();
                 }
                 if (!(hasDrill1 || hasDrill2))
                 {
