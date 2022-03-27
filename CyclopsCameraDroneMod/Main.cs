@@ -224,9 +224,11 @@ namespace CyclopsCameraDroneMod.Main
             timeLastDrill = Time.time;
             droneInstance.StartDrillSound();
             SetBeamTarget(mapRoomCamera);
-            Targeting.GetTarget(mapRoomCamera.gameObject, hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out var gameObject4, out _);
+            float range = hasDrill2 ? QMod.Config.drillRange * 2 : QMod.Config.drillRange;
+            Targeting.GetTarget(mapRoomCamera.gameObject, range, out var gameObject4, out float distance);
             if (gameObject4 != null)
             {
+                Vector3 hitPoint = MainCameraControl.main.transform.position + MainCameraControl.main.transform.forward * distance;
                 Drillable drillable = gameObject4.GetComponentInParent<Drillable>();
                 if (drillable != null && (Time.time > timeNextDrill || hasDrill2))
                 {
@@ -256,7 +258,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     mapRoomCamera.energyMixin.ConsumeEnergy(5);
                     timeNextDrill = Time.time + drillCooldownLength;
-                    liveMixin.TakeDamage(30);
+                    liveMixin.TakeDamage(30, hitPoint, DamageType.Drill);
                 }
                 BreakableResource resource = gameObject4.GetComponent<BreakableResource>() != null ? gameObject4.GetComponent<BreakableResource>() : gameObject4.GetComponentInParent<BreakableResource>();
                 if (resource)
