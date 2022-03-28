@@ -6,18 +6,19 @@ using Sprite = Atlas.Sprite;
 using System.IO;
 using UnityEngine;
 using RecipeData = SMLHelper.V2.Crafting.TechData;
+using SMLHelper.V2.Utility;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Upgrades;
 
 namespace CyclopsCameraDroneMod.Modules
 {
-    public class CyclopsCameraDroneExplorationModule : Equipable
+    public class CyclopsCameraDroneModule : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneExplorationModule() : base("CyclopsCameraDroneExplModule", "Cyclops Camera Drone Exploration Module", "Allows the use of a camera drone for the Cyclops, equipped with important exploration features.")
+        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneModule", "Cyclops Camera Drone Module", "Allows the use of a camera drone for the Cyclops. Can be upgraded to include a laser drill.")
         {
             OnFinishedPatching += () =>
             {
@@ -47,9 +48,8 @@ namespace CyclopsCameraDroneMod.Modules
                     {
                         new Ingredient(TechType.Magnetite, 2),
                         new Ingredient(TechType.MapRoomCamera, 1),
-                        new Ingredient(TechType.WiringKit, 1),
-                        new Ingredient(TechType.Scanner, 1),
-                        new Ingredient(TechType.PrecursorIonCrystal, 1)
+                        new Ingredient(TechType.WiringKit, 1)
+
                     }
                 )
             };
@@ -63,13 +63,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneDrillModule : Equipable
+    public class CyclopsCameraDroneModuleDrill : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneDrillModule() : base("CyclopsCameraDroneDrillModule", "Cyclops Camera Drone Drill Module", "Allows the use of a camera drone for the Cyclops, with an attached laser drill.")
+        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneModuleDrill", "Cyclops Camera Drone MK2", "Allows the use of a camera drone for the Cyclops, with an attached laser drill. Can be upgraded to enhance drill speed and range.")
         {
             OnFinishedPatching += () =>
             {
@@ -97,10 +97,9 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(TechType.MapRoomCamera, 1),
+                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 2),
                         new Ingredient(TechType.ExosuitDrillArmModule, 1),
-                        new Ingredient(TechType.Kyanite, 4),
-                        new Ingredient(TechType.PrecursorIonCrystal, 3)
+                        new Ingredient(TechType.PrecursorIonCrystal, 1)
 
                     }
                 )
@@ -115,13 +114,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneMaintenanceModule : Equipable
+    public class CyclopsCameraDroneModuleDrillMK2 : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneMaintenanceModule() : base("CyclopsCameraDroneMaintenanceModule", "Cyclops Camera Drone Maintenance Module", "Allows the use of a camera drone for the Cyclops, equipped with necessary tools for build and repair.")
+        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Camera Drone MK3", "Allows the use of a camera drone for the Cyclops, with an upgraded laser drill.")
         {
             OnFinishedPatching += () =>
             {
@@ -150,9 +149,10 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(TechType.MapRoomCamera, 1),
-                        new Ingredient(TechType.Builder, 1),
-                        new Ingredient(TechType.Welder, 1)
+                        new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 2),
+                        new Ingredient(TechType.Kyanite, 5),
+                        new Ingredient(TechType.PrecursorIonCrystal, 3)
+
                     }
                 )
             };
@@ -165,9 +165,9 @@ namespace CyclopsCameraDroneMod.Modules
             return obj;
         }
     }
-    internal class CyclopsDroneExplorationUpgradeHandler : UpgradeHandler
+    internal class CyclopsDroneUpgradeHandler : UpgradeHandler
     {
-        public CyclopsDroneExplorationUpgradeHandler(TechType DroneModule, SubRoot cyclops) : base(DroneModule, cyclops)
+        public CyclopsDroneUpgradeHandler(TechType DroneModule, SubRoot cyclops) : base(DroneModule, cyclops)
         {
 
         }
@@ -179,9 +179,9 @@ namespace CyclopsCameraDroneMod.Modules
 
         }
     }
-    internal class CyclopsDroneMaintenanceUpgradeHandler : UpgradeHandler
+    internal class CyclopsDroneDrillMK2UpgradeHandler : UpgradeHandler
     {
-        public CyclopsDroneMaintenanceUpgradeHandler(TechType DrillModule2, SubRoot cyclops) : base(DrillModule2, cyclops)
+        public CyclopsDroneDrillMK2UpgradeHandler(TechType DrillModule2, SubRoot cyclops) : base(DrillModule2, cyclops)
         {
 
         }
