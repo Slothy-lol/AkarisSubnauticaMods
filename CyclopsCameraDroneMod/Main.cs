@@ -34,10 +34,13 @@ namespace CyclopsCameraDroneMod.Main
         public static float timeLastDrill;
         public static float timeLastMineResource;
         public static float timeLastTractorBeam;
+        public static float timeLastRepair; 
+        public static float timeLastScan;
 
         public static float timeNextDrill;
         public static float timeNextUseDrone;
         public static float timeNextPing; //sonar ping
+        public static float timeNextTeleport;
 
         public static LineRenderer cameraDroneLaser;
         public static LineRenderer lineRenderer;
@@ -250,20 +253,28 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
                         LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
-                        if(liveMixin)
+                        if(liveMixin && Time.time >= timeLastRepair + 0.5f)
                         {
                             if(liveMixin.IsWeldable())
                             {
-                                liveMixin.AddHealth(5);
+                                liveMixin.AddHealth(10);
                                 HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                                if (!liveMixin.IsFullHealth())
+                                {
+                                    timeLastRepair = Time.time;
+                                }
                             }
                             else
                             {
                                 WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
                                 if(weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
                                 {
-                                    liveMixin.AddHealth(5);
+                                    liveMixin.AddHealth(10);
                                     HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                                    if(!liveMixin.IsFullHealth())
+                                    {
+                                        timeLastRepair = Time.time;
+                                    }
                                 }
                             }
                         }
@@ -273,12 +284,34 @@ namespace CyclopsCameraDroneMod.Main
                         Targeting.GetTarget(__instance.gameObject, 20, out var gameObject4, out float distance);
                         PDAScanner.scanTarget.gameObject = gameObject4;
                         PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
-                        PDAScanner.Scan();//BUGGY. FIX THIS SHIT
-                                          //half the time doesn't delete fragment
-                                          //no visual or auditory indication that you're actually scanning
+                        PDAScanner.Result result = PDAScanner.Scan();//BUGGY. FIX THIS SHIT
+                                                                     //half the time doesn't delete fragment
+                                                                     //no visual or auditory indication that you're actually scanning
                         HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                        if(result != PDAScanner.Result.Done && result != PDAScanner.Result.Researched)
+                        {
+                            timeLastScan = Time.time;
+                        }
                     }
-                    if(Input.GetKeyUp(QMod.Config.teleportKey) && hasDrill2) { __instance.transform.position += 10 * __instance.transform.forward; HandleEnergyDrain(__instance, 5); }
+                    if(Input.GetKeyUp(QMod.Config.teleportKey) && hasDrill2)//key pressed and has ion drill
+                    { 
+                        if (Time.time >= timeNextTeleport || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //checks for cooldown being over
+                        {//if in creative or using no cost, no teleport cooldown and can teleport through objects. Mostly for my own testing purposes plus fucking around for funsies
+                            if (!Targeting.GetTarget(__instance.gameObject, 10, out GameObject _, out float distance) || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //Checks for object in way of teleporting
+                            {
+                                __instance.transform.position += 10 * __instance.transform.forward;
+                                HandleEnergyDrain(__instance, 5);
+                                timeNextTeleport = Time.time + 5f;
+                            }
+                            else
+                            {
+                                __instance.transform.position += distance * __instance.transform.forward;
+                                HandleEnergyDrain(__instance, 5 / distance);//energy drain and cooldown get reduced proportionally to distance travelled
+                                timeNextTeleport = Time.time + 5f / distance;
+                            }
+                        }    
+                    }
+                    //add cooldown, and a check to make sure you don't go through walls
                 }
                 HandleSFX();
                 if(QMod.Config.energyUsageType.Equals("None"))
@@ -316,6 +349,24 @@ namespace CyclopsCameraDroneMod.Main
             else // otherwise, make sure it isn't playing
             {
                 droneInstance.StopTractorBeamSound();
+            }
+
+            if (Time.time < timeLastRepair + 0.5f) // if you recently repaired something, play repair sound
+            {
+                droneInstance.StartRepairSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopRepairSound();
+            }
+
+            if (Time.time < timeLastScan + 0.1f) // if you recently scanned something, play scan sound
+            {
+                droneInstance.StartScanSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopScanSound();
             }
         }
         public static void HandleEnergyDrain(MapRoomCamera camera, float amount)
@@ -373,10 +424,14 @@ namespace CyclopsCameraDroneMod.Main
                     }
                 }
                 LiveMixin liveMixin = gameObject4.GetComponent<LiveMixin>() ?? gameObject4.GetComponentInParent<LiveMixin>();
-                if(liveMixin != null && Time.time > timeNextDrill)
+                if(liveMixin != null && Time.time > timeNextDrill && !liveMixin.IsWeldable())//need weldable check or could accidentally hit and fully kill repairable panels
                 {
                     timeNextDrill = Time.time + drillCooldownLength;
                     liveMixin.TakeDamage(30, hitPoint, DamageType.Drill);
+                    if(gameObject4.GetComponent<CollectShiny>() != null)
+                    {
+                        gameObject4.GetComponent<CollectShiny>().DropShinyTarget();
+                    }
                 }
                 BreakableResource resource = gameObject4.GetComponent<BreakableResource>() ?? gameObject4.GetComponentInParent<BreakableResource>();
                 if(resource)
