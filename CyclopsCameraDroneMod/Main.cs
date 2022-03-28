@@ -29,12 +29,15 @@ namespace CyclopsCameraDroneMod.Main
         public static float useDroneCooldownLength = 2f;
         public static float defaultBeamWidth = 0.15f;
 
+        public static bool sonarActive = false;
+
         public static float timeLastDrill;
         public static float timeLastMineResource;
         public static float timeLastTractorBeam;
 
         public static float timeNextDrill;
         public static float timeNextUseDrone;
+        public static float timeNextPing; //sonar ping
 
         public static LineRenderer cameraDroneLaser;
         public static LineRenderer lineRenderer;
@@ -206,7 +209,25 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
+<<<<<<< Updated upstream
                     droneInstance.PlaySonarSound();
+=======
+                    if(QMod.Config.autoSonar)
+                    {
+                        sonarActive = !sonarActive;
+                        timeNextPing = Time.time + 2; //keep +2, otherwise it would ping twice when you hit the button
+                    }
+                    else
+                    {
+                        sonarActive = false;
+                    }
+                }
+                if(sonarActive && Time.time >= timeNextPing)
+                {
+                    __instance.energyMixin.ConsumeEnergy(2);
+                    SNCameraRoot.main.SonarPing();
+                    timeNextPing = Time.time + 2;
+>>>>>>> Stashed changes
                 }
                 if (hasDrill1 || hasDrill2)
                 {
