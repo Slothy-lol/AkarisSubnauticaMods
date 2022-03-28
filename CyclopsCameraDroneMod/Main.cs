@@ -209,9 +209,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
-<<<<<<< Updated upstream
                     droneInstance.PlaySonarSound();
-=======
                     if(QMod.Config.autoSonar)
                     {
                         sonarActive = !sonarActive;
@@ -227,7 +225,6 @@ namespace CyclopsCameraDroneMod.Main
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
                     timeNextPing = Time.time + 2;
->>>>>>> Stashed changes
                 }
                 if (hasDrill1 || hasDrill2)
                 {
