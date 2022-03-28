@@ -72,6 +72,12 @@ namespace CyclopsCameraDroneMod.QMods
         [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 15, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
         public int drillRange = 15;
 
+        [Choice("Drone Energy usage", new[] { "All", "Some", "None" }, Tooltip = "All means all energy drains from drone, none from cyclops. Some means that only the base energy drain from moving will drain from drone. None means that all drain comes from cyclops")]
+        public string energyUsageType = "Some"; //make more descriptive
+                                                //All means all energy drains from drone, none from cyclops
+                                                //Some means that only the base energy drain from moving will drain from drone, laser and sonar and shit come from cyclops
+                                                //None means that the cyclops constantly tops up the drone, effectively meaning that all of the energy is being drained from the cyclops instead
+
         public int drill1RGB1 = 77;
         public int drill1RGB2 = 166;
         public int drill1RGB3 = 255;
@@ -88,5 +94,6 @@ namespace CyclopsCameraDroneMod.QMods
         public KeyCode scanKey = KeyCode.F;
         public KeyCode repairKey = KeyCode.X;
         public bool autoSonar = false;
+        public bool fuckAutoStabilization = false;
     }
 }
