@@ -206,7 +206,22 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
+                    droneInstance.PlaySonarSound();
                 }
+                if (hasDrill1 || hasDrill2)
+                {
+                    if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
+                    {
+                        DrillFunctionality(__instance, hasDrill1, hasDrill2);
+                    }
+                    else if (Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2))
+                    {
+                        TractorBeamFunctionality(__instance);
+                    }
+                    else
+                    {
+                        cameraDroneLaser.enabled = false;
+                    }
                 if(Input.GetKey(QMod.Config.repairKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule))
                 {
                     Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
@@ -234,43 +249,35 @@ namespace CyclopsCameraDroneMod.Main
                     PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
                     PDAScanner.Scan();
                 }
-                if (!(hasDrill1 || hasDrill2))
-                {
-                    return;
-                }
-                if ((GameInput.GetButtonHeld(GameInput.Button.LeftHand) || Input.GetKey(QMod.Config.miningKey)) && __instance.name == cameraObjectName)
-                {
-                    DrillFunctionality(__instance, hasDrill1, hasDrill2);
-                }
-                else if(Input.GetKey(QMod.Config.interactKey) && (hasDrill1 || hasDrill2)) 
-                {
-                    TractorBeamFunctionality(__instance);
-                }
-                else 
-                { 
-                    cameraDroneLaser.enabled = false;
-                }
                 if(Input.GetKeyUp(QMod.Config.teleportKey) && hasDrill2) { __instance.transform.position += 10 * __instance.transform.forward; }
-                if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
-                {
-                    droneInstance.StopDrillSound();
                 }
-                if (Time.time < timeLastMineResource + 1f) // if you recently mined a resource, play the mining sound
-                {
-                    droneInstance.StartMineSound();
-                }
-                else // otherwise, make sure it isn't playing
-                {
-                    droneInstance.StopMineSound();
-                }
-                if (Time.time < timeLastTractorBeam + 1f) // if you recently fired the tractor beam, play its sound
-                {
-                    droneInstance.StartTractorBeamSound();
-                }
-                else // otherwise, make sure it isn't playing
-                {
-                    droneInstance.StopTractorBeamSound();
-                }
+                HandleSFX();
+            }
+        }
+
+        public static void HandleSFX()
+        {
+            if (Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
+            {
+                droneInstance.StopDrillSound();
+            }
+
+            if (Time.time < timeLastMineResource + 0.5f) // if you recently mined a resource, play the mining sound
+            {
+                droneInstance.StartMineSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopMineSound();
+            }
+
+            if (Time.time < timeLastTractorBeam + 1f) // if you recently fired the tractor beam, play its sound
+            {
+                droneInstance.StartTractorBeamSound();
+            }
+            else // otherwise, make sure it isn't playing
+            {
+                droneInstance.StopTractorBeamSound();
             }
         }
 
@@ -376,7 +383,7 @@ namespace CyclopsCameraDroneMod.Main
             UpdateAppearance(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3, TractorBeam.lineWidth, TractorBeam.lineWidth);
             cameraDroneLaser.enabled = true;
             timeLastTractorBeam = Time.time;
-            SetBeamTarget(mapRoomCamera, true);
+            CalculateBeamVectors(TractorBeam.maxDistance, mapRoomCamera, true);
 
             var camTransform = Camera.current.transform;
             int colliders = Physics.SphereCastNonAlloc(new Ray(camTransform.position, camTransform.forward), TractorBeam.radius, TractorBeam.tractorBeamHit, TractorBeam.maxDistance, TractorBeam.tractorBeamLayerMask, QueryTriggerInteraction.Ignore);
@@ -421,6 +428,7 @@ namespace CyclopsCameraDroneMod.Main
                             }
                         }
                     }
+                  
                 }
                 else
                 {
@@ -429,40 +437,6 @@ namespace CyclopsCameraDroneMod.Main
             }
 
             return;
-            // OLD CODE:
-            /*
-            Targeting.GetTarget(mapRoomCamera.gameObject, QMod.Config.drillRange, out var gameObject4, out _);
-            if(gameObject4 == null)
-            {
-                return;
-            }
-            Pickupable pickupable = gameObject4.GetComponent<Pickupable>() != null ? gameObject4.GetComponent<Pickupable>() : gameObject4.GetComponentInParent<Pickupable>();
-            if (pickupable != null)
-            {
-                SubRoot currentSub = Player.main.currentSub;
-                if (currentSub != null)
-                {
-                    CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
-                    ItemsContainer emptyContainer = null;
-                    foreach (CyclopsLocker locker in cyclopsLockers)
-                    {
-                        ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
-                        if (cyclopsContainer != null && cyclopsContainer.HasRoomFor(pickupable))
-                        {
-                            emptyContainer = cyclopsContainer;
-                            break;
-                        }
-                    }
-                    if (emptyContainer != null)
-                    {
-                        CyclopsLockerPickup(emptyContainer, pickupable);
-                    }
-                    else
-                    {
-                        pickupable.OnHandClick(Player.main.armsController.guiHand);
-                    }
-                }
-            }*/
         }
         public static IEnumerator CreateBeacon(Transform transform)
         {

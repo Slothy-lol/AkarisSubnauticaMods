@@ -32,6 +32,7 @@ namespace CyclopsCameraDroneMod
                 Destroy(this);
             }
             rb.AddForce(CalculateForce(), ForceMode.Force);
+            DampenVelocity();
         }
 
         private Vector3 CalculateForce()
@@ -39,6 +40,13 @@ namespace CyclopsCameraDroneMod
             var normalized = (targetTransform.position - transform.position).normalized;
             var strength = Mathf.Clamp(TractorBeam.force * rb.mass, TractorBeam.force, TractorBeam.maxForce);
             return normalized * strength;
+        }
+
+        private void DampenVelocity()
+        {
+            var relativeToCamera = targetTransform.InverseTransformVector(rb.velocity);
+            var dampenened = new Vector3(relativeToCamera.x * (1 - Time.fixedDeltaTime * TractorBeam.dampeningStrength), relativeToCamera.y * (1 - Time.fixedDeltaTime * TractorBeam.dampeningStrength), relativeToCamera.z);
+            rb.velocity = targetTransform.TransformVector(dampenened);
         }
     }
 }

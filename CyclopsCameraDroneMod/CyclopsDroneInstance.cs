@@ -13,6 +13,7 @@ namespace CyclopsCameraDroneMod
         private static FMODAsset drillLoopSound = Helpers.GetFmodAsset("event:/tools/gravsphere/loop_actual");
         private static FMODAsset mineEmitterLoopSound = Helpers.GetFmodAsset("event:/sub/exo/drill_hit_loop");
         private static FMODAsset tractorBeamLoopSound = Helpers.GetFmodAsset("event:/sub/rocket/call_lift_loop");
+        private static FMODAsset sonarSound = Helpers.GetFmodAsset("event:/sub/seamoth/sonar_loop");
 
         private FMOD_CustomLoopingEmitter drillEmitter;
         private FMOD_CustomLoopingEmitter mineEmitter;
@@ -62,6 +63,11 @@ namespace CyclopsCameraDroneMod
         public void StopTractorBeamSound()
         {
             tractorBeamEmitter.Stop();
+        }
+
+        public void PlaySonarSound()
+        {
+            Utils.PlayFMODAsset(sonarSound, transform.position);
         }
 
         public void PlayBeaconSound()

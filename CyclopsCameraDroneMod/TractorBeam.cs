@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,11 +12,14 @@ namespace CyclopsCameraDroneMod
         public static float pickupRange = 2f;
         public static float massLimit = 2500f;
         public static float force = 10f;
-        public static float maxForce = 500f;
+        public static float maxForce = 12000f;
+        public static float dampeningStrength = 5f;
         public static float lineWidth = 1f;
         public static RaycastHit[] tractorBeamHit = new RaycastHit[32];
         public static List<Rigidbody> hitRigidbodies = new List<Rigidbody>();
         public static LayerMask tractorBeamLayerMask = -1;
+        
+        public static Type[] whitelistedComponents = new Type[] { typeof(Creature), typeof(BreakableResource), };
 
         public static void Reset()
         {
@@ -25,28 +29,29 @@ namespace CyclopsCameraDroneMod
         public static void Attract(Transform cameraTransform, Collider collider)
         {
             var rb = collider.attachedRigidbody;
-            if (rb == null || hitRigidbodies.Contains(rb))
+            if (rb == null || hitRigidbodies.Contains(rb)) // make sure the object has a rigidbody
             {
                 return;
             }
-            if (rb.mass > massLimit)
+            if (rb.mass > massLimit) // if the object is too heavy, give up
             {
                 return;
             }
             var pickupable = rb.gameObject.GetComponent<Pickupable>();
-            var creature = rb.gameObject.GetComponent<Creature>();
-            if (rb.isKinematic)
+            bool hasComponentInWhitelist = false;
+            for (int i = 0; i < whitelistedComponents.Length; i++)
             {
-                if ((pickupable == null || !pickupable.isPickupable))
+                if (rb.gameObject.GetComponent(whitelistedComponents[i]) != null)
                 {
-                    return;
+                    hasComponentInWhitelist = true;
+                    break;
                 }
             }
-            if (creature == null && pickupable == null)
+            if (pickupable == null && hasComponentInWhitelist == false) // if the object doesn't have any of the correct components, give up
             {
                 return;
             }
-            if (pickupable != null && !pickupable.isPickupable)
+            if (pickupable != null && !pickupable.isPickupable) // if the object is pickupable but not pickupable, give up
             {
                 return;
             }
