@@ -86,7 +86,6 @@ namespace CyclopsCameraDroneMod.QMods
 
         public KeyCode teleportKey = KeyCode.P;
         public KeyCode scanKey = KeyCode.F;
-        public KeyCode sonarKey = KeyCode.Z;
         public KeyCode repairKey = KeyCode.X;
         public bool autoSonar = false;
     }
