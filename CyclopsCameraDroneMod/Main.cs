@@ -220,7 +220,7 @@ namespace CyclopsCameraDroneMod.Main
                     if(QMod.Config.autoSonar)
                     {
                         sonarActive = !sonarActive;
-                        timeNextPing = Time.time + 5; //keep +2, otherwise it would ping twice when you hit the button
+                        timeNextPing = Time.time + 2; //keep +2, otherwise it would ping twice when you hit the button
                     }
                     else
                     {
