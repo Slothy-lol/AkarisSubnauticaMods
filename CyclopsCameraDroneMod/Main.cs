@@ -213,7 +213,7 @@ namespace CyclopsCameraDroneMod.Main
                     if(QMod.Config.autoSonar)
                     {
                         sonarActive = !sonarActive;
-                        timeNextPing = Time.time + 2; //keep +2, otherwise it would ping twice when you hit the button
+                        timeNextPing = Time.time + 5; //keep +2, otherwise it would ping twice when you hit the button
                     }
                     else
                     {
@@ -224,7 +224,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     __instance.energyMixin.ConsumeEnergy(2);
                     SNCameraRoot.main.SonarPing();
-                    timeNextPing = Time.time + 2;
+                    timeNextPing = Time.time + 5;
                 }
                 if (hasDrill1 || hasDrill2)
                 {
@@ -353,6 +353,11 @@ namespace CyclopsCameraDroneMod.Main
                 if (resource)
                 {
                     resource.BreakIntoResources();
+                }
+                Sealed sealedButNotCalledThat = gameObject4.GetComponent<Sealed>() != null ? gameObject4.GetComponent<Sealed>() : gameObject4.GetComponentInParent<Sealed>();
+                if (sealedButNotCalledThat)//sealed is a keyword in C#, can't call it sealed
+                {
+                    sealedButNotCalledThat.Weld(hasDrill2 ? 450 : 150);
                 }
             }
         }
