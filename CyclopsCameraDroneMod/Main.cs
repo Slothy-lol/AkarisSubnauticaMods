@@ -54,7 +54,7 @@ namespace CyclopsCameraDroneMod.Main
             public static void HandleInputPatch(CyclopsExternalCams __instance, ref bool __result)
             {
                 KeyCode droneButton = QMod.Config.droneKey;
-                if(!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                if(!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModule.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModuleMK2.thisTechType)))
                 {
                     return;
                 }
@@ -206,8 +206,8 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance) //no longer just get's target, now also works keybinds
             {
-                bool hasDrill2 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType);
-                bool hasDrill1 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType);
+                bool hasDrill2 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModuleMK2.thisTechType);
+                bool hasDrill1 = MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModule.thisTechType);
                 if(Input.GetKeyUp(QMod.Config.beaconKey) && __instance.name == cameraObjectName) // Beacon placement
                 {
                     BeaconFunctionality(__instance);
@@ -658,12 +658,12 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void SetBeamTarget(MapRoomCamera __instance, bool inverted = false)
         {
-            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModuleMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
                 CalculateBeamVectors(targetDist, __instance, inverted);
             }
             else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrillModuleMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
         }
 
         public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance, bool inverted)
