@@ -63,13 +63,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneDrillModule : Equipable
+    public class CyclopsCameraDroneModuleDrill : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneDrillModule() : base("CyclopsCameraDroneDrill", "Cyclops Camera Drone MK2", "Allows the use of a camera drone for the Cyclops, with an attached laser drill. Can be upgraded to enhance drill speed and range.")
+        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneModuleDrill", "Cyclops Camera Drone MK2", "Allows the use of a camera drone for the Cyclops, with an attached laser drill. Can be upgraded to enhance drill speed and range.")
         {
             OnFinishedPatching += () =>
             {
@@ -114,13 +114,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneDrillModuleMK2 : Equipable
+    public class CyclopsCameraDroneModuleDrillMK2 : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneDrillModuleMK2() : base("CyclopsCameraDroneDrill2", "Cyclops Camera Drone MK3", "Allows the use of a camera drone for the Cyclops, with an upgraded laser drill.")
+        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Camera Drone MK3", "Allows the use of a camera drone for the Cyclops, with an upgraded laser drill.")
         {
             OnFinishedPatching += () =>
             {
@@ -149,7 +149,7 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneDrillModule.thisTechType, 2),
+                        new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 2),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
 

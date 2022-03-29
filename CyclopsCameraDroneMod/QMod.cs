@@ -26,19 +26,19 @@ namespace CyclopsCameraDroneMod.QMods
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
             new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModule().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrillModule().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrillModuleMK2().Patch();
+            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrill().Patch();
+            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrillMK2().Patch();
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModule.thisTechType, cyclops);
             });
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneDrillUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrillModule.thisTechType, cyclops);
+                return new CyclopsDroneDrillUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrill.thisTechType, cyclops);
             });
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrillModuleMK2.thisTechType, cyclops);
+                return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType, cyclops);
             });
         }
 
