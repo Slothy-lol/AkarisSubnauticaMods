@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UWE;
+using Logger = QModManager.Utility.Logger;
 
 namespace CyclopsCameraDroneMod.Main
 {
@@ -26,7 +27,7 @@ namespace CyclopsCameraDroneMod.Main
         public static string cameraObjectName = "CyclopsDroneCamera";
 
         public static float drillCooldownLength = 1f;
-        public static float useDroneCooldownLength = 2f;
+        public static float useDroneCooldownLength = 90f;
         public static float defaultBeamWidth = 0.15f;
 
         public static bool sonarActive = false;
@@ -63,6 +64,10 @@ namespace CyclopsCameraDroneMod.Main
                     CoroutineHost.StartCoroutine(CreateAndControl(__instance));
 
                     __result = true;
+                }
+                else if(Input.GetKeyUp(droneButton))
+                {
+                    ErrorMessage.AddMessage("Drone on Cooldown! " + (timeNextUseDrone - Time.time) + " Seconds left");
                 }
             }
             private static IEnumerator CreateAndControl(CyclopsExternalCams __instance)
@@ -144,8 +149,9 @@ namespace CyclopsCameraDroneMod.Main
 
                 if(__instance.name == cameraObjectName)
                 {
+                    float healthFraction = __instance.GetComponent<LiveMixin>().GetHealthFraction();
+                    timeNextUseDrone = Time.time + (useDroneCooldownLength * (1f - healthFraction));
                     GameObject.Destroy(__instance.gameObject);
-                    timeNextUseDrone = Time.time + useDroneCooldownLength;
                 }
                 return false;
             }
@@ -191,6 +197,7 @@ namespace CyclopsCameraDroneMod.Main
                     __result = (Player.main.transform.position - __instance.transform.position).magnitude;
                 }
             }
+
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.StabilizeRoll))]
             [HarmonyPostfix]
             public static void FixPlayerMovement(MapRoomCamera __instance)

@@ -97,7 +97,7 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 2),
+                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 1),
                         new Ingredient(TechType.ExosuitDrillArmModule, 1),
                         new Ingredient(TechType.PrecursorIonCrystal, 1)
 
@@ -149,7 +149,7 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 2),
+                        new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 1),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
 
