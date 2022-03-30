@@ -23,6 +23,14 @@ namespace CyclopsCameraDroneMod
 
         //read only because I was annoyed at the messages appearing telling me to. Shouldn't change anything, if it breaks blame Lee not me. Why Lee? Because
 
+        public enum CyclopsDroneType
+        {
+            Exploration,
+            Mining,
+            Combo
+        }
+        public CyclopsDroneType droneType = CyclopsDroneType.Exploration;
+
         private FMOD_CustomLoopingEmitter drillEmitter;
         private FMOD_CustomLoopingEmitter mineEmitter;
         private FMOD_CustomLoopingEmitter tractorBeamEmitter;

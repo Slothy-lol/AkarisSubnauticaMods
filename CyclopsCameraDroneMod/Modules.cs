@@ -18,7 +18,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneModule", "Cyclops Camera Drone Module", "Allows the use of a camera drone for the Cyclops. Can be upgraded to include a laser drill.")
+        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneModule", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
         {
             OnFinishedPatching += () =>
             {
@@ -49,7 +49,7 @@ namespace CyclopsCameraDroneMod.Modules
                         new Ingredient(TechType.Magnetite, 2),
                         new Ingredient(TechType.MapRoomCamera, 1),
                         new Ingredient(TechType.WiringKit, 1)
-
+                        
                     }
                 )
             };
@@ -69,7 +69,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneModuleDrill", "Cyclops Camera Drone MK2", "Allows the use of a camera drone for the Cyclops, with an attached laser drill. Can be upgraded to enhance drill speed and range.")
+        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneModuleDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
         {
             OnFinishedPatching += () =>
             {
@@ -97,7 +97,8 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 1),
+                        new Ingredient(TechType.Magnetite, 2),
+                        new Ingredient(TechType.MapRoomCamera, 1),
                         new Ingredient(TechType.ExosuitDrillArmModule, 1),
                         new Ingredient(TechType.PrecursorIonCrystal, 1)
 
@@ -120,7 +121,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Camera Drone MK3", "Allows the use of a camera drone for the Cyclops, with an upgraded laser drill.")
+        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Camera Drone MK3", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
         {
             OnFinishedPatching += () =>
             {
@@ -150,6 +151,7 @@ namespace CyclopsCameraDroneMod.Modules
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
                         new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 1),
+                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 1),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
 
