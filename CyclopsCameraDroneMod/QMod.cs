@@ -55,13 +55,14 @@ namespace CyclopsCameraDroneMod.QMods
         [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found.")]
         public KeyCode beaconKey = KeyCode.B;
 
-        //delete this config if we are going for tractor beam route instead
         [Keybind("Interact Key", Tooltip = "When using the cyclops drone, press this key to pick up the object the drone is looking at.")]
         public KeyCode interactKey = KeyCode.Q;
 
-        //delete this config if we are going for tractor beam route instead
-        [Keybind("Sonar Key", Tooltip = "When using the cyclops drone, press this key to activate sonar. Only fuctions if the sonar module is present.")]
+        [Keybind("Sonar Key", Tooltip = "When using the cyclops drone, press this key to activate sonar. Only fuctions if the cyclops sonar module is present.")]
         public KeyCode sonarKey = KeyCode.Z;
+
+        [Keybind("Shield Key", Tooltip = "When using the ion cyclops drone, press this key to activate A shield. Only fuctions if the cyclops shield module is present.")]
+        public KeyCode shieldKey = KeyCode.Z;
 
         [Toggle("Infinite Distance", Tooltip = "When enabled, there will be no limit on the Cyclops Camera Drone's range.")]
         public bool InfiniteDistance = false;
@@ -75,7 +76,7 @@ namespace CyclopsCameraDroneMod.QMods
         [Choice("Drone Energy usage", new[] { "All", "Some", "None" }, Tooltip = "All means all energy drains from drone, none from cyclops. Some means that only the base energy drain from moving will drain from drone. None means that all drain comes from cyclops")]
         public string energyUsageType = "Some"; //make more descriptive
                                                 //All means all energy drains from drone, none from cyclops
-                                                //Some means that only the base energy drain from moving will drain from drone, laser and sonar and shit come from cyclops
+                                                //Some means that only the base energy drain from moving will drain from drone, laser and tractor beam and shit come from cyclops
                                                 //None means that the cyclops constantly tops up the drone, effectively meaning that all of the energy is being drained from the cyclops instead
 
         public int drill1RGB1 = 77;
@@ -95,5 +96,6 @@ namespace CyclopsCameraDroneMod.QMods
         public KeyCode repairKey = KeyCode.X;
         public bool autoSonar = false;
         public bool fuckAutoStabilization = false;
+        public KeyCode drone2Key = KeyCode.L;
     }
 }
