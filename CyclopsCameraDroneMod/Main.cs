@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UWE;
 using Logger = QModManager.Utility.Logger;
+using CyclopsCameraDroneMod.droneInstance;
 
 namespace CyclopsCameraDroneMod.Main
 {
@@ -58,7 +59,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 KeyCode droneButton = QMod.Config.droneKey;
                 KeyCode droneButton2 = QMod.Config.drone2Key;
-                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType)))
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType)))
                 {
                     return;
                 }
@@ -74,7 +75,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 else if(Input.GetKeyUp(droneButton))
                 {
-                    ErrorMessage.AddMessage("Drone on Cooldown! " + (timeNextUseDrone - Time.time) + " Seconds left");
+                    ErrorMessage.AddMessage("Drone on Cooldown! " + (timeNextUseDrone - Time.time) + " seconds left");
                 }
                 if (Input.GetKeyUp(droneButton2) && Time.time >= timeNextUseDrone)
                 {
@@ -84,7 +85,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 else if (Input.GetKeyUp(droneButton2))
                 {
-                    ErrorMessage.AddMessage("Drone on Cooldown! " + (timeNextUseDrone - Time.time) + " Seconds left");
+                    ErrorMessage.AddMessage("Drone on Cooldown! " + (timeNextUseDrone - Time.time) + " seconds left");
                 }
             }
             private static IEnumerator CreateAndControl(CyclopsExternalCams __instance, bool secondDrone = false)
@@ -107,11 +108,11 @@ namespace CyclopsCameraDroneMod.Main
                 SubRoot sub = Player.main.currentSub;
                 if(sub)
                 {
-                    if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType))
+                    if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Combo;
                     }
-                    else if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType))
+                    else if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Mining;
                     }
@@ -119,7 +120,7 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
-                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrill.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModule.thisTechType))
+                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
@@ -715,12 +716,12 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void SetBeamTarget(MapRoomCamera __instance, bool inverted = false)
         {
-            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
                 CalculateBeamVectors(targetDist, __instance, inverted);
             }
             else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
         }
 
         public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance, bool inverted)

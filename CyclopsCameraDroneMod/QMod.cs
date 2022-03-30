@@ -25,20 +25,20 @@ namespace CyclopsCameraDroneMod.QMods
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModule().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrill().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrillMK2().Patch();
+            new CyclopsCameraDroneMod.Modules.CyclopsCameraDrone().Patch();
+            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrill().Patch();
+            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneCombo().Patch();
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModule.thisTechType, cyclops);
+                return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDrone.thisTechType, cyclops);
             });
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneDrillUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrill.thisTechType, cyclops);
+                return new CyclopsDroneDrillUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneDrill.thisTechType, cyclops);
             });
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneModuleDrillMK2.thisTechType, cyclops);
+                return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneCombo.thisTechType, cyclops);
             });
         }
 

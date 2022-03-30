@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="CyclopsDroneInstance.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="HUDIcon.cs" />
     <Compile Include="Modules.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

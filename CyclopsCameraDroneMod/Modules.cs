@@ -12,13 +12,13 @@ using MoreCyclopsUpgrades.API.Upgrades;
 
 namespace CyclopsCameraDroneMod.Modules
 {
-    public class CyclopsCameraDroneModule : Equipable
+    public class CyclopsCameraDrone : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneExploration", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
+        public CyclopsCameraDrone() : base("CyclopsCameraDroneExploration", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
         {
             OnFinishedPatching += () =>
             {
@@ -63,13 +63,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneModuleDrill : Equipable
+    public class CyclopsCameraDroneDrill : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
+        public CyclopsCameraDroneDrill() : base("CyclopsCameraDroneDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
         {
             OnFinishedPatching += () =>
             {
@@ -115,13 +115,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneModuleDrillMK2 : Equipable
+    public class CyclopsCameraDroneCombo : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneCombo", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
+        public CyclopsCameraDroneCombo() : base("CyclopsCameraDroneCombo", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
         {
             OnFinishedPatching += () =>
             {
@@ -149,8 +149,8 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneModuleDrill.thisTechType, 1),
-                        new Ingredient(CyclopsCameraDroneModule.thisTechType, 1),
+                        new Ingredient(CyclopsCameraDroneDrill.thisTechType, 1),
+                        new Ingredient(CyclopsCameraDrone.thisTechType, 1),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
 
