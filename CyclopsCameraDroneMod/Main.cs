@@ -59,7 +59,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 KeyCode droneButton = QMod.Config.droneKey;
                 KeyCode droneButton2 = QMod.Config.drone2Key;
-                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType)))
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType)))
                 {
                     return;
                 }
@@ -108,11 +108,11 @@ namespace CyclopsCameraDroneMod.Main
                 SubRoot sub = Player.main.currentSub;
                 if(sub)
                 {
-                    if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType))
+                    if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Combo;
                     }
-                    else if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType))
+                    else if(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Mining;
                     }
@@ -120,7 +120,7 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
-                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneDrill.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType))
+                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
@@ -716,12 +716,12 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void SetBeamTarget(MapRoomCamera __instance, bool inverted = false)
         {
-            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
                 CalculateBeamVectors(targetDist, __instance, inverted);
             }
             else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneCombo.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
+                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
         }
 
         public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance, bool inverted)

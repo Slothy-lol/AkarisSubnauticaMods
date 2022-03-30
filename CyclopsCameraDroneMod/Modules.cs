@@ -18,7 +18,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDrone() : base("CyclopsCameraDroneExploration", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
+        public CyclopsCameraDrone() : base("CyclopsCameraDroneExploration", "Cyclops Camera Drone: Exploration", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
         {
             OnFinishedPatching += () =>
             {
@@ -63,13 +63,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneDrill : Equipable
+    public class CyclopsCameraDroneIndustry : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneDrill() : base("CyclopsCameraDroneDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
+        public CyclopsCameraDroneIndustry() : base("CyclopsCameraDroneIndustry", "Cyclops Camera Drone: Industry", "Allows the use of an industrial camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
         {
             OnFinishedPatching += () =>
             {
@@ -115,13 +115,13 @@ namespace CyclopsCameraDroneMod.Modules
         }
     }
 
-    public class CyclopsCameraDroneCombo : Equipable
+    public class CyclopsCameraDroneUltimate : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneCombo() : base("CyclopsCameraDroneCombo", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
+        public CyclopsCameraDroneUltimate() : base("CyclopsCameraDroneUltimate", "Cyclops Camera Drone: Ultimate", "Allows the use of an ultimate(tm) camera drone for the Cyclops, which acts as both an exploration and an upgraded industrial drone. Can also teleport short distances.")
         {
             OnFinishedPatching += () =>
             {
@@ -149,7 +149,7 @@ namespace CyclopsCameraDroneMod.Modules
                 craftAmount = 1,
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
-                        new Ingredient(CyclopsCameraDroneDrill.thisTechType, 1),
+                        new Ingredient(CyclopsCameraDroneIndustry.thisTechType, 1),
                         new Ingredient(CyclopsCameraDrone.thisTechType, 1),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
