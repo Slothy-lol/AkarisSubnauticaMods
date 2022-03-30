@@ -18,7 +18,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneModule", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
+        public CyclopsCameraDroneModule() : base("CyclopsCameraDroneExploration", "Cyclops Exploration Camera Drone Module", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
         {
             OnFinishedPatching += () =>
             {
@@ -36,7 +36,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            return SpriteManager.Get(TechType.MapRoomCamera);
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone2.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
@@ -69,7 +69,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneModuleDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
+        public CyclopsCameraDroneModuleDrill() : base("CyclopsCameraDroneDrill", "Cyclops Mining Camera Drone", "Allows the use of a mining camera drone for the Cyclops, with an attached laser drill. Can be combined and upgraded with exploration drone.")
         {
             OnFinishedPatching += () =>
             {
@@ -87,7 +87,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            return SpriteManager.Get(TechType.MapRoomCamera);
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone1.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
@@ -121,7 +121,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
+        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneCombo", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
         {
             OnFinishedPatching += () =>
             {
@@ -139,8 +139,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            //return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, ".png"));
-            return SpriteManager.Get(TechType.MapRoomCamera);
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone2.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
