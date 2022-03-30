@@ -93,9 +93,12 @@
     <Compile Include="TractorBeamedObject.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="manifest.json" />
     <None Include="mod.json" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icon.png" />
     <Content Include="Assets\CameraDroneModule0.png" />
     <Content Include="Assets\CameraDroneModule1.png" />
     <Content Include="Assets\CameraDroneModule2.png" />

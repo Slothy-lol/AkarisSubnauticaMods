@@ -1,7 +1,10 @@
-## Cyclops Vehicle Bay HUD Icon
+## Cyclops Camera Drone Mod
 
-This mod adds an icon to the Cyclops HUD that shows a docked Seamoth or PRAWN Suit, if one is within the vehicle bay.<br>
+This mod adds the ability to upgrade the Cyclops with its own camera drone.<br>
+The drone can then be upgraded to include a drill, with an extra upgrade for the drill. (Enhances speed.) 
 
-    Needs: QModManager, MoreCyclopsUpgrades-5.2 (and its own dependencies).
-    
-    ThunderStore Page: https://subnautica.thunderstore.io/package/Akari/CyclopsVehicleBayHUDIcon/
+    Needs: QModManager, MoreCyclopUpgrades.
+
+    Contributors: Akari, nagorrogan, Lee23, spartaileo
+
+    ThunderStore Page: To Be Added
