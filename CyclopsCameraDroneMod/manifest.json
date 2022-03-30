@@ -1,0 +1,10 @@
+﻿{
+    "name": "CyclopsCameraDroneMod",
+    "version_number": "1.0.2",
+    "website_url": "https://github.com/Slothy-lol/AkarisSubnauticaMods",
+    "description": "View README for description.",
+    "dependencies": [
+        "Subnautica_Modding-QModManager-4.4.2",
+        "Subnautica_Modding-SMLHelper-2.13.0"
+    ]
+}
