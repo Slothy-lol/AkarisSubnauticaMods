@@ -123,7 +123,9 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
+
                 }
+
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
@@ -282,6 +284,10 @@ namespace CyclopsCameraDroneMod.Main
                     SNCameraRoot.main.SonarPing();
                     timeNextPing = Time.time + 5;
                 }
+                if (Input.GetKeyUp(QMod.Config.shieldKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsShieldModule) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)
+                {
+                    droneInstance.ToggleShield();
+                }
                 if (Input.GetKey(QMod.Config.repairKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
                     Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
@@ -419,18 +425,7 @@ namespace CyclopsCameraDroneMod.Main
                 droneInstance.StopScanSound();
             }
         }
-        public static void HandleEnergyDrain(MapRoomCamera camera, float amount)
-        {
-            EnergyMixin mixin = camera.GetComponent<EnergyMixin>();
-            if(QMod.Config.energyUsageType.Equals("All"))
-            {
-                mixin.ConsumeEnergy(amount);
-            }
-            else if(QMod.Config.energyUsageType.Equals("Some") || QMod.Config.energyUsageType.Equals("None"))
-            {
-                Player.main.currentSub.powerRelay.ConsumeEnergy(amount, out float _);
-            }
-        }
+        
         public static void DrillFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill1, bool hasDrill2)
         {
             if(hasDrill2)
@@ -626,6 +621,19 @@ namespace CyclopsCameraDroneMod.Main
             }
             SkyEnvironmentChanged.Send(pickupable.gameObject, Player.main.GetSkyEnvironment());
             return true;
+        }
+        public static bool HandleEnergyDrain(MapRoomCamera camera, float amount)
+        {
+            EnergyMixin mixin = camera.GetComponent<EnergyMixin>();
+            if(QMod.Config.energyUsageType.Equals("All"))
+            {
+                return mixin.ConsumeEnergy(amount);
+            }
+            else if(QMod.Config.energyUsageType.Equals("Some") || QMod.Config.energyUsageType.Equals("None"))
+            {
+                 return Player.main.currentSub.powerRelay.ConsumeEnergy(amount, out float _);
+            }
+            return false;
         }
 
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]

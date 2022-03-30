@@ -121,7 +121,7 @@ namespace CyclopsCameraDroneMod.Modules
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Camera Drone MK3", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
+        public CyclopsCameraDroneModuleDrillMK2() : base("CyclopsCameraDroneModuleDrillMK2", "Cyclops Ion Camera Drone", "Allows the use of an ion camera drone for the Cyclops, acts as both an exploration and an upgraded mining drone. Can also teleport short distances.")
         {
             OnFinishedPatching += () =>
             {
