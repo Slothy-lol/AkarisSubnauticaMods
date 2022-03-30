@@ -105,10 +105,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "D:\Mods\$(TargetName)"
-mkdir "D:\Mods\$(TargetName)\QMods"
-mkdir "D:\Mods\$(TargetName)\QMods\$(TargetName)"
-copy /Y "$(TargetPath)" "D:\Mods\$(TargetName)\QMods\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "D:\Mods\$(TargetName)\QMods\$(TargetName)\mod.json"</PostBuildEvent>
+    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods"
+mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod"
+mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\CyclopsCameraDroneMod\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod\mod.json"
+copy /Y "$(ProjectDir)\CameraDroneModule0.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod\Assets\CameraDroneModule0.png"
+copy /Y "$(ProjectDir)\CameraDroneModule1.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod\Assets\CameraDroneModule1.png"
+copy /Y "$(ProjectDir)\CameraDroneModule2.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\CyclopsCameraDroneMod\Assets\CameraDroneModule2.png"
+copy /Y "$(ProjectDir)\manifest.json" "C:\Users\snorl\Documents\$(TargetName)\manifest.json"
+copy /Y "$(ProjectDir)\README.md" "C:\Users\snorl\Documents\$(TargetName)\README.md"
+copy /Y "$(ProjectDir)\icon.png" "C:\Users\snorl\Documents\$(TargetName)\icon.png"</PostBuildEvent>
   </PropertyGroup>
 </Project>
