@@ -25,9 +25,9 @@ namespace CyclopsCameraDroneMod.QMods
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDrone().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneIndustry().Patch();
-            new CyclopsCameraDroneMod.Modules.CyclopsCameraDroneUltimate().Patch();
+            new CyclopsCameraDrone().Patch();
+            new CyclopsCameraDroneIndustry().Patch();
+            new CyclopsCameraDroneUltimate().Patch();
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
                 return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDrone.thisTechType, cyclops);
@@ -41,7 +41,10 @@ namespace CyclopsCameraDroneMod.QMods
                 return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneUltimate.thisTechType, cyclops);
             });
         }
-
+        public static void MyInitializationMethod()
+        {
+            MCUServices.Register.CyclopsStatusIcon<HUDIcon.MySubStatus>((SubRoot cyclops) => new HUDIcon.MySubStatus(cyclops));
+        }
     }
     [Menu("Cyclops Camera Drone")]
     public class Config : ConfigFile

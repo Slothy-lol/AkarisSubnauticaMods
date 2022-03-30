@@ -6,9 +6,8 @@ using Sprite = Atlas.Sprite;
 using UnityEngine;
 using SMLHelper.V2.Utility;
 using System.IO;
-using CyclopsCameraDroneMod.Main;
 
-namespace cyclopsVehiclebayHUDIcon
+namespace CyclopsCameraDroneMod.HUDIcon
 {
     internal class MySubStatus : CyclopsStatusIcon
     {
@@ -27,9 +26,9 @@ namespace cyclopsVehiclebayHUDIcon
 
         public override string StatusText()
         {
-            if (Time.time < Main.timeNextUseDrone)
+            if (Time.time < Main.Main.timeNextUseDrone)
             {
-                return $"Time until next use: {Main.timeNextUseDrone - Time.time}.";
+                return $"Time until next use: {Main.Main.timeNextUseDrone - Time.time}.";
             }
             else
                 return "Drone Ready.";
@@ -37,24 +36,12 @@ namespace cyclopsVehiclebayHUDIcon
 
         public override Color StatusTextColor()
         {
-            if (Time.time < Main.timeNextUseDrone)
+            if (Time.time < Main.Main.timeNextUseDrone)
             {
                 return Color.red;
             }
             else
                 return Color.white;
-        }
-    }
-
-    // Your main patching class must have the QModCore attribute (and must be public)
-    [QModCore]
-    public static class MyInitializerClass
-    {
-        // Your patching method must have the QModPatch attribute (and must be public)
-        [QModPatch]
-        public static void MyInitializationMethod()
-        {
-            MCUServices.Register.CyclopsStatusIcon<MySubStatus>((SubRoot cyclops) => new MySubStatus(cyclops));
         }
     }
 }
