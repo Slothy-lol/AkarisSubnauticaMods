@@ -21,7 +21,7 @@ namespace CyclopsCameraDroneMod.HUDIcon
 
         public override Sprite StatusSprite()
         {
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone0.png"));
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule0.png"));
         }
 
         public override string StatusText()
