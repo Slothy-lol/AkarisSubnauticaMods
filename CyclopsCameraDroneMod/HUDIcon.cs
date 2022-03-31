@@ -18,11 +18,11 @@ namespace cyclopsVehiclebayHUDIcon
         }
 
         public override bool ShowStatusIcon => true;
-        string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+        readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override Sprite StatusSprite()
         {
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone0.png"));
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule0.png"));
         }
 
         public override string StatusText()
@@ -43,18 +43,6 @@ namespace cyclopsVehiclebayHUDIcon
             }
             else
                 return Color.white;
-        }
-    }
-
-    // Your main patching class must have the QModCore attribute (and must be public)
-    [QModCore]
-    public static class MyInitializerClass
-    {
-        // Your patching method must have the QModPatch attribute (and must be public)
-        [QModPatch]
-        public static void MyInitializationMethod()
-        {
-            MCUServices.Register.CyclopsStatusIcon<MySubStatus>((SubRoot cyclops) => new MySubStatus(cyclops));
         }
     }
 }

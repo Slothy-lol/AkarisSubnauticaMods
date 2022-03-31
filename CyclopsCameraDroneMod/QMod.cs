@@ -1,4 +1,5 @@
 using CyclopsCameraDroneMod.Modules;
+using cyclopsVehiclebayHUDIcon;
 using HarmonyLib;
 using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.Upgrades;
@@ -40,6 +41,7 @@ namespace CyclopsCameraDroneMod.QMods
             {
                 return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneUltimate.thisTechType, cyclops);
             });
+            MCUServices.Register.CyclopsStatusIcon<MySubStatus>((SubRoot cyclops) => new MySubStatus(cyclops));
         }
 
     }
@@ -64,8 +66,6 @@ namespace CyclopsCameraDroneMod.QMods
         [Keybind("Shield Key", Tooltip = "When using the ion cyclops drone, press this key to activate A shield. Only fuctions if the cyclops shield module is present.")]
         public KeyCode shieldKey = KeyCode.Z;
 
-        [Toggle("Infinite Distance", Tooltip = "When enabled, there will be no limit on the Cyclops Camera Drone's range.")]
-        public bool InfiniteDistance = false;
         /*Too lazy to make this. Shouldn't be hard, just more work than I care to put in for something I don't care about.
         [Toggle("Prioritize Player Inventory", Tooltip = "If checked, will priotize putting items into the players inventory first and then the cyclops lockers second. if unchecked, uses cyclops lockers first.")]
         public bool useInventory = false;
@@ -97,5 +97,7 @@ namespace CyclopsCameraDroneMod.QMods
         public bool autoSonar = false;
         public bool fuckAutoStabilization = false;
         public KeyCode drone2Key = KeyCode.L;
+        public bool infiniteDistance = false;
+        public bool variableEnergyDrain = true;
     }
 }

@@ -36,7 +36,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone2.png"));
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule0.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
@@ -87,7 +87,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone1.png"));
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule1.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
@@ -139,7 +139,7 @@ namespace CyclopsCameraDroneMod.Modules
         public override QuickSlotType QuickSlotType => QuickSlotType.None;
         protected override Sprite GetItemSprite()
         {
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CyclopsCameraDrone2.png"));
+            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule2.png"));
         }
 
         protected override RecipeData GetBlueprintRecipe()
