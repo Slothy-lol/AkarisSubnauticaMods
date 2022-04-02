@@ -66,7 +66,8 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if(Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
+
+                if (Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
                 {
                     CoroutineHost.StartCoroutine(CreateAndControl(__instance));
                     tempCooldown = false;
@@ -242,6 +243,7 @@ namespace CyclopsCameraDroneMod.Main
 
                 if(Input.GetKeyUp(QMod.Config.beaconKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration)) // Beacon placement
                 {
+                    
                     BeaconFunctionality(__instance);
                 }
                 if(Input.GetKeyUp(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule) && Time.time >= timeNextPing)
@@ -301,6 +303,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (Input.GetKey(QMod.Config.scanKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
+
                     Targeting.GetTarget(__instance.gameObject, 20, out var gameObject4, out float distance);
                     PDAScanner.scanTarget.gameObject = gameObject4;
                     PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
@@ -335,7 +338,7 @@ namespace CyclopsCameraDroneMod.Main
                     }
                     
                     if(Input.GetKeyUp(QMod.Config.teleportKey) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)//key pressed and has ion drill
-                    { 
+                    {
                         if (Time.time >= timeNextTeleport || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //checks for cooldown being over
                         {//if in creative or using no cost, no teleport cooldown and can teleport through objects. Mostly for my own testing purposes plus fucking around for funsies
                             if (!Targeting.GetTarget(__instance.gameObject, 15, out GameObject _, out float distance) || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //Checks for object in way of teleporting
@@ -664,31 +667,30 @@ namespace CyclopsCameraDroneMod.Main
                     }
                     else
                     {
-                        Vector3 b = currentSub.transform.position;
-                        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, b, Time.deltaTime * 5f);
-                        if(Vector3.Distance(gameObject.transform.position, b) < 3f)
+                        Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
+                        if (pickupable)
                         {
-                            Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
-                            if(pickupable)
+                            ItemsContainer freeContainer = null;
+                            CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
+                            foreach (CyclopsLocker locker in cyclopsLockers)
                             {
-                                CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
-                                foreach(CyclopsLocker locker in cyclopsLockers)
+                                ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
+                                if (cyclopsContainer.HasRoomFor(pickupable))
                                 {
-                                    ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
-                                    if (cyclopsContainer.HasRoomFor(pickupable))
-                                    {
-                                        string arg = Language.main.Get(pickupable.GetTechName());
-                                        ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
-                                        uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
-                                        pickupable = pickupable.Initialize();
-                                        InventoryItem item = new InventoryItem(pickupable);
-                                        cyclopsContainer.UnsafeAdd(item);
-                                        pickupable.PlayPickupSound();
-
-                                        list.Add(gameObject);
-                                        break;
-                                    }
+                                    freeContainer = cyclopsContainer;
+                                    break;
                                 }
+                            }
+                            if (freeContainer != null)
+                            {
+                                string arg = Language.main.Get(pickupable.GetTechName());
+                                ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
+                                uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
+                                pickupable = pickupable.Initialize();
+                                InventoryItem item = new InventoryItem(pickupable);
+                                freeContainer.UnsafeAdd(item);
+                                pickupable.PlayPickupSound();
+                                list.Add(gameObject);
                             }
                         }
                     }
