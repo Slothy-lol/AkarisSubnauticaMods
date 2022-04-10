@@ -380,7 +380,7 @@ namespace CyclopsCameraDroneMod.Main
 
         public static void HandleSFX()
         {
-            if(Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
+            if(Time.time > timeLastDrill + 0.5f && droneInstance.drillSoundPlaying) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
             {
                 droneInstance.StopDrillSound();
             }
@@ -389,7 +389,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartMineSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.mineSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopMineSound();
             }
@@ -398,7 +398,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartTractorBeamSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.tractorSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopTractorBeamSound();
             }
@@ -407,7 +407,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartRepairSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.repairSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopRepairSound();
             }
@@ -416,7 +416,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartScanSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.scanSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopScanSound();
             }
@@ -682,12 +682,16 @@ namespace CyclopsCameraDroneMod.Main
             }
         }
 
+
+        /*Couldn't get to work well, ignore for now
         [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.UpdateDistanceText))]
         [HarmonyPostfix]
         public static void DisplayEnergyDrain(uGUI_CameraDrone __instance)
         {
             __instance.textDistance.text = string.Format("<color=#6EFEFFFF>{0}</color> <size=26>{1} {2}</size>", __instance.stringDistance, "F", (__instance.distance >= 0) ? IntStringCache.GetStringForInt(__instance.distance) : "--", __instance.stringMeterSuffix, "\n", "Hello, World!", ":", "0.66666");
         }
+
+        */
 
         [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
         [HarmonyPrefix]
