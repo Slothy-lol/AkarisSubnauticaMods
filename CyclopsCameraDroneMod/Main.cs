@@ -17,12 +17,13 @@ namespace CyclopsCameraDroneMod.Main
     {
         //TODO
         //add scanning functionality -- Done
-        //Improve scanning functionality, it sucks dick
+        //Improve scanning functionality, it sucks dick - partly done, shows icon and sound works, but still sometimes(almost always) doesn't delete fragment
         //add way to pick up items -- done
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
         //more shit I guess, idk
         //command for all modules
+        //improve repairing similar to scanning - done, but icon turns green instead of blue for some reason
 
         public static string cameraObjectName = "CyclopsDroneCamera";
 
@@ -241,6 +242,13 @@ namespace CyclopsCameraDroneMod.Main
                 return false;
             }
 
+            [HarmonyPatch(typeof(uGUI_ScannerIcon), nameof(uGUI_ScannerIcon.Awake))]
+            [HarmonyPostfix]
+            public static void PostFix(uGUI_ScannerIcon __instance)
+            {
+                __instance.gameObject.EnsureComponent<uGUI_RepairToolIcon>();
+            }
+
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance) //no longer just get's target, now also works keybinds
@@ -282,33 +290,7 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (Input.GetKey(QMod.Config.repairKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
-                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
-                    LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
-                    if (liveMixin && Time.time >= timeLastRepair + 0.5f)
-                    {
-                        if (liveMixin.IsWeldable())
-                        {
-                            liveMixin.AddHealth(10);
-                            HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
-                            if (!liveMixin.IsFullHealth())
-                            {
-                                timeLastRepair = Time.time;
-                            }
-                        }
-                        else
-                        {
-                            WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
-                            if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
-                            {
-                                liveMixin.AddHealth(10);
-                                HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
-                                if (!liveMixin.IsFullHealth())
-                                {
-                                    timeLastRepair = Time.time;
-                                }
-                            }
-                        }
-                    }
+                    RepairFunctionality(__instance);
                 }
                 if (Input.GetKey(QMod.Config.scanKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
@@ -363,7 +345,7 @@ namespace CyclopsCameraDroneMod.Main
                     */
                 }
                 HandleSFX();
-                CheckScan(__instance);
+                CheckTarget(__instance);//handles icon changes for scanning and repairing, can't think of better name
 
                 float magnitude = __instance.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
                 if (QMod.Config.energyUsageType.Equals("None"))
@@ -429,28 +411,47 @@ namespace CyclopsCameraDroneMod.Main
                 droneInstance.StopScanSound();
             }
         }
-        public static void CheckScan(MapRoomCamera __instance)
+        public static void CheckTarget(MapRoomCamera __instance)
         {
-            if (droneInstance.droneType == CyclopsDroneType.Mining) return;
+            if (!Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance)) return;//no point in the rest if there's no object
 
-            if (!Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance)) return;
-
-            PDAScanner.scanTarget.gameObject = gameObject;
-            PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject);
-
-            if (PDAScanner.scanTarget.isValid && PDAScanner.CanScan() == PDAScanner.Result.Scan && !PDAScanner.scanTarget.isPlayer)
+            if (droneInstance.droneType != CyclopsDroneType.Mining)//is exploration or combo drone
             {
-                float progress = PDAScanner.scanTarget.progress;
-                float vanilRed = droneInstance.vanillaColor.r;
-                float vanilGreen = droneInstance.vanillaColor.g;
-                float vanilBlue = droneInstance.vanillaColor.b;
+                //handles scan icon shit
+                PDAScanner.scanTarget.gameObject = gameObject;
+                PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject);
 
-                float red = Mathf.Lerp(vanilRed, 1, progress);
-                float green = Mathf.Lerp(vanilGreen, 0, progress);
-                float blue = Mathf.Lerp(vanilBlue, 0, progress);
+                if (PDAScanner.scanTarget.isValid && PDAScanner.CanScan() == PDAScanner.Result.Scan && !PDAScanner.scanTarget.isPlayer)
+                {
+                    float progress = PDAScanner.scanTarget.progress;
+                    float vanilRed = droneInstance.vanillaColor.r;
+                    float vanilGreen = droneInstance.vanillaColor.g;
+                    float vanilBlue = droneInstance.vanillaColor.b;
 
-                Color color = new Color(red, green, blue);
-                droneInstance.ScannerIconFunction(1 - progress, color);
+                    float red = Mathf.Lerp(vanilRed, 1, progress);
+                    float green = Mathf.Lerp(vanilGreen, 0, progress);
+                    float blue = Mathf.Lerp(vanilBlue, 0, progress);
+
+                    Color color = new Color(red, green, blue);
+                    droneInstance.ScannerIconFunction(1 - progress, color);
+                }
+
+                //handles repair icon shit
+                LiveMixin liveMixin = gameObject.GetComponentInParent<LiveMixin>();
+                if (liveMixin != null && liveMixin.IsWeldable()) 
+                {
+                    float healthPercentage = liveMixin.GetHealthFraction();
+                    float vanilRed = droneInstance.vanillaColor.r;
+                    float vanilGreen = droneInstance.vanillaColor.g;
+                    float vanilBlue = droneInstance.vanillaColor.b;
+
+                    float red = Mathf.Lerp(1, vanilRed, healthPercentage);
+                    float green = Mathf.Lerp(0, vanilGreen, healthPercentage);
+                    float blue = Mathf.Lerp(0, vanilBlue, healthPercentage);
+
+                    Color color = new Color(red, green, blue);
+                    droneInstance.RepairIconFunction(healthPercentage, color);
+                }
             }
         }
         public static void DrillFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill1, bool hasDrill2)
@@ -541,6 +542,52 @@ namespace CyclopsCameraDroneMod.Main
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 { 
                     droneInstance.PlayScanEndSound();
+                    /*
+                     * tried to make absolutely certain the object scanned was deleted
+                     * didn't work
+                    if (!PDAScanner.scanTarget.isPlayer && gameObject4 != null)
+                    {
+                        UnityEngine.Object.Destroy(gameObject4);
+                        PDAScanner.scanTarget.Invalidate();
+                        string uid = PDAScanner.scanTarget.uid;
+                        bool hasUID = PDAScanner.scanTarget.hasUID;
+                        if (hasUID)
+                        {
+                            PDAScanner.fragments.Remove(uid);
+                        }
+                    }
+                    */
+                }
+            }
+        }
+
+        public static void RepairFunctionality(MapRoomCamera __instance)
+        {
+            Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
+            LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
+            if (liveMixin && Time.time >= timeLastRepair + 0.5f)
+            {
+                if (liveMixin.IsWeldable())
+                {
+                    liveMixin.AddHealth(10);
+                    HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                    if (!liveMixin.IsFullHealth())
+                    {
+                        timeLastRepair = Time.time;
+                    }
+                }
+                else
+                {
+                    WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
+                    if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
+                    {
+                        liveMixin.AddHealth(10);
+                        HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                        if (!liveMixin.IsFullHealth())
+                        {
+                            timeLastRepair = Time.time;
+                        }
+                    }
                 }
             }
         }
@@ -735,7 +782,6 @@ namespace CyclopsCameraDroneMod.Main
         {
             __instance.textDistance.text = string.Format("<color=#6EFEFFFF>{0}</color> <size=26>{1} {2}</size>", __instance.stringDistance, "F", (__instance.distance >= 0) ? IntStringCache.GetStringForInt(__instance.distance) : "--", __instance.stringMeterSuffix, "\n", "Hello, World!", ":", "0.66666");
         }
-
         */
 
         [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]

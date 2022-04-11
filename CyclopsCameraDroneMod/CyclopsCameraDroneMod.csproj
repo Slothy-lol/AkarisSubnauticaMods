@@ -89,6 +89,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QMod.cs" />
+    <Compile Include="RepairToolIcon.cs" />
     <Compile Include="TractorBeam.cs" />
     <Compile Include="TractorBeamedObject.cs" />
   </ItemGroup>

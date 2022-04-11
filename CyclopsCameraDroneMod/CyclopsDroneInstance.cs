@@ -315,6 +315,13 @@ namespace CyclopsCameraDroneMod.droneInstance
         {
             uGUI_ScannerIcon icon = uGUI_ScannerIcon.main;
             icon.Show();
+            //icon.SetAlpha(alpha);
+            icon.icon.SetBackgroundColors(color, color, color);
+        }
+        public void RepairIconFunction(float alpha, Color color)
+        {
+            uGUI_RepairToolIcon icon = uGUI_RepairToolIcon.main;
+            icon.Show();
             icon.SetAlpha(alpha);
             icon.icon.SetBackgroundColors(color, color, color);
         }
