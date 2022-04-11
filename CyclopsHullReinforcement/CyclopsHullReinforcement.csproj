@@ -73,5 +73,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QMods.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="mod.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir "D:\Mods\$(TargetName)"
+copy /Y "$(TargetPath)" "D:\Mods\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "D:\Mods\$(TargetName)\mod.json"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
