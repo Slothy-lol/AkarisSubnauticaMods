@@ -64,7 +64,7 @@ namespace CyclopsCameraDroneMod.QMods
         public KeyCode sonarKey = KeyCode.Z;
 
         [Keybind("Shield Key", Tooltip = "When using the ion cyclops drone, press this key to activate A shield. Only fuctions if the cyclops shield module is present.")]
-        public KeyCode shieldKey = KeyCode.Z;
+        public KeyCode shieldKey = KeyCode.K;
 
         /*Too lazy to make this. Shouldn't be hard, just more work than I care to put in for something I don't care about.
         [Toggle("Prioritize Player Inventory", Tooltip = "If checked, will priotize putting items into the players inventory first and then the cyclops lockers second. if unchecked, uses cyclops lockers first.")]

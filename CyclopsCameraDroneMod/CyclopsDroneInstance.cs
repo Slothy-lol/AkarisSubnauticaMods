@@ -64,6 +64,9 @@ namespace CyclopsCameraDroneMod.droneInstance
         public bool tractorSoundPlaying = false;
         public bool repairSoundPlaying = false;
         public bool scanSoundPlaying = false;
+
+        public Color vanillaColor;
+
         private void Start()
         {
             drillEmitter = AddLoopingEmitter(drillLoopSound);
@@ -95,8 +98,9 @@ namespace CyclopsCameraDroneMod.droneInstance
             shieldFX.gameObject.transform.parent = transform;
 
             shieldFX.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        }
 
+            vanillaColor = uGUI_ScannerIcon.main.icon.backgroundColorNormal;
+        }
         private FMOD_CustomLoopingEmitter AddLoopingEmitter(FMODAsset asset)
         {
             var emitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -306,6 +310,13 @@ namespace CyclopsCameraDroneMod.droneInstance
             {
                 StartShield();
             }
+        }
+        public void ScannerIconFunction(float alpha, Color color)
+        {
+            uGUI_ScannerIcon icon = uGUI_ScannerIcon.main;
+            icon.Show();
+            icon.SetAlpha(alpha);
+            icon.icon.SetBackgroundColors(color, color, color);
         }
     }
 }
