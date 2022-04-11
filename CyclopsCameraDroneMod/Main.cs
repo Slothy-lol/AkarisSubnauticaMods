@@ -492,6 +492,66 @@ namespace CyclopsCameraDroneMod.Main
             }
         }
 
+        public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
+        {
+            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
+
+            PrefabIdentifier Identifier = gameObject1.GetComponentInParent<PrefabIdentifier>();
+            if (Identifier == null) return;
+            GameObject gameObject4 = Identifier.gameObject;
+
+            PDAScanner.scanTarget.gameObject = gameObject4;
+            PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
+
+            HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
+
+            PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;
+            if (scanTarget.isValid && mapRoomCamera.energyMixin.charge > 0f)
+            {
+                PDAScanner.Result result = PDAScanner.Scan();
+                if (result == PDAScanner.Result.Scan)
+                {
+                    float amount = 0.5f * Time.deltaTime;
+                    HandleEnergyDrain(mapRoomCamera, amount);
+                    timeLastScan = Time.time;
+                }
+                else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
+                { 
+                    droneInstance.PlayScanEndSound();
+                }
+            }
+        }
+
+        public static void RepairFunctionality(MapRoomCamera __instance)
+        {
+            Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
+            LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
+            if (liveMixin && Time.time >= timeLastRepair + 0.5f)
+            {
+                if (liveMixin.IsWeldable())
+                {
+                    liveMixin.AddHealth(10);
+                    HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                    if (!liveMixin.IsFullHealth())
+                    {
+                        timeLastRepair = Time.time;
+                    }
+                }
+                else
+                {
+                    WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
+                    if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
+                    {
+                        liveMixin.AddHealth(10);
+                        HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
+                        if (!liveMixin.IsFullHealth())
+                        {
+                            timeLastRepair = Time.time;
+                        }
+                    }
+                }
+            }
+        }
         public static void BeaconFunctionality(MapRoomCamera mapRoomCamera)
         {
             SubRoot currentSub = Player.main.currentSub;
