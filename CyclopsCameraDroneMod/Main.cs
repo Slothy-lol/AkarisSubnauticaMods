@@ -520,7 +520,6 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
-
         public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
         {
             if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject4, out float distance)) return;
@@ -714,7 +713,7 @@ namespace CyclopsCameraDroneMod.Main
                 StarshipDoor door = gameObject.GetComponentInParent<StarshipDoor>();
                 if (door != null && Time.time >= timeNextDoor) { door.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
                 SupplyCrate crate = gameObject.GetComponentInParent<SupplyCrate>();
-                if (crate != null && Time.time >= timeNextDoor) { door.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
+                if (door != null && Time.time >= timeNextDoor) { crate.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
             }
 
             return;
