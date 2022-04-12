@@ -13,7 +13,5 @@ This is a port of More Engine Efficiency Modules for SN1, with slight changes so
     The MK2 and MK3 are crafted at a modification station after unlocking the vehicle upgrade console, while the MK1 can be crafted at the PRAWN Suit tab in either the fabricator or the Vehicle Upgrade Console in a moonpool.
     
     Needs: SMLHelper, QModManager.
-    
-    ThunderStore Page: https://belowzero.thunderstore.io/package/Akari/More_Engine_Efficiency_Modules_BZ/
-    
-    To use with Upgraded Vehicles, please go to the Subnautica Modding Server and ping me: "Akari - アカリ#1302" for more information.
+
+    Currently incompatible with the mod "Upgraded Vehicles".

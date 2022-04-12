@@ -48,8 +48,8 @@ namespace CyclopsHullReinforcement.Module
                     Ingredients = new List<Ingredient>(new Ingredient[]
                         {
                             new Ingredient(TechType.VehicleArmorPlating, 1),
-                            new Ingredient(TechType.TitaniumIngot, 1),
-                            new Ingredient(TechType.WiringKit, 1)
+                            new Ingredient(TechType.PlasteelIngot, 1),
+                            new Ingredient(TechType.AdvancedWiringKit, 1)
                         }
                     )
                 };
@@ -64,7 +64,7 @@ namespace CyclopsHullReinforcement.Module
         }
         internal class CyclopsHullReinforcmentUpgradeHandler : UpgradeHandler
         {
-            public CyclopsHullReinforcmentUpgradeHandler(SubRoot cyclops) : base(CyclopsHullReinforcement.thisTechType, cyclops)
+            public CyclopsHullReinforcmentUpgradeHandler(TechType Module, SubRoot cyclops) : base(Module, cyclops)
             {
             }
         }
