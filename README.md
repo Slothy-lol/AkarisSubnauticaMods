@@ -65,3 +65,15 @@ The drone comes in 3 versions: Exploration, Industrial, Ultimate.<br>
     Contributors: Akari, nagorrogan, Lee23, spartaileo
 
     ThunderStore Page: To Be Added
+
+## Cyclops Hull Reinforcement Mod
+
+    This mod adds a Cyclops Hull Reinforcement Module, which halves all damage to the Cyclops while equipped.
+
+    ID: CyclopsArmorPlating
+
+    Crafted at the Cyclops Fabricator.
+
+    Needs: SMLHelper, QModManager, MoreCyclopsUpgrades.
+
+ThunderStore Page: To Be Added.
