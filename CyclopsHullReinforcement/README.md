@@ -1,6 +1,6 @@
 ## Cyclops Hull Reinforcement Mod
 
-This mod adds a Cyclops Hull Reinforcement Module, which halves all damage to the Cyclops while equipped.
+This mod adds a Cyclops Hull Reinforcement Module, which halves all damage to the Cyclops while equipped.<br>
 
   ID: CyclopsArmorPlating
 
