@@ -17,7 +17,7 @@ namespace CyclopsCameraDroneMod.HUDIcon
         }
 
         public override bool ShowStatusIcon => true;
-        string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+        readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override Sprite StatusSprite()
         {

@@ -7,22 +7,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CyclopsCameraDroneMod.Main;
 using CyclopsCameraDroneMod.QMods;
+using System.Collections;
 
 namespace CyclopsCameraDroneMod.droneInstance
 {
     public class CyclopsDroneInstance : MonoBehaviour
     {
-        private static FMODAsset deployBeaconSound = Helpers.GetFmodAsset("event:/sub/cyclops/load_decoy");
-        private static FMODAsset drillLoopSound = Helpers.GetFmodAsset("event:/tools/gravsphere/loop_actual");
-        private static FMODAsset mineEmitterLoopSound = Helpers.GetFmodAsset("event:/sub/exo/drill_hit_loop");
-        private static FMODAsset tractorBeamLoopSound = Helpers.GetFmodAsset("event:/sub/rocket/call_lift_loop");
-        private static FMODAsset sonarSound = Helpers.GetFmodAsset("event:/sub/seamoth/sonar_loop");
+        private static readonly FMODAsset deployBeaconSound = Helpers.GetFmodAsset("event:/sub/cyclops/load_decoy");
+        private static readonly FMODAsset drillLoopSound = Helpers.GetFmodAsset("event:/tools/gravsphere/loop_actual");
+        private static readonly FMODAsset mineEmitterLoopSound = Helpers.GetFmodAsset("event:/sub/exo/drill_hit_loop");
+        private static readonly FMODAsset tractorBeamLoopSound = Helpers.GetFmodAsset("event:/sub/rocket/call_lift_loop");
+        private static readonly FMODAsset sonarSound = Helpers.GetFmodAsset("event:/sub/seamoth/sonar_loop");
 
-        private static FMODAsset repairEndSound = Helpers.GetFmodAsset("event:/tools/welder/weld_end");
-        private static FMODAsset repairLoop = Helpers.GetFmodAsset("event:/tools/welder/weld_loop");
+        private static readonly FMODAsset repairEndSound = Helpers.GetFmodAsset("event:/tools/welder/weld_end");
+        private static readonly FMODAsset repairLoop = Helpers.GetFmodAsset("event:/tools/welder/weld_loop");
 
-        private static FMODAsset scanEndSound = Helpers.GetFmodAsset("event:/tools/scanner/scan_complete");
-        private static FMODAsset scanLoop = Helpers.GetFmodAsset("event:/tools/scanner/scan_loop");
+        private static readonly FMODAsset scanEndSound = Helpers.GetFmodAsset("event:/tools/scanner/scan_complete");
+        private static readonly FMODAsset scanLoop = Helpers.GetFmodAsset("event:/tools/scanner/scan_loop");
 
         //read only because I was annoyed at the messages appearing telling me to. Shouldn't change anything, if it breaks blame Lee not me. Why Lee? Because
 
@@ -58,6 +59,14 @@ namespace CyclopsCameraDroneMod.droneInstance
         private FMODAsset shield_on_loop;
         private FMOD_CustomEmitter sfx;
 
+        public bool drillSoundPlaying = false;
+        public bool mineSoundPlaying = false;
+        public bool tractorSoundPlaying = false;
+        public bool repairSoundPlaying = false;
+        public bool scanSoundPlaying = false;
+
+        public Color vanillaColor;
+
         private void Start()
         {
             drillEmitter = AddLoopingEmitter(drillLoopSound);
@@ -89,8 +98,9 @@ namespace CyclopsCameraDroneMod.droneInstance
             shieldFX.gameObject.transform.parent = transform;
 
             shieldFX.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        }
 
+            vanillaColor = uGUI_ScannerIcon.main.icon.backgroundColorNormal;
+        }
         private FMOD_CustomLoopingEmitter AddLoopingEmitter(FMODAsset asset)
         {
             var emitter = gameObject.AddComponent<FMOD_CustomLoopingEmitter>();
@@ -103,38 +113,50 @@ namespace CyclopsCameraDroneMod.droneInstance
         public void StartDrillSound()
         {
             drillEmitter.Play();
+            drillSoundPlaying = true;
         }
 
         public void StopDrillSound()
         {
             drillEmitter.Stop();
+            drillSoundPlaying = false;
         }
 
         public void StartMineSound()
         {
             mineEmitter.Play();
+            mineSoundPlaying = true;
         }
 
         public void StopMineSound()
         {
             mineEmitter.Stop();
+            mineSoundPlaying = false;
         }
 
         public void StartTractorBeamSound()
         {
             tractorBeamEmitter.Play();
+            tractorSoundPlaying = true;
         }
 
         public void StopTractorBeamSound()
         {
             tractorBeamEmitter.Stop();
+            tractorSoundPlaying = false;
         }
 
         public void PlaySonarSound()
         {
             Utils.PlayFMODAsset(sonarSound, transform.position);
         }
-
+        public IEnumerator DashVFXCoroutine(float duration = 0.25f)
+        {
+            TeleportScreenFXController fxController = MainCamera.camera.GetComponent<TeleportScreenFXController>();
+            //fxController.StartTeleport();
+            yield return new WaitForSeconds(duration);
+            fxController.StopTeleport();
+        }
         public void PlayBeaconSound()
         {
             Utils.PlayFMODAsset(deployBeaconSound, transform.position - transform.forward);
@@ -142,11 +164,13 @@ namespace CyclopsCameraDroneMod.droneInstance
         public void StartRepairSound()
         {
             repairEmitter.Play();
+            repairSoundPlaying = true;
         }
 
         public void StopRepairSound()
         {
             repairEmitter.Stop();
+            repairSoundPlaying = false;
         }
 
         public void PlayRepairEnd()
@@ -156,11 +180,13 @@ namespace CyclopsCameraDroneMod.droneInstance
         public void StartScanSound()
         {
             scanEmitter.Play();
+            scanSoundPlaying = true;
         }
 
         public void StopScanSound()
         {
             scanEmitter.Stop();
+            scanSoundPlaying = false;
         }
 
         public void PlayScanEndSound()
@@ -239,7 +265,7 @@ namespace CyclopsCameraDroneMod.droneInstance
             }
         }
 
-        public static bool HandleEnergyDrain(MapRoomCamera camera, float amount)
+        public static bool HandleEnergyDrain(MapRoomCamera camera, float amount) //here because I couldn't access the one in main
         {
             EnergyMixin mixin = camera.GetComponent<EnergyMixin>();
             if (QMod.Config.energyUsageType.Equals("All"))
@@ -284,6 +310,20 @@ namespace CyclopsCameraDroneMod.droneInstance
             {
                 StartShield();
             }
+        }
+        public void ScannerIconFunction(float alpha, Color color)
+        {
+            uGUI_ScannerIcon icon = uGUI_ScannerIcon.main;
+            icon.Show();
+            //icon.SetAlpha(alpha);
+            icon.icon.SetBackgroundColors(color, color, color);
+        }
+        public void RepairIconFunction(float alpha, Color color)
+        {
+            uGUI_RepairToolIcon icon = uGUI_RepairToolIcon.main;
+            icon.Show();
+            icon.SetAlpha(alpha);
+            icon.icon.SetBackgroundColors(color, color, color);
         }
     }
 }

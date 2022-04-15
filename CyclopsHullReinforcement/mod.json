@@ -1,0 +1,17 @@
+{
+  "Id": "CyclopsHR",
+  "DisplayName": "Cyclops Hull Reinforcement Mod",
+  "Author": "Akari The Sloth",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "CyclopsHullReinforcement.dll",
+  "VersionDependencies": {
+    "SMLHelper": "2.9.6",
+    "MoreCyclopsUpgrades": "5.2.0"
+  },
+  "VersionChecker": {
+    "LatestVersionURL": "https://github.com/Slothy-lol/AkarisSubnauticaMods/raw/main/CyclopsHullReinforcement/mod.json"
+  },
+  "Game": "Subnautica"
+}
+

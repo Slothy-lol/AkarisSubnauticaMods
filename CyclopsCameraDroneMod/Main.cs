@@ -8,6 +8,7 @@ using UnityEngine;
 using UWE;
 using Logger = QModManager.Utility.Logger;
 using CyclopsCameraDroneMod.droneInstance;
+using static CyclopsCameraDroneMod.droneInstance.CyclopsDroneInstance;
 
 namespace CyclopsCameraDroneMod.Main
 {
@@ -15,23 +16,23 @@ namespace CyclopsCameraDroneMod.Main
     public class Main
     {
         //TODO
-        //add scanning functionality
-        //add way to pick up items
+        //add scanning functionality -- Done
+        //Improve scanning functionality, it sucks dick - partly done, shows icon and sound works, but still sometimes(almost always) doesn't delete fragment
+        //add way to pick up items -- done
         //add new cool shit, what all exactly this entails is for you to decide and then DM me with.
         //add speed upgrades for all drones somehow, they too fuckin slow
         //more shit I guess, idk
         //command for all modules
-        //TELEPORTATION! HELL YEA!
-        //No seriously, solves problem of being too slow and is more cool shit. Just do it
-        //sonar for drones
+        //improve repairing similar to scanning - done, but icon turns green instead of blue for some reason
 
         public static string cameraObjectName = "CyclopsDroneCamera";
 
         public static float drillCooldownLength = 1f;
-        public static float useDroneCooldownLength = 90f;
+        public static float useDroneCooldownLength = 100f; //changed to 100 seconds to fit better with the energy recharge time
         public static float defaultBeamWidth = 0.15f;
 
         public static bool sonarActive = false;
+        public static float energyAmount = 100;
 
         public static float timeLastDrill;
         public static float timeLastMineResource;
@@ -67,7 +68,8 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     return;
                 }
-                if(Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
+
+                if (Input.GetKeyUp(droneButton) && Time.time >= timeNextUseDrone)
                 {
                     CoroutineHost.StartCoroutine(CreateAndControl(__instance));
                     tempCooldown = false;
@@ -104,6 +106,7 @@ namespace CyclopsCameraDroneMod.Main
                 droneInstance = cyclopsCameraDrone.gameObject.AddComponent<CyclopsDroneInstance>();
                 LargeWorldStreamer.main.cellManager.UnregisterEntity(cyclopsCameraDrone.gameObject);
                 cyclopsCameraDrone.GetComponent<Pickupable>().isPickupable = false;
+                cyclopsCameraDrone.GetComponent<EcoTarget>().SetTargetType(EcoTargetType.Shark);
 
                 SubRoot sub = Player.main.currentSub;
                 if(sub)
@@ -131,6 +134,7 @@ namespace CyclopsCameraDroneMod.Main
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
                 battery.gameObject.transform.parent = cyclopsCameraDrone.gameObject.transform;
+                cyclopsCameraDrone.energyMixin.ConsumeEnergy( 100f - energyAmount);
 
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
                 __instance.ExitCamera(); //happy Lee?
@@ -193,33 +197,13 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     float healthFraction = __instance.GetComponent<LiveMixin>().GetHealthFraction();
                     timeNextUseDrone = Time.time + (useDroneCooldownLength * (1f - healthFraction));
+                    energyAmount = __instance.energyMixin.charge;
+                    CoroutineHost.StartCoroutine(RefillEnergy());
                     GameObject.Destroy(__instance.gameObject);
+                    uGUI_ScannerIcon.main.icon.backgroundColorNormal = droneInstance.vanillaColor;
                 }
                 return false;
             }
-            /*
-            LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
-			if(liveMixin)
-			{
-				if(liveMixin.IsWeldable())
-				{
-					liveMixin.AddHealth(5);
-				}
-				else
-				{
-					WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
-					if(weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
-					{
-						liveMixin.AddHealth(5);
-					}
-				}
-			}
-
-            Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject4, out float distance);
-            PDAScanner.scanTarget.gameObject = gameObject4;
-            PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
-            PDAScanner.Scan();
-            */
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.StabilizeRoll))]
             [HarmonyPrefix]
             public static bool StabilizeRolePatch()
@@ -234,7 +218,7 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
-                if(__instance.name == cameraObjectName && !QMod.Config.InfiniteDistance)
+                if(__instance.name == cameraObjectName && !QMod.Config.infiniteDistance)
                 {
                     __result = (Player.main.transform.position - __instance.transform.position).magnitude;
                 }
@@ -250,6 +234,20 @@ namespace CyclopsCameraDroneMod.Main
                     Player.main.EnterLockedMode(null);
                 }
             }
+            [HarmonyPatch(typeof(StasisSphere), nameof(StasisSphere.Freeze))]
+            [HarmonyPrefix]
+            public static bool UnfreezeCameraDrone(Collider other)
+            {
+                if (other == null || other.gameObject == null || other.gameObject.GetComponent<MapRoomCamera>() == null) return true;
+                return false;
+            }
+
+            [HarmonyPatch(typeof(uGUI_ScannerIcon), nameof(uGUI_ScannerIcon.Awake))]
+            [HarmonyPostfix]
+            public static void PostFix(uGUI_ScannerIcon __instance)
+            {
+                __instance.gameObject.EnsureComponent<uGUI_RepairToolIcon>();
+            }
 
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
             [HarmonyPostfix]
@@ -262,6 +260,7 @@ namespace CyclopsCameraDroneMod.Main
 
                 if(Input.GetKeyUp(QMod.Config.beaconKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration)) // Beacon placement
                 {
+                    
                     BeaconFunctionality(__instance);
                 }
                 if(Input.GetKeyUp(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule) && Time.time >= timeNextPing)
@@ -291,47 +290,11 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 if (Input.GetKey(QMod.Config.repairKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
-                    Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance);
-                    LiveMixin liveMixin = gameObject.FindAncestor<LiveMixin>();
-                    if (liveMixin && Time.time >= timeLastRepair + 0.5f)
-                    {
-                        if (liveMixin.IsWeldable())
-                        {
-                            liveMixin.AddHealth(10);
-                            HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
-                            if (!liveMixin.IsFullHealth())
-                            {
-                                timeLastRepair = Time.time;
-                            }
-                        }
-                        else
-                        {
-                            WeldablePoint weldablePoint = gameObject.FindAncestor<WeldablePoint>();
-                            if (weldablePoint != null && weldablePoint.transform.IsChildOf(liveMixin.transform))
-                            {
-                                liveMixin.AddHealth(10);
-                                HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
-                                if (!liveMixin.IsFullHealth())
-                                {
-                                    timeLastRepair = Time.time;
-                                }
-                            }
-                        }
-                    }
+                    RepairFunctionality(__instance);
                 }
                 if (Input.GetKey(QMod.Config.scanKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration))
                 {
-                    Targeting.GetTarget(__instance.gameObject, 20, out var gameObject4, out float distance);
-                    PDAScanner.scanTarget.gameObject = gameObject4;
-                    PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
-                    PDAScanner.Result result = PDAScanner.Scan();//BUGGY. FIX THIS SHIT
-                                                                 //half the time doesn't delete fragment
-                                                                 //no visual or auditory indication that you're actually scanning
-                    HandleEnergyDrain(__instance, 0.5f * Time.deltaTime);
-                    if (result != PDAScanner.Result.Done && result != PDAScanner.Result.Researched)
-                    {
-                        timeLastScan = Time.time;
-                    }
+                    ScanFunctionality(__instance);
                 }
                 if (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Mining)
                 {
@@ -351,7 +314,7 @@ namespace CyclopsCameraDroneMod.Main
                     }
                     
                     if(Input.GetKeyUp(QMod.Config.teleportKey) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)//key pressed and has ion drill
-                    { 
+                    {
                         if (Time.time >= timeNextTeleport || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //checks for cooldown being over
                         {//if in creative or using no cost, no teleport cooldown and can teleport through objects. Mostly for my own testing purposes plus fucking around for funsies
                             if (!Targeting.GetTarget(__instance.gameObject, 15, out GameObject _, out float distance) || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //Checks for object in way of teleporting
@@ -359,19 +322,33 @@ namespace CyclopsCameraDroneMod.Main
                                 __instance.transform.position += 15 * __instance.transform.forward;
                                 HandleEnergyDrain(__instance, 5);
                                 timeNextTeleport = Time.time + 3f;
+                                TeleportScreenFXController fxController = MainCamera.camera.GetComponent<TeleportScreenFXController>();
+                                fxController.StartTeleport();
+                                CoroutineHost.StartCoroutine(droneInstance.DashVFXCoroutine());
                             }
                             else
                             {
                                 __instance.transform.position += distance * __instance.transform.forward;
                                 HandleEnergyDrain(__instance, 5 / distance);//energy drain and cooldown get reduced proportionally to distance travelled
                                 timeNextTeleport = Time.time + 3f / distance;
+                                TeleportScreenFXController fxController = MainCamera.camera.GetComponent<TeleportScreenFXController>();
+                                fxController.StartTeleport();
+                                CoroutineHost.StartCoroutine(droneInstance.DashVFXCoroutine(0.25f / distance));
                             }
                         }    
                     }
-                    //add cooldown, and a check to make sure you don't go through walls
+                    /*Do shit
+                    if(Input.GetKeyUp(KeyCode.Y) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)
+                    {
+                        StasisSphereFunctionality(__instance);
+                    }
+                    */
                 }
                 HandleSFX();
-                if(QMod.Config.energyUsageType.Equals("None"))
+                CheckTarget(__instance);//handles icon changes for scanning and repairing, can't think of better name
+
+                float magnitude = __instance.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
+                if (QMod.Config.energyUsageType.Equals("None"))
                 {
                     EnergyMixin mixin = __instance.GetComponent<EnergyMixin>();
                     while (mixin.charge < mixin.maxEnergy)
@@ -379,13 +356,21 @@ namespace CyclopsCameraDroneMod.Main
                         Player.main.currentSub.powerRelay.ConsumeEnergy(1, out float amountGiven);
                         mixin.AddEnergy(amountGiven);
                     }
+                    if(QMod.Config.variableEnergyDrain && magnitude > 2f)
+                    {
+                        HandleEnergyDrain(__instance, 0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position));
+                    }
+                }
+                else if (QMod.Config.variableEnergyDrain && magnitude > 2f)
+                {
+                    __instance.GetComponent<EnergyMixin>().ConsumeEnergy((0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position)) * Time.deltaTime);
                 }
             }
         }
 
         public static void HandleSFX()
         {
-            if(Time.time > timeLastDrill + 0.5f) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
+            if(Time.time > timeLastDrill + 0.5f && droneInstance.drillSoundPlaying) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
             {
                 droneInstance.StopDrillSound();
             }
@@ -394,7 +379,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartMineSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.mineSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopMineSound();
             }
@@ -403,7 +388,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartTractorBeamSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.tractorSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopTractorBeamSound();
             }
@@ -412,7 +397,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartRepairSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.repairSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopRepairSound();
             }
@@ -421,12 +406,54 @@ namespace CyclopsCameraDroneMod.Main
             {
                 droneInstance.StartScanSound();
             }
-            else // otherwise, make sure it isn't playing
+            else if (droneInstance.scanSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopScanSound();
             }
         }
-        
+        public static void CheckTarget(MapRoomCamera __instance)
+        {
+            if (!Targeting.GetTarget(__instance.gameObject, 5, out var gameObject, out float distance)) return;//no point in the rest if there's no object
+
+            if (droneInstance.droneType != CyclopsDroneType.Mining)//is exploration or combo drone
+            {
+                //handles scan icon shit
+                PDAScanner.scanTarget.gameObject = gameObject;
+                PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject);
+
+                if (PDAScanner.scanTarget.isValid && PDAScanner.CanScan() == PDAScanner.Result.Scan && !PDAScanner.scanTarget.isPlayer)
+                {
+                    float progress = PDAScanner.scanTarget.progress;
+                    float vanilRed = droneInstance.vanillaColor.r;
+                    float vanilGreen = droneInstance.vanillaColor.g;
+                    float vanilBlue = droneInstance.vanillaColor.b;
+
+                    float red = Mathf.Lerp(vanilRed, 1, progress);
+                    float green = Mathf.Lerp(vanilGreen, 0, progress);
+                    float blue = Mathf.Lerp(vanilBlue, 0, progress);
+
+                    Color color = new Color(red, green, blue);
+                    droneInstance.ScannerIconFunction(1 - progress, color);
+                }
+
+                //handles repair icon shit
+                LiveMixin liveMixin = gameObject.GetComponentInParent<LiveMixin>();
+                if (liveMixin != null && liveMixin.IsWeldable()) 
+                {
+                    float healthPercentage = liveMixin.GetHealthFraction();
+                    float vanilRed = droneInstance.vanillaColor.r;
+                    float vanilGreen = droneInstance.vanillaColor.g;
+                    float vanilBlue = droneInstance.vanillaColor.b;
+
+                    float red = Mathf.Lerp(1, vanilRed, healthPercentage);
+                    float green = Mathf.Lerp(0, vanilGreen, healthPercentage);
+                    float blue = Mathf.Lerp(0, vanilBlue, healthPercentage);
+
+                    Color color = new Color(red, green, blue);
+                    droneInstance.RepairIconFunction(healthPercentage, color);
+                }
+            }
+        }
         public static void DrillFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill1, bool hasDrill2)
         {
             if(hasDrill2)
@@ -437,7 +464,9 @@ namespace CyclopsCameraDroneMod.Main
             {
                 UpdateAppearance(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3, defaultBeamWidth, defaultBeamWidth);
             }
-            cameraDroneLaser.enabled = true;
+            if(hasDrill1)
+            { /*fuck off VS*/ }
+                cameraDroneLaser.enabled = true;
             timeLastDrill = Time.time;
             droneInstance.StartDrillSound();
             SetBeamTarget(mapRoomCamera);
@@ -491,11 +520,13 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
-
         public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
         {
             if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
 
+        public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
+        {
+            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
             PrefabIdentifier Identifier = gameObject1.GetComponentInParent<PrefabIdentifier>();
             if (Identifier == null) return;
             GameObject gameObject4 = Identifier.gameObject;
@@ -518,6 +549,21 @@ namespace CyclopsCameraDroneMod.Main
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 { 
                     droneInstance.PlayScanEndSound();
+                    /*
+                     * tried to make absolutely certain the object scanned was deleted
+                     * didn't work
+                    if (!PDAScanner.scanTarget.isPlayer && gameObject4 != null)
+                    {
+                        UnityEngine.Object.Destroy(gameObject4);
+                        PDAScanner.scanTarget.Invalidate();
+                        string uid = PDAScanner.scanTarget.uid;
+                        bool hasUID = PDAScanner.scanTarget.hasUID;
+                        if (hasUID)
+                        {
+                            PDAScanner.fragments.Remove(uid);
+                        }
+                    }
+                    */
                 }
             }
         }
@@ -552,6 +598,22 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
+        /*do shit
+        public static void StasisSphereFunctionality(MapRoomCamera mapRoomCamera)
+        {
+            GameObject sphereObject = GameObject.Instantiate(StasisRifle.sphere.gameObject);
+            Logger.Log(Logger.Level.Info, "1", null, true); 
+            StasisSphere sphere = sphereObject.GetComponent<StasisSphere>();
+            Logger.Log(Logger.Level.Info, "2", null, true); 
+
+            sphereObject.transform.parent = mapRoomCamera.transform;
+            sphere.maxRadius = 100f;
+            Logger.Log(Logger.Level.Info, "3", null, true); 
+            sphere.maxTime = 5f;
+            sphere.EnableField();
+            Logger.Log(Logger.Level.Info, "WTF", null, true); 
+        }
+        */
         public static void BeaconFunctionality(MapRoomCamera mapRoomCamera)
         {
             SubRoot currentSub = Player.main.currentSub;
@@ -590,9 +652,23 @@ namespace CyclopsCameraDroneMod.Main
                 CoroutineHost.StartCoroutine(CreateBeacon(mapRoomCamera.transform));
             }
         }
+        public static IEnumerator CreateBeacon(Transform transform)
+        {
+            droneInstance.PlayBeaconSound();
+
+            var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
+            yield return coroutineTask;
+            var prefab = coroutineTask.GetResult();
+
+            GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
+
+            ErrorMessage.AddMessage("Beacon deployed!");
+        }
+
 
         public static void TractorBeamFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill2 = false)
         {
+            if(hasDrill2) {/*fuck off VS 2.0*/}
             UpdateAppearance(QMod.Config.tractorBeamRGB1, QMod.Config.tractorBeamRGB2, QMod.Config.tractorBeamRGB3, TractorBeam.lineWidth, TractorBeam.lineWidth);
             cameraDroneLaser.enabled = true;
             timeLastTractorBeam = Time.time;
@@ -645,24 +721,11 @@ namespace CyclopsCameraDroneMod.Main
                 StarshipDoor door = gameObject.GetComponentInParent<StarshipDoor>();
                 if (door != null && Time.time >= timeNextDoor) { door.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
                 SupplyCrate crate = gameObject.GetComponentInParent<SupplyCrate>();
-                if (door != null && Time.time >= timeNextDoor) { door.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
+                if (door != null && Time.time >= timeNextDoor) { crate.OnHandClick(Player.main.armsController.guiHand); timeNextDoor = Time.time + 2f; }
             }
 
             return;
         }
-        public static IEnumerator CreateBeacon(Transform transform)
-        {
-            droneInstance.PlayBeaconSound();
-
-            var coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Beacon, false);
-            yield return coroutineTask;
-            var prefab = coroutineTask.GetResult();
-
-            GameObject.Instantiate(prefab, transform.position - 0.5f * transform.forward, transform.rotation);
-
-            ErrorMessage.AddMessage("Beacon deployed!");
-        }
-
         public static bool CyclopsLockerPickup(ItemsContainer container, Pickupable pickupable)
         {
             if(!container.HasRoomFor(pickupable))
@@ -696,6 +759,98 @@ namespace CyclopsCameraDroneMod.Main
             }
             return false;
         }
+        // uGUI_CameraDrone.textPower.text = subRoot.powerRelay.GetPower().ToString();
+        public static IEnumerator RefillEnergy()
+        {
+            SubRoot currentSub = Player.main.currentSub;
+            while (energyAmount < 100 && currentSub != null)
+            {
+                energyAmount++;
+                currentSub.powerRelay.ConsumeEnergy(1f, out float _);
+                yield return new WaitForSeconds(1f);
+            }
+        }
+
+        [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.UpdateTexts))]
+        [HarmonyPostfix]
+        public static void DisplayCyclopsPower(uGUI_CameraDrone __instance)
+        {
+            if(QMod.Config.energyUsageType == "None" && Player.main.currentSub != null && __instance.activeCamera.gameObject.GetComponent<CyclopsDroneInstance>())
+            {
+                __instance.textPower.text = Player.main.currentSub.powerRelay.GetPower().ToString();
+            }
+        }
+
+
+        /*Couldn't get to work well, ignore for now
+        [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.UpdateDistanceText))]
+        [HarmonyPostfix]
+        public static void DisplayEnergyDrain(uGUI_CameraDrone __instance)
+        {
+            __instance.textDistance.text = string.Format("<color=#6EFEFFFF>{0}</color> <size=26>{1} {2}</size>", __instance.stringDistance, "F", (__instance.distance >= 0) ? IntStringCache.GetStringForInt(__instance.distance) : "--", __instance.stringMeterSuffix, "\n", "Hello, World!", ":", "0.66666");
+        }
+        */
+
+        [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.Update))]
+        [HarmonyPrefix]
+        public static bool StopCameraChanging(MapRoomCamera __instance)
+        {
+            if((GameInput.GetButtonDown(GameInput.Button.CycleNext) || GameInput.GetButtonDown(GameInput.Button.CyclePrev)) && (__instance.name.Equals(cameraObjectName) || __instance.GetComponent<CyclopsDroneInstance>()))
+            {
+                ProfilingUtils.BeginSample("MapRoomCamera.Update()");
+                __instance.UpdateEnergyRecharge();
+                if (__instance.IsControlled() && __instance.inputStackDummy.activeInHierarchy)
+                {
+                    if (!__instance.IsReady() && LargeWorldStreamer.main.IsWorldSettled())
+                    {
+                        __instance.readyForControl = true;
+                        __instance.connectingSound.Stop();
+                        Utils.PlayFMODAsset(__instance.connectedSound, __instance.transform, 20f);
+                    }
+                    if (__instance.CanBeControlled(null) && __instance.readyForControl)
+                    {
+                        Vector2 lookDelta = GameInput.GetLookDelta();
+                        __instance.rigidBody.AddTorque(__instance.transform.up * lookDelta.x * 45f * 0.0015f, ForceMode.VelocityChange);
+                        __instance.rigidBody.AddTorque(__instance.transform.right * -lookDelta.y * 45f * 0.0015f, ForceMode.VelocityChange);
+                        __instance.wishDir = GameInput.GetMoveDirection();
+                        __instance.wishDir.Normalize();
+                        if (__instance.dockingPoint != null && __instance.wishDir != Vector3.zero)
+                        {
+                            __instance.dockingPoint.UndockCamera();
+                        }
+                    }
+                    else
+                    {
+                        __instance.wishDir = Vector3.zero;
+                    }
+                    if (Input.GetKeyUp(KeyCode.Escape) || GameInput.GetButtonUp(GameInput.Button.Exit))
+                    {
+                        __instance.FreeCamera(true);
+                    }
+                    if (Player.main != null && Player.main.liveMixin != null && !Player.main.liveMixin.IsAlive())
+                    {
+                        __instance.FreeCamera(true);
+                    }
+                    float magnitude = __instance.GetComponent<Rigidbody>().velocity.magnitude;
+                    float time = Mathf.Clamp(__instance.transform.InverseTransformDirection(__instance.GetComponent<Rigidbody>().velocity).z / 15f, 0f, 1f);
+                    if (magnitude > 2f)
+                    {
+                        __instance.engineSound.Play();
+                        __instance.energyMixin.ConsumeEnergy(Time.deltaTime * 0.06666f);
+                    }
+                    else
+                    {
+                        __instance.engineSound.Stop();
+                    }
+                    __instance.screenEffectModel.GetComponent<Renderer>().materials[0].SetColor(ShaderPropertyID._Color, __instance.gradientInner.Evaluate(time));
+                    __instance.screenEffectModel.GetComponent<Renderer>().materials[1].SetColor(ShaderPropertyID._Color, __instance.gradientOuter.Evaluate(time));
+                }
+                ProfilingUtils.EndSample(null);
+                ErrorMessage.AddMessage("Can't switch cameras while operating the cyclops drone");
+                return false;
+            }
+            return true;
+        }
 
         [HarmonyPatch(typeof(Drillable), nameof(Drillable.ManagedUpdate))]
         [HarmonyPostfix]
@@ -713,31 +868,29 @@ namespace CyclopsCameraDroneMod.Main
                     }
                     else
                     {
-                        Vector3 b = currentSub.transform.position;
-                        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, b, Time.deltaTime * 5f);
-                        if(Vector3.Distance(gameObject.transform.position, b) < 3f)
+                        Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
+                        if (pickupable)
                         {
-                            Pickupable pickupable = gameObject.GetComponentInChildren<Pickupable>();
-                            if(pickupable)
+                            ItemsContainer freeContainer = null;
+                            CyclopsLocker[] cyclopsLockers = currentSub.gameObject.GetComponentsInChildren<CyclopsLocker>();
+                            foreach (CyclopsLocker locker in cyclopsLockers)
                             {
-                                ItemsContainer cyclopsContainer = currentSub.gameObject.GetComponentInChildren<CyclopsLocker>().gameObject.GetComponent<StorageContainer>().container;
-                                if(!cyclopsContainer.HasRoomFor(pickupable))
+                                ItemsContainer cyclopsContainer = locker.gameObject.GetComponent<StorageContainer>().container;
+                                if (cyclopsContainer.HasRoomFor(pickupable))
                                 {
-                                    if(currentSub != null)
-                                    {
-                                        ErrorMessage.AddMessage(Language.main.Get("ContainerCantFit"));
-                                    }
+                                    freeContainer = cyclopsContainer;
+                                    break;
                                 }
-                                else
-                                {
-                                    string arg = Language.main.Get(pickupable.GetTechName());
-                                    ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
-                                    uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
-                                    pickupable = pickupable.Initialize();
-                                    InventoryItem item = new InventoryItem(pickupable);
-                                    cyclopsContainer.UnsafeAdd(item);
-                                    pickupable.PlayPickupSound();
-                                }
+                            }
+                            if (freeContainer != null)
+                            {
+                                string arg = Language.main.Get(pickupable.GetTechName());
+                                ErrorMessage.AddMessage(Language.main.GetFormat<string>("VehicleAddedToStorage", arg));
+                                uGUI_IconNotifier.main.Play(pickupable.GetTechType(), uGUI_IconNotifier.AnimationType.From, null);
+                                pickupable = pickupable.Initialize();
+                                InventoryItem item = new InventoryItem(pickupable);
+                                freeContainer.UnsafeAdd(item);
+                                pickupable.PlayPickupSound();
                                 list.Add(gameObject);
                             }
                         }
