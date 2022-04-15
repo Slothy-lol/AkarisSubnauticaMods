@@ -6,9 +6,8 @@ using Sprite = Atlas.Sprite;
 using UnityEngine;
 using SMLHelper.V2.Utility;
 using System.IO;
-using CyclopsCameraDroneMod.Main;
 
-namespace cyclopsVehiclebayHUDIcon
+namespace CyclopsCameraDroneMod.HUDIcon
 {
     internal class MySubStatus : CyclopsStatusIcon
     {
@@ -27,9 +26,9 @@ namespace cyclopsVehiclebayHUDIcon
 
         public override string StatusText()
         {
-            if (Time.time < Main.timeNextUseDrone)
+            if (Time.time < Main.Main.timeNextUseDrone)
             {
-                return $"Time until next use: {Main.timeNextUseDrone - Time.time}.";
+                return $"Time until next use: {Main.Main.timeNextUseDrone - Time.time}.";
             }
             else
                 return "Drone Ready.";
@@ -37,7 +36,7 @@ namespace cyclopsVehiclebayHUDIcon
 
         public override Color StatusTextColor()
         {
-            if (Time.time < Main.timeNextUseDrone)
+            if (Time.time < Main.Main.timeNextUseDrone)
             {
                 return Color.red;
             }

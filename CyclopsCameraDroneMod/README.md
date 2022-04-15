@@ -14,3 +14,5 @@ The drone comes in 3 versions: Exploration, Industrial, Ultimate.<br>
     Needs: QModManager, MoreCyclopUpgrades 5.2.
 
     Contributors: Akari, nagorrogan, Lee23, spartaileo
+
+    ThunderStore Page: To Be Added
