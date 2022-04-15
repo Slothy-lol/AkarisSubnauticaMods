@@ -1,5 +1,4 @@
 using CyclopsCameraDroneMod.Modules;
-using cyclopsVehiclebayHUDIcon;
 using HarmonyLib;
 using MoreCyclopsUpgrades.API;
 using QModManager.API.ModLoading;
