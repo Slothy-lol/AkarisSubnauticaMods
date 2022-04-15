@@ -76,4 +76,4 @@ The drone comes in 3 versions: Exploration, Industrial, Ultimate.<br>
 
     Needs: SMLHelper, QModManager, MoreCyclopsUpgrades.
 
-ThunderStore Page: To Be Added.
+    ThunderStore Page: To Be Added.
