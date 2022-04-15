@@ -2,7 +2,6 @@ using CyclopsCameraDroneMod.Modules;
 using cyclopsVehiclebayHUDIcon;
 using HarmonyLib;
 using MoreCyclopsUpgrades.API;
-using MoreCyclopsUpgrades.API.Upgrades;
 using QModManager.API.ModLoading;
 using SMLHelper.V2.Handlers;
 using SMLHelper.V2.Json;
