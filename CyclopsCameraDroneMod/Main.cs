@@ -524,6 +524,9 @@ namespace CyclopsCameraDroneMod.Main
         {
             if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
 
+        public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
+        {
+            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
             PrefabIdentifier Identifier = gameObject1.GetComponentInParent<PrefabIdentifier>();
             if (Identifier == null) return;
             GameObject gameObject4 = Identifier.gameObject;
