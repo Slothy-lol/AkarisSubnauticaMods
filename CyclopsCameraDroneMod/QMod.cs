@@ -24,12 +24,12 @@ namespace CyclopsCameraDroneMod.QMods
             Harmony harmony = new Harmony(modName);
             harmony.PatchAll(assembly);
             Logger.Log(Logger.Level.Info, "Patched successfully!");
-            new CyclopsCameraDrone().Patch();
+            new CyclopsCameraDroneExploration().Patch();
             new CyclopsCameraDroneIndustry().Patch();
             new CyclopsCameraDroneUltimate().Patch();
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
-                return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDrone.thisTechType, cyclops);
+                return new CyclopsDroneUpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneExploration.thisTechType, cyclops);
             });
             MCUServices.Register.CyclopsUpgradeHandler((SubRoot cyclops) =>
             {
@@ -70,7 +70,7 @@ namespace CyclopsCameraDroneMod.QMods
         [Slider("Drill Range", Max = 50, Min = 5, DefaultValue = 15, Step = 1.0F, Tooltip = "Range in meters of how far the cyclops drone can drill from.")]
         public int drillRange = 15;
 
-        [Choice("Drone Energy usage", new[] { "All", "Some", "None" }, Tooltip = "All means all energy drains from drone, none from cyclops. Some means that only the base energy drain from moving will drain from drone. None means that all drain comes from cyclops")]
+        [Choice("Drone Energy usage", new[] { "All", "None", "Some" }, Tooltip = "All means all energy drains from drone, none from cyclops. Some means that only the base energy drain from moving will drain from drone. None means that all drain comes from cyclops")]
         public string energyUsageType = "Some"; //make more descriptive
                                                 //All means all energy drains from drone, none from cyclops
                                                 //Some means that only the base energy drain from moving will drain from drone, laser and tractor beam and shit come from cyclops

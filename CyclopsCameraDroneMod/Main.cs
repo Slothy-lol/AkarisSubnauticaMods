@@ -60,7 +60,7 @@ namespace CyclopsCameraDroneMod.Main
             {
                 KeyCode droneButton = QMod.Config.droneKey;
                 KeyCode droneButton2 = QMod.Config.drone2Key;
-                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType)))
+                if (!(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneExploration.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType)))
                 {
                     return;
                 }
@@ -123,7 +123,7 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
-                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDrone.thisTechType))
+                    if(secondDrone && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneExploration.thisTechType))
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }

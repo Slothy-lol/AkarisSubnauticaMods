@@ -12,13 +12,13 @@ using MoreCyclopsUpgrades.API.Upgrades;
 
 namespace CyclopsCameraDroneMod.Modules
 {
-    public class CyclopsCameraDrone : Equipable
+    public class CyclopsCameraDroneExploration : Equipable
     {
         public static TechType thisTechType;
 
         public override string AssetsFolder => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
-        public CyclopsCameraDrone() : base("CyclopsCameraDroneExploration", "Cyclops Camera Drone: Exploration", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
+        public CyclopsCameraDroneExploration() : base("CyclopsCameraDroneExploration", "Cyclops Camera Drone: Exploration", "Allows the use of an exploration camera drone for the Cyclops. Can scan and place beacons.")
         {
             OnFinishedPatching += () =>
             {
@@ -150,7 +150,7 @@ namespace CyclopsCameraDroneMod.Modules
                 Ingredients = new List<Ingredient>(new Ingredient[]
                     {
                         new Ingredient(CyclopsCameraDroneIndustry.thisTechType, 1),
-                        new Ingredient(CyclopsCameraDrone.thisTechType, 1),
+                        new Ingredient(CyclopsCameraDroneExploration.thisTechType, 1),
                         new Ingredient(TechType.Kyanite, 5),
                         new Ingredient(TechType.PrecursorIonCrystal, 3)
 

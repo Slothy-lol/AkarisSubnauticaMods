@@ -16,7 +16,7 @@ namespace CyclopsCameraDroneMod.HUDIcon
 
         }
 
-        public override bool ShowStatusIcon => true;
+        public override bool ShowStatusIcon => (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneIndustry.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneExploration.thisTechType) || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType));
         readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
 
         public override Sprite StatusSprite()
