@@ -68,5 +68,18 @@ namespace CyclopsHullReinforcement.Module
             {
             }
         }
+
+        public class ModuleStuff : DamageModifier
+        {
+            public void Awake()
+            {
+                multiplier = 0.5f; // Reduce all damage by half
+            }
+
+            public override float ModifyDamage(float damage, DamageType type)
+            {
+                return damage * (enabled ? multiplier : 1f);
+            }
+        }
     }
 }
