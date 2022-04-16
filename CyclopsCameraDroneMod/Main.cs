@@ -417,6 +417,14 @@ namespace CyclopsCameraDroneMod.Main
 
             if (droneInstance.droneType != CyclopsDroneType.Mining)//is exploration or combo drone
             {
+
+                if (gameObject.name.Equals("Collision"))
+                {
+
+                    Transform parent = gameObject.transform.parent;
+                    gameObject = parent != null ? parent.gameObject : gameObject;
+                }
+
                 //handles scan icon shit
                 PDAScanner.scanTarget.gameObject = gameObject;
                 PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject);
@@ -424,15 +432,9 @@ namespace CyclopsCameraDroneMod.Main
                 if (PDAScanner.scanTarget.isValid && PDAScanner.CanScan() == PDAScanner.Result.Scan && !PDAScanner.scanTarget.isPlayer)
                 {
                     float progress = PDAScanner.scanTarget.progress;
-                    float vanilRed = droneInstance.vanillaColor.r;
-                    float vanilGreen = droneInstance.vanillaColor.g;
-                    float vanilBlue = droneInstance.vanillaColor.b;
+                    Color endColor = new Color(1, 0, 0);
 
-                    float red = Mathf.Lerp(vanilRed, 1, progress);
-                    float green = Mathf.Lerp(vanilGreen, 0, progress);
-                    float blue = Mathf.Lerp(vanilBlue, 0, progress);
-
-                    Color color = new Color(red, green, blue);
+                    Color color = Color.Lerp(droneInstance.vanillaColor, endColor, progress);
                     droneInstance.ScannerIconFunction(1 - progress, color);
                 }
 
@@ -441,15 +443,10 @@ namespace CyclopsCameraDroneMod.Main
                 if (liveMixin != null && liveMixin.IsWeldable()) 
                 {
                     float healthPercentage = liveMixin.GetHealthFraction();
-                    float vanilRed = droneInstance.vanillaColor.r;
-                    float vanilGreen = droneInstance.vanillaColor.g;
-                    float vanilBlue = droneInstance.vanillaColor.b;
 
-                    float red = Mathf.Lerp(1, vanilRed, healthPercentage);
-                    float green = Mathf.Lerp(0, vanilGreen, healthPercentage);
-                    float blue = Mathf.Lerp(0, vanilBlue, healthPercentage);
+                    Color startColor = new Color(1, 0, 0);
 
-                    Color color = new Color(red, green, blue);
+                    Color color = Color.Lerp(startColor, droneInstance.vanillaColor, healthPercentage);
                     droneInstance.RepairIconFunction(healthPercentage, color);
                 }
             }
@@ -522,12 +519,13 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
         {
-            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 20, out var gameObject1, out float distance)) return;
+            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 5, out var gameObject4, out float distance)) return;
 
-            PrefabIdentifier Identifier = gameObject1.GetComponentInParent<PrefabIdentifier>();
-            if (Identifier == null) return;
-            GameObject gameObject4 = Identifier.gameObject;
-
+            if(gameObject4.name.Equals("Collision"))
+            {
+                Transform parent = gameObject4.transform.parent;
+                gameObject4 = parent != null ? parent.gameObject : gameObject4;
+            }
             PDAScanner.scanTarget.gameObject = gameObject4;
             PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
 
