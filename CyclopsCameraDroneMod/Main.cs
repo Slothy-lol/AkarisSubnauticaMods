@@ -353,6 +353,7 @@ namespace CyclopsCameraDroneMod.Main
                     EnergyMixin mixin = __instance.GetComponent<EnergyMixin>();
                     while (mixin.charge < mixin.maxEnergy)
                     {
+                        if (Player.main.currentSub.powerRelay.GetPower() < 50) break;
                         Player.main.currentSub.powerRelay.ConsumeEnergy(1, out float amountGiven);
                         mixin.AddEnergy(amountGiven);
                     }
