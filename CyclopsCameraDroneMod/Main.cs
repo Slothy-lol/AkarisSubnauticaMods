@@ -258,12 +258,12 @@ namespace CyclopsCameraDroneMod.Main
 
                 CyclopsDroneInstance.CyclopsDroneType droneType = component.droneType;
 
-                if(Input.GetKeyUp(QMod.Config.beaconKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration)) // Beacon placement
+                if(Input.GetKeyDown(QMod.Config.beaconKey) && (droneType == CyclopsDroneInstance.CyclopsDroneType.Combo || droneType == CyclopsDroneInstance.CyclopsDroneType.Exploration)) // Beacon placement
                 {
                     
                     BeaconFunctionality(__instance);
                 }
-                if(Input.GetKeyUp(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule) && Time.time >= timeNextPing)
+                if(Input.GetKeyDown(QMod.Config.sonarKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSonarModule) && Time.time >= timeNextPing)
                 {
                     HandleEnergyDrain(__instance, 2);
                     SNCameraRoot.main.SonarPing();
@@ -284,7 +284,7 @@ namespace CyclopsCameraDroneMod.Main
                     SNCameraRoot.main.SonarPing();
                     timeNextPing = Time.time + 5;
                 }
-                if (Input.GetKeyUp(QMod.Config.shieldKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsShieldModule) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)
+                if (Input.GetKeyDown(QMod.Config.shieldKey) && MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsShieldModule) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)
                 {
                     droneInstance.ToggleShield();
                 }
@@ -313,7 +313,7 @@ namespace CyclopsCameraDroneMod.Main
                         cameraDroneLaser.enabled = false;
                     }
                     
-                    if(Input.GetKeyUp(QMod.Config.teleportKey) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)//key pressed and has ion drill
+                    if(Input.GetKeyDown(QMod.Config.teleportKey) && droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)//key pressed and has ion drill
                     {
                         if (Time.time >= timeNextTeleport || GameModeUtils.IsOptionActive(GameModeOption.NoCost)) //checks for cooldown being over
                         {//if in creative or using no cost, no teleport cooldown and can teleport through objects. Mostly for my own testing purposes plus fucking around for funsies
@@ -660,7 +660,6 @@ namespace CyclopsCameraDroneMod.Main
 
             ErrorMessage.AddMessage("Beacon deployed!");
         }
-
 
         public static void TractorBeamFunctionality(MapRoomCamera mapRoomCamera, bool hasDrill2 = false)
         {
