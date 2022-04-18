@@ -913,8 +913,8 @@ namespace CyclopsCameraDroneMod.Main
             laserBeam.SetActive(true);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.5f;
-            lineRenderer.endWidth = 0.5f;
+            lineRenderer.startWidth = 0.3f;
+            lineRenderer.endWidth = 0.3f;
             lineRenderer.positionCount = 2;
 
             cameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
@@ -926,9 +926,9 @@ namespace CyclopsCameraDroneMod.Main
             if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
                 CalculateBeamVectors(targetDist, __instance, inverted);
+                return;
             }
-            else
-                CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
+            CalculateBeamVectors(MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, __instance, inverted);
         }
 
         public static void CalculateBeamVectors(float targetDistance, MapRoomCamera __instance, bool inverted)
@@ -943,7 +943,7 @@ namespace CyclopsCameraDroneMod.Main
             else { positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition }; }
             cameraDroneLaser.SetPositions(positions);
         }
-        public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.5f, float endWidth = 0.5f)
+        public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.3f, float endWidth = 0.3f)
         {
             Color beamColour = new Color(77 / 255, 166 / 255, 1);
             if (!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
