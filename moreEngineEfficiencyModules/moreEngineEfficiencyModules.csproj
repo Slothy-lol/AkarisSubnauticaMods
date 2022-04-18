@@ -33,19 +33,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass_publicized">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp-firstpass_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp_publicized">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreCyclopsUpgrades">
+      <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\QMods\MoreCyclopsUpgrades\MoreCyclopsUpgrades.dll</HintPath>
     </Reference>
     <Reference Include="QModInstaller">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\BepInEx\plugins\QModManager\QModInstaller.dll</HintPath>
     </Reference>
     <Reference Include="SMLHelper">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\QMods\Modding Helper\SMLHelper.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\Subnautica\profiles\Default\QMods\Modding Helper\SMLHelper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,13 +59,13 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Subnautica\Subnautica_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -78,12 +81,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
-mkdir "C:\Users\snorl\Documents\$(TargetName)\Assets"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\mod.json"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\EngineEfficiencyModuleMK2Sprite.png"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\Assets\EngineEfficiencyModuleMK3Sprite.png"
+    <PostBuildEvent>mkdir "D:\Mods\$(TargetName)"
+mkdir "D:\Mods\$(TargetName)\Assets"
+copy /Y "$(TargetPath)" "D:\Mods\$(TargetName)"
+copy /Y "$(ProjectDir)\mod.json" "D:\Mods\$(TargetName)\mod.json"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "D:\Mods\$(TargetName)\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "D:\Mods\$(TargetName)\Assets\EngineEfficiencyModuleMK3Sprite.png"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

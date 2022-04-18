@@ -7,7 +7,7 @@ using UnityEngine;
 using SMLHelper.V2.Utility;
 using System.IO;
 
-namespace cyclopsVehiclebayHUDIcon
+namespace CyclopsVehicleBayHUDIcon
 {
     internal class MySubStatus : CyclopsStatusIcon
     {

@@ -73,29 +73,21 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="manifest.json" />
     <None Include="mod.json" />
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="EngineEfficiencyModuleMK2Sprite.png" />
     <Content Include="EngineEfficiencyModuleMK3Sprite.png" />
-    <Content Include="icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
-mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods"
-mkdir "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ"
-mkdir "C:\Users\snorl\Documents\\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\Assets"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.dll"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\mod.json"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK2Sprite.png"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\QMods\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK3Sprite.png"
-copy /Y "$(ProjectDir)\manifest.json" "C:\Users\snorl\Documents\$(TargetName)\manifest.json"
-copy /Y "$(ProjectDir)\README.md" "C:\Users\snorl\Documents\$(TargetName)\README.md"
-copy /Y "$(ProjectDir)\icon.png" "C:\Users\snorl\Documents\$(TargetName)\icon.png"
-
+mkdir "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ"
+mkdir "C:\Users\snorl\Documents\\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets"
+copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.dll"
+copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\mod.json"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK3Sprite.png"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

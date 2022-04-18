@@ -7,17 +7,15 @@ using UnityEngine;
 using SMLHelper.V2.Utility;
 using System.IO;
 
-namespace cyclopsVehiclebayHUDIcon
+namespace CyclopsVehicleBayHUDIcon
 {
-    internal class MySubStatus : CyclopsStatusIcon
+    internal class CyclopeVehicleBayHUDIcon : CyclopsStatusIcon
     {
-        public MySubStatus(SubRoot cyclops) : base(cyclops)
+        public CyclopeVehicleBayHUDIcon(SubRoot cyclops) : base(cyclops)
         {
 
         }
 
-        private VehicleDockingBay dockingBay;
-        private VehicleDockingBay DockingBay => dockingBay ?? (dockingBay = Cyclops.GetComponentInChildren<VehicleDockingBay>());
         private Vehicle VehicleInBay => Cyclops.GetComponentInChildren<VehicleDockingBay>().GetDockedVehicle();
         public override bool ShowStatusIcon => VehicleInBay is SeaMoth || VehicleInBay is Exosuit;
 
@@ -60,7 +58,7 @@ namespace cyclopsVehiclebayHUDIcon
         [QModPatch]
         public static void MyInitializationMethod()
         {
-            MCUServices.Register.CyclopsStatusIcon<MySubStatus>((SubRoot cyclops) => new MySubStatus(cyclops));
+            MCUServices.Register.CyclopsStatusIcon<CyclopeVehicleBayHUDIcon>((SubRoot cyclops) => new CyclopeVehicleBayHUDIcon(cyclops));
         }
     }
 }
