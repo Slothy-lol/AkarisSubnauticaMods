@@ -39,7 +39,7 @@ namespace CyclopsCameraDroneMod.QMods
             {
                 return new CyclopsDroneDrillMK2UpgradeHandler(CyclopsCameraDroneMod.Modules.CyclopsCameraDroneUltimate.thisTechType, cyclops);
             });
-            MCUServices.Register.CyclopsStatusIcon<HUDIcon.MySubStatus>((SubRoot cyclops) => new HUDIcon.MySubStatus(cyclops));
+            MCUServices.Register.CyclopsStatusIcon<HUDIcon.CyclopsCameraDroneHUDIcon>((SubRoot cyclops) => new HUDIcon.CyclopsCameraDroneHUDIcon(cyclops));
         }
     }
     [Menu("Cyclops Camera Drone")]

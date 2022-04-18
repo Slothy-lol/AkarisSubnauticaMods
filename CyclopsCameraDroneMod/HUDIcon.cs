@@ -9,9 +9,9 @@ using System.IO;
 
 namespace CyclopsCameraDroneMod.HUDIcon
 {
-    internal class MySubStatus : CyclopsStatusIcon
+    internal class CyclopsCameraDroneHUDIcon : CyclopsStatusIcon
     {
-        public MySubStatus(SubRoot cyclops) : base(cyclops)
+        public CyclopsCameraDroneHUDIcon(SubRoot cyclops) : base(cyclops)
         {
 
         }
