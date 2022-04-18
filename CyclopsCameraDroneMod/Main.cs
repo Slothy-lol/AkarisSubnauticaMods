@@ -351,7 +351,7 @@ namespace CyclopsCameraDroneMod.Main
                 if (QMod.Config.energyUsageType.Equals("None"))
                 {
                     EnergyMixin mixin = __instance.GetComponent<EnergyMixin>();
-                    while (mixin.charge < mixin.maxEnergy)
+                    while (mixin.charge < mixin.maxEnergy - 1)
                     {
                         if (Player.main.currentSub.powerRelay.GetPower() < 50) break;
                         Player.main.currentSub.powerRelay.ConsumeEnergy(1, out float amountGiven);
@@ -520,15 +520,9 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void ScanFunctionality(MapRoomCamera mapRoomCamera)
         {
-            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 5, out var gameObject4, out float distance)) return;
+            if (!Targeting.GetTarget(mapRoomCamera.gameObject, 5, out var gameObject1, out float distance)) return;
 
-            if(gameObject4.name.Equals("Collision"))
-            {
-                Transform parent = gameObject4.transform.parent;
-                gameObject4 = parent != null ? parent.gameObject : gameObject4;
-            }
-            PDAScanner.scanTarget.gameObject = gameObject4;
-            PDAScanner.scanTarget.techType = CraftData.GetTechType(gameObject4);
+            UpdateScanTarget(gameObject1);
 
             HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
 
@@ -538,30 +532,36 @@ namespace CyclopsCameraDroneMod.Main
                 PDAScanner.Result result = PDAScanner.Scan();
                 if (result == PDAScanner.Result.Scan)
                 {
-                    float amount = 0.5f * Time.deltaTime;
-                    HandleEnergyDrain(mapRoomCamera, amount);
+                    HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
                     timeLastScan = Time.time;
                 }
                 else if (result == PDAScanner.Result.Done || result == PDAScanner.Result.Researched)
                 { 
                     droneInstance.PlayScanEndSound();
-                    /*
-                     * tried to make absolutely certain the object scanned was deleted
-                     * didn't work
-                    if (!PDAScanner.scanTarget.isPlayer && gameObject4 != null)
-                    {
-                        UnityEngine.Object.Destroy(gameObject4);
-                        PDAScanner.scanTarget.Invalidate();
-                        string uid = PDAScanner.scanTarget.uid;
-                        bool hasUID = PDAScanner.scanTarget.hasUID;
-                        if (hasUID)
-                        {
-                            PDAScanner.fragments.Remove(uid);
-                        }
-                    }
-                    */
                 }
             }
+        }
+        public static void UpdateScanTarget(GameObject objTarget)
+        {
+            PDAScanner.ScanTarget newTarget = default;
+            newTarget.Invalidate();
+
+            // Finds the correct object and sets the gameObject, uid and the techType fields of ScanTarget to the appropriate values.
+            newTarget.Initialize(objTarget);
+
+            // If the previous scan target is the same as the new one, exit early.
+            if (PDAScanner.scanTarget.techType == newTarget.techType &&
+                      PDAScanner.scanTarget.gameObject == newTarget.gameObject &&
+                      PDAScanner.scanTarget.uid == newTarget.uid) return;
+
+            // Finds the cached progress of this item and if it exists, we set it as our new scan target's progress
+            if (newTarget.hasUID && PDAScanner.cachedProgress.TryGetValue(newTarget.uid, out var progress))
+            {
+                newTarget.progress = progress;
+            }
+
+            // Set the scanner's target to the new target
+            PDAScanner.scanTarget = newTarget;
         }
 
         public static void RepairFunctionality(MapRoomCamera __instance)
