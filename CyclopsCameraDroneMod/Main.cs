@@ -464,7 +464,7 @@ namespace CyclopsCameraDroneMod.Main
             }
             if(hasDrill1)
             { /*fuck off VS*/ }
-                cameraDroneLaser.enabled = true;
+            cameraDroneLaser.enabled = true;
             timeLastDrill = Time.time;
             droneInstance.StartDrillSound();
             SetBeamTarget(mapRoomCamera);
@@ -905,7 +905,7 @@ namespace CyclopsCameraDroneMod.Main
         [HarmonyPostfix]
         public static void CreateLaser(MapRoomCamera __instance)
         {
-            if(cameraDroneLaser != null) return;
+            if (cameraDroneLaser != null) return;
             GameObject cannon_pylon_left = CraftData.InstantiateFromPrefab(TechType.PowerTransmitter);
             cannon_pylon_left.transform.SetParent(__instance.transform, false);
             Utils.ZeroTransform(cannon_pylon_left.transform);
@@ -924,7 +924,7 @@ namespace CyclopsCameraDroneMod.Main
         }
         public static void SetBeamTarget(MapRoomCamera __instance, bool inverted = false)
         {
-            if(Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
+            if (Targeting.GetTarget(__instance.gameObject, MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, Modules.CyclopsCameraDroneUltimate.thisTechType) ? QMod.Config.drillRange * 2 : QMod.Config.drillRange, out GameObject targetGameobject, out float targetDist))
             {
                 CalculateBeamVectors(targetDist, __instance, inverted);
             }
@@ -940,18 +940,18 @@ namespace CyclopsCameraDroneMod.Main
             Vector3 targetPosition = aimTransform.position + (targetDistance + 1) * aimTransform.forward;
 
             Vector3[] positions;
-            if(inverted) { positions = new Vector3[2] { targetPosition, aimTransform.position + (1f * -aimTransform.up) }; }
+            if (inverted) { positions = new Vector3[2] { targetPosition, aimTransform.position + (1f * -aimTransform.up) }; }
             else { positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition }; }
             cameraDroneLaser.SetPositions(positions);
         }
         public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.15f, float endWidth = 0.15f)
         {
             Color beamColour = new Color(77 / 255, 166 / 255, 1);
-            if(!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
+            if (!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
             {
                 beamColour = new Color(red / 255f, green / 255f, blue / 255f);
             }
-            if(red == 0 && green == 0 && blue == 0) { beamColour = new Color(1, 38f / 255, 147 / 255f); }
+            if (red == 0 && green == 0 && blue == 0) { beamColour = new Color(1, 38f / 255, 147 / 255f); }
             cameraDroneLaser.material.color = beamColour;
             cameraDroneLaser.startWidth = startWidth;
             cameraDroneLaser.endWidth = endWidth;

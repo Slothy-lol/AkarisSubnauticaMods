@@ -78,13 +78,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "C:\Users\snorl\Documents\$(TargetName)"
-mkdir "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ"
-mkdir "C:\Users\snorl\Documents\\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets"
-copy /Y "$(TargetPath)" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.dll"
-copy /Y "$(ProjectDir)\mod.json" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\mod.json"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK2Sprite.png"
-copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "C:\Users\snorl\Documents\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK3Sprite.png"
+    <PostBuildEvent>mkdir "D:\Mods\$(TargetName)"
+mkdir "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ"
+mkdir "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets"
+copy /Y "$(TargetPath)" "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ\MoreEngineEfficiencyModulesBZ.dll"
+copy /Y "$(ProjectDir)\mod.json" "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ\mod.json"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK2Sprite.png" "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK2Sprite.png"
+copy /Y "$(ProjectDir)\EngineEfficiencyModuleMK3Sprite.png" "D:\Mods\$(TargetName)\MoreEngineEfficiencyModulesBZ\Assets\EngineEfficiencyModuleMK3Sprite.png"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
