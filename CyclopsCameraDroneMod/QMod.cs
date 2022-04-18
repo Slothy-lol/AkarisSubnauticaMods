@@ -48,20 +48,32 @@ namespace CyclopsCameraDroneMod.QMods
         [Keybind("Drone Key", Tooltip = "When on the cyclops cameras, use this key to swap to a drone.")]
         public KeyCode droneKey = KeyCode.P;
 
-        [Keybind("Mining Key", Tooltip = "When using the cyclops drone, press this key to mine the drillable being targeted.")]
+        [Keybind("Mining Key", Tooltip = "When using the industrial/ultimate cyclops drone, press this key to mine the drillable being targeted.")]
         public KeyCode miningKey = KeyCode.R;
 
-        [Keybind("Beacon Key", Tooltip = "When using the cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found.")]
+        [Keybind("Beacon Key", Tooltip = "When using the exploration/ultimate cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found.")]
         public KeyCode beaconKey = KeyCode.B;
 
         [Keybind("Interact Key", Tooltip = "When using the cyclops drone, press this key to pick up the object the drone is looking at.")]
         public KeyCode interactKey = KeyCode.Q;
 
-        [Keybind("Sonar Key", Tooltip = "When using the cyclops drone, press this key to activate sonar. Only fuctions if the cyclops sonar module is present.")]
+        [Keybind("Sonar Key", Tooltip = "When using the exploration/ultimate cyclops drone, press this key to activate sonar. Only fuctions if the cyclops sonar module is present.")]
         public KeyCode sonarKey = KeyCode.Z;
 
-        [Keybind("Shield Key", Tooltip = "When using the ion cyclops drone, press this key to activate A shield. Only fuctions if the cyclops shield module is present.")]
+        [Keybind("Shield Key", Tooltip = "When using the ultimate cyclops drone, press this key to activate A shield. Only fuctions if the cyclops shield module is present.")]
         public KeyCode shieldKey = KeyCode.K;
+
+        [Keybind("Teleport Key", Tooltip = "When using the ultimate cyclops drone, press this key to teleport a short distance.")]
+        public KeyCode teleportKey = KeyCode.P;
+
+        [Keybind("Scan Key", Tooltip = "When using the ion cyclops drone, press this key to scan what you are looking at.")]
+        public KeyCode scanKey = KeyCode.F;
+
+        [Keybind("Repair Key", Tooltip = "When using the exploration/ultimate cyclops drone, press this key to repair what you are looking at.")]
+        public KeyCode repairKey = KeyCode.X;
+
+        [Keybind("Second Drone Key", Tooltip = "If you have both the exploration and industrial drone modules equipped, press this to use the exploration drone, and the other key to use the industrial drone.")]
+        public KeyCode drone2Key = KeyCode.L;
 
         /*Too lazy to make this. Shouldn't be hard, just more work than I care to put in for something I don't care about.
         [Toggle("Prioritize Player Inventory", Tooltip = "If checked, will priotize putting items into the players inventory first and then the cyclops lockers second. if unchecked, uses cyclops lockers first.")]
@@ -88,12 +100,8 @@ namespace CyclopsCameraDroneMod.QMods
         public int tractorBeamRGB2 = 0;
         public int tractorBeamRGB3 = 179;
 
-        public KeyCode teleportKey = KeyCode.P;
-        public KeyCode scanKey = KeyCode.F;
-        public KeyCode repairKey = KeyCode.X;
         public bool autoSonar = false;
         public bool fuckAutoStabilization = false;
-        public KeyCode drone2Key = KeyCode.L;
         public bool infiniteDistance = false;
         public bool variableEnergyDrain = true;
     }
