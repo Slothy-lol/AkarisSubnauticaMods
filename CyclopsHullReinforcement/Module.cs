@@ -28,7 +28,7 @@ namespace CyclopsHullReinforcement.Module
             }
 
             public override EquipmentType EquipmentType => EquipmentType.CyclopsModule;
-            public override TechType RequiredForUnlock => TechType.CyclopsFabricator;
+            public override TechType RequiredForUnlock => TechType.Cyclops;
             public override TechGroup GroupForPDA => TechGroup.Cyclops;
             public override TechCategory CategoryForPDA => TechCategory.CyclopsUpgrades;
             public override CraftTree.Type FabricatorType => CraftTree.Type.CyclopsFabricator;
