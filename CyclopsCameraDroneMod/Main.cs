@@ -352,13 +352,14 @@ namespace CyclopsCameraDroneMod.Main
                     EnergyMixin mixin = __instance.GetComponent<EnergyMixin>();
                     while (mixin.charge < mixin.maxEnergy - 1)
                     {
-                        if (Player.main.currentSub.powerRelay.GetPower() < 50) break;
+                        if (Player.main.currentSub.powerRelay.GetPower() < Player.main.currentSub.powerRelay.GetMaxPower() / 10) break;
+
                         Player.main.currentSub.powerRelay.ConsumeEnergy(1, out float amountGiven);
                         mixin.AddEnergy(amountGiven);
                     }
                     if (QMod.Config.variableEnergyDrain && magnitude > 2f)
                     {
-                        HandleEnergyDrain(__instance, 0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position));
+                        HandleEnergyDrain(__instance, (0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position)) * Time.deltaTime);
                     }
                 }
                 else if (QMod.Config.variableEnergyDrain && magnitude > 2f)
@@ -437,6 +438,8 @@ namespace CyclopsCameraDroneMod.Main
                     Color color = Color.Lerp(droneInstance.vanillaColor, endColor, progress);
                     droneInstance.ScannerIconFunction(1 - progress, color);
                 }
+
+                if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule)) return;
 
                 //handles repair icon shit
                 LiveMixin liveMixin = gameObject.GetComponentInParent<LiveMixin>();
@@ -679,7 +682,7 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     gameObject = TractorBeam.tractorBeamHit[i].transform.gameObject;
                     Pickupable pickupable = gameObject.GetComponent<Pickupable>() ?? gameObject.GetComponentInParent<Pickupable>();
-                    if (pickupable != null)
+                    if (pickupable != null && pickupable.isPickupable)
                     {
                         SubRoot currentSub = Player.main.currentSub;
                         if (currentSub != null)
@@ -741,7 +744,7 @@ namespace CyclopsCameraDroneMod.Main
             return true;
         }
         public static bool HandleEnergyDrain(MapRoomCamera camera, float amount)
-        {
+        {//return bool to check if cyclops/drone can spare the energy. Don't know why I even return a bool, I never use the return value
             EnergyMixin mixin = camera.GetComponent<EnergyMixin>();
             if (QMod.Config.energyUsageType.Equals("All"))
             {
@@ -749,6 +752,10 @@ namespace CyclopsCameraDroneMod.Main
             }
             else if (QMod.Config.energyUsageType.Equals("Some") || QMod.Config.energyUsageType.Equals("None"))
             {
+                if (Player.main.currentSub.powerRelay.GetPower() < 50)
+                {
+                    return mixin.ConsumeEnergy(amount);
+                }
                 return Player.main.currentSub.powerRelay.ConsumeEnergy(amount, out float _);
             }
             return false;
