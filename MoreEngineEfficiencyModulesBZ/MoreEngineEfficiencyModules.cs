@@ -32,7 +32,7 @@ namespace MoreEngineEfficiencyModules
         }
 
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
-        public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
+        public override TechType RequiredForUnlock => TechType.Workbench;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
         public override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
@@ -80,12 +80,12 @@ namespace MoreEngineEfficiencyModules
             OnFinishedPatching += () =>
             {
                 VehiclePowerUpgradeModuleMK3.thisTechType = this.TechType;
-                VehicleUpgraderFix.AddUVEfficiencyBonus(VehiclePowerUpgradeModuleMK3.thisTechType ,bForce: false);
+                VehicleUpgraderFix.AddUVEfficiencyBonus(VehiclePowerUpgradeModuleMK3.thisTechType, bForce: false);
             };
         }
 
         public override EquipmentType EquipmentType => EquipmentType.VehicleModule;
-        public override TechType RequiredForUnlock => TechType.BaseUpgradeConsole;
+        public override TechType RequiredForUnlock => TechType.Workbench;
         public override TechGroup GroupForPDA => TechGroup.VehicleUpgrades;
         public override TechCategory CategoryForPDA => TechCategory.VehicleUpgrades;
         public override CraftTree.Type FabricatorType => CraftTree.Type.Workbench;
