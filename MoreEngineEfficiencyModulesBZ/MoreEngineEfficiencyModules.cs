@@ -237,15 +237,15 @@ namespace MoreEngineEfficiencyModules
     [QModCore]
     public static class QMod
     {
-
         internal const string WorkBenchTab = "EngineEfficiencyModUpgrades";
         internal static Config Config { get; } = OptionsPanelHandler.Main.RegisterModOptions<Config>();
+        public static List<TechType> TechTypes = (List<TechType>)new List<TechType>().AddItem(TechType.VehiclePowerUpgradeModule);
 
         [QModPatch]
         public static void Patch()
         {
-            SMLHelper.V2.Handlers.CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitModules" });
-            SMLHelper.V2.Handlers.CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
+            CraftTreeHandler.AddCraftingNode(CraftTree.Type.SeamothUpgrades, TechType.VehiclePowerUpgradeModule, new string[] { "ExosuitModules" });
+            CraftTreeHandler.AddTabNode(CraftTree.Type.Workbench, WorkBenchTab, "Engine Efficiency Modules", SpriteManager.Get(TechType.VehiclePowerUpgradeModule));
             var assembly = Assembly.GetExecutingAssembly();
             var modName = ($"AkariTheSloth_{assembly.GetName().Name}");
             Logger.Log(Logger.Level.Info, $"Patching {modName}");
@@ -253,6 +253,8 @@ namespace MoreEngineEfficiencyModules
             harmony.PatchAll(assembly);
             LanguageHandler.SetTechTypeName(TechType.VehiclePowerUpgradeModule, "Engine Efficiency Module");
             LanguageHandler.SetTechTypeTooltip(TechType.VehiclePowerUpgradeModule, "Recycles heat by-product to minimize power inefficiencies.");
+            KnownTechHandler.RemoveAllCurrentAnalysisTechEntry(TechType.VehiclePowerUpgradeModule);
+            KnownTechHandler.SetAnalysisTechEntry(TechType.Exosuit, TechTypes);
             new VehiclePowerUpgradeModuleMK2().Patch();
             new VehiclePowerUpgradeModuleMK3().Patch();
             Logger.Log(Logger.Level.Info, "Patched successfully!");
