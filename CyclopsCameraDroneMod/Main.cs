@@ -451,11 +451,11 @@ namespace CyclopsCameraDroneMod.Main
         {
             if(hasDrill2)
             {
-                UpdateAppearance(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3, 1, 1);
+                UpdateAppearance(QMod.Config.drill2RGB1, QMod.Config.drill2RGB2, QMod.Config.drill2RGB3, defaultBeamWidth, defaultBeamWidth);
             }
             else
             {
-                UpdateAppearance(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3, 1, 1);
+                UpdateAppearance(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3, defaultBeamWidth, defaultBeamWidth);
             }
             if(hasDrill1)
             { /*fuck off VS*/ }
@@ -913,8 +913,8 @@ namespace CyclopsCameraDroneMod.Main
             laserBeam.SetActive(true);
 
             lineRenderer = laserBeam.GetComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.3f;
-            lineRenderer.endWidth = 0.3f;
+            lineRenderer.startWidth = 0.15f;
+            lineRenderer.endWidth = 0.15f;
             lineRenderer.positionCount = 2;
 
             cameraDroneLaser = UnityEngine.Object.Instantiate(lineRenderer, position: __instance.transform.position - new Vector3(0, 2, 0), rotation: __instance.transform.rotation);
@@ -943,7 +943,7 @@ namespace CyclopsCameraDroneMod.Main
             else { positions = new Vector3[2] { aimTransform.position + (1f * -aimTransform.up), targetPosition }; }
             cameraDroneLaser.SetPositions(positions);
         }
-        public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.3f, float endWidth = 0.3f)
+        public static void UpdateAppearance(float red = 77, float green = 166, float blue = 255, float startWidth = 0.15f, float endWidth = 0.15f)
         {
             Color beamColour = new Color(77 / 255, 166 / 255, 1);
             if(!(red < 0 || red > 255 || green < 0 || green > 255 || blue < 0 || blue > 255))
