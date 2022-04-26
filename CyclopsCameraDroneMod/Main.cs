@@ -44,6 +44,7 @@ namespace CyclopsCameraDroneMod.Main
         public static float timeNextPing; //sonar ping
         public static float timeNextTeleport;
         public static float timeNextDoor;
+        public static float originalGrav = 9.81f;
 
         public static LineRenderer cameraDroneLaser;
         public static LineRenderer lineRenderer;
@@ -142,6 +143,12 @@ namespace CyclopsCameraDroneMod.Main
                 tempCooldown = true;
                 Player.main.ExitLockedMode(false, false);
                 Player.main.EnterLockedMode(null);
+
+                originalGrav = cyclopsCameraDrone.gameObject.GetComponent<WorldForces>().aboveWaterGravity;
+                if (droneInstance.droneType == CyclopsDroneType.Combo && QMod.Config.canFly && QMod.Config.floatsAboveWater)
+                {
+                    cyclopsCameraDrone.gameObject.GetComponent<WorldForces>().aboveWaterGravity = 0;
+                }
             }
             static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
@@ -213,6 +220,27 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 return true;
             }
+            
+            [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.FixedUpdate))]
+            [HarmonyPrefix]
+            public static bool FLYMYCHILD(MapRoomCamera __instance)
+            {
+                CyclopsDroneInstance component = __instance.GetComponent<CyclopsDroneInstance>();
+                if (__instance.name != cameraObjectName || component == null) { return true; }
+
+                CyclopsDroneInstance.CyclopsDroneType droneType = component.droneType;
+
+                if(droneType == CyclopsDroneType.Combo && QMod.Config.canFly)
+                {
+                    __instance.rigidBody.AddForce(__instance.transform.rotation * (20f * __instance.wishDir), ForceMode.Acceleration);
+
+                    __instance.StabilizeRoll();
+
+                    return false;
+                }
+                return true;
+            }
+            
             [HarmonyPatch(typeof(MapRoomCamera), nameof(MapRoomCamera.GetScreenDistance))]
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
@@ -346,7 +374,15 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         if (Targeting.GetTarget(__instance.gameObject, 3f, out var gameobject, out var distance))
                         {
-                            PrecursorDoorway doorway = gameobject.transform.parent.parent.gameObject.GetComponentInChildren<PrecursorDoorway>();
+                            Transform target = gameobject.transform.parent;
+                            if(target != null)
+                            {
+                                target = target.parent;
+                            }
+                            else { target = gameobject.transform; }
+
+                            PrecursorDoorway doorway = target.gameObject.GetComponentInChildren<PrecursorDoorway>();
+
                             if (doorway != null)
                             {
                                 doorway.DisableField();
@@ -449,6 +485,27 @@ namespace CyclopsCameraDroneMod.Main
                     droneInstance.ScannerIconFunction(1 - progress, color);
                 }
 
+                /*doesn't work well, ignore this sadly
+                var terminal = gameObject.GetComponentInParent<StoryHandTarget>();
+                if(terminal != null)
+                {
+                    droneInstance.ScannerIconFunction(1, droneInstance.vanillaColor);
+                }
+                */
+
+                var blueprint = gameObject.GetComponentInParent<BlueprintHandTarget>();
+                if (blueprint != null)
+                {
+                    if(blueprint.used)
+                    {
+                        droneInstance.ScannerIconFunction(0.01f, new Color(1, 0, 0));
+                    }
+                    else
+                    {
+                        droneInstance.ScannerIconFunction(1, droneInstance.vanillaColor);
+                    }
+                }
+
                 if (!MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, TechType.CyclopsSeamothRepairModule)) return;
 
                 //handles repair icon shit
@@ -475,7 +532,8 @@ namespace CyclopsCameraDroneMod.Main
                 UpdateAppearance(QMod.Config.drill1RGB1, QMod.Config.drill1RGB2, QMod.Config.drill1RGB3, defaultBeamWidth, defaultBeamWidth);
             }
             if (hasDrill1)
-            { /*fuck off VS*/ }
+            { /*fuck off VS*/
+            }
             cameraDroneLaser.enabled = true;
             timeLastDrill = Time.time;
             droneInstance.StartDrillSound();
@@ -536,11 +594,11 @@ namespace CyclopsCameraDroneMod.Main
 
             UpdateScanTarget(gameObject1);
 
-            HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
 
             PDAScanner.ScanTarget scanTarget = PDAScanner.scanTarget;
             if (scanTarget.isValid && mapRoomCamera.energyMixin.charge > 0f)
             {
+                HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
                 PDAScanner.Result result = PDAScanner.Scan();
                 if (result == PDAScanner.Result.Scan)
                 {
@@ -551,6 +609,19 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     droneInstance.PlayScanEndSound();
                 }
+            }
+            /*doesn't work well, ignore this sadly
+            var terminal = gameObject1.GetComponentInParent<StoryHandTarget>();
+            if (terminal != null)
+            {
+                HandleEnergyDrain(mapRoomCamera, 0.5f * Time.deltaTime);
+                terminal.OnHandClick(Player.main.armsController.guiHand);
+            }
+            */
+            var blueprint = gameObject1.GetComponentInParent<BlueprintHandTarget>();
+            if (blueprint != null)
+            {
+                blueprint.UnlockBlueprint();
             }
         }
         public static void UpdateScanTarget(GameObject objTarget)
