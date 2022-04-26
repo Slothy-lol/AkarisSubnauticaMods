@@ -342,6 +342,18 @@ namespace CyclopsCameraDroneMod.Main
                         StasisSphereFunctionality(__instance);
                     }
                     */
+                    if(droneType == CyclopsDroneInstance.CyclopsDroneType.Combo)
+                    {
+                        if (Targeting.GetTarget(__instance.gameObject, 3f, out var gameobject, out var distance))
+                        {
+                            PrecursorDoorway doorway = gameobject.transform.parent.parent.gameObject.GetComponentInChildren<PrecursorDoorway>();
+                            if (doorway != null)
+                            {
+                                doorway.DisableField();
+                                CoroutineHost.StartCoroutine(CloseDoorBehindDrone(doorway));
+                            }
+                        }
+                    }
                 }
                 HandleSFX();
                 CheckTarget(__instance);//handles icon changes for scanning and repairing, can't think of better name
@@ -368,7 +380,12 @@ namespace CyclopsCameraDroneMod.Main
                 }
             }
         }
-
+        public static IEnumerator CloseDoorBehindDrone(PrecursorDoorway doorway)
+        {
+            yield return new WaitForSeconds(6);//takes a damn long while to finish the animation to open door
+            //need to wait until animation finishes or door will be invisible
+            doorway.EnableField();
+        }
         public static void HandleSFX()
         {
             if (Time.time > timeLastDrill + 0.5f && droneInstance.drillSoundPlaying) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
