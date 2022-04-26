@@ -1,11 +1,11 @@
-﻿using MoreCyclopsUpgrades.API;
+﻿using CyclopsCameraDroneMod.Modules;
+using MoreCyclopsUpgrades.API;
 using MoreCyclopsUpgrades.API.StatusIcons;
-using System.Reflection;
-using Sprite = Atlas.Sprite;
-using UnityEngine;
 using SMLHelper.V2.Utility;
 using System.IO;
-using CyclopsCameraDroneMod.Modules;
+using System.Reflection;
+using UnityEngine;
+using Sprite = Atlas.Sprite;
 
 namespace CyclopsCameraDroneMod.HUDIcon
 {
@@ -18,9 +18,9 @@ namespace CyclopsCameraDroneMod.HUDIcon
             // And so do I
         }
 
-        public override bool ShowStatusIcon => 
-            (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneIndustry.thisTechType) 
-            || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneExploration.thisTechType) 
+        public override bool ShowStatusIcon =>
+            (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneIndustry.thisTechType)
+            || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneExploration.thisTechType)
             || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneUltimate.thisTechType));
 
         readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");

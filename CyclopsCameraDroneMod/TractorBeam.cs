@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CyclopsCameraDroneMod
 {
@@ -18,7 +17,7 @@ namespace CyclopsCameraDroneMod
         public static RaycastHit[] tractorBeamHit = new RaycastHit[32];
         public static List<Rigidbody> hitRigidbodies = new List<Rigidbody>();
         public static LayerMask tractorBeamLayerMask = -1;
-        
+
         public static Type[] whitelistedComponents = new Type[] { typeof(Creature), typeof(BreakableResource), };
 
         public static void Reset()

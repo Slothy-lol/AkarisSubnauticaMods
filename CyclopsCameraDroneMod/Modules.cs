@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using MoreCyclopsUpgrades.API;
+using MoreCyclopsUpgrades.API.Upgrades;
 using SMLHelper.V2.Assets;
 using SMLHelper.V2.Crafting;
-using System.Reflection;
-using Sprite = Atlas.Sprite;
+using SMLHelper.V2.Utility;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using RecipeData = SMLHelper.V2.Crafting.TechData;
-using SMLHelper.V2.Utility;
-using MoreCyclopsUpgrades.API;
-using MoreCyclopsUpgrades.API.Upgrades;
+using Sprite = Atlas.Sprite;
 
 namespace CyclopsCameraDroneMod.Modules
 {
@@ -49,7 +49,7 @@ namespace CyclopsCameraDroneMod.Modules
                         new Ingredient(TechType.Magnetite, 2),
                         new Ingredient(TechType.MapRoomCamera, 1),
                         new Ingredient(TechType.WiringKit, 1)
-                        
+
                     }
                 )
             };

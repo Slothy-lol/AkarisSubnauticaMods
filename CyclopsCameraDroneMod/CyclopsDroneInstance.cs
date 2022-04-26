@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CyclopsCameraDroneMod.QMods;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CyclopsCameraDroneMod.Main;
-using CyclopsCameraDroneMod.QMods;
-using System.Collections;
 
 namespace CyclopsCameraDroneMod.droneInstance
 {
@@ -302,7 +296,7 @@ namespace CyclopsCameraDroneMod.droneInstance
 
         public void ToggleShield()
         {
-            if(shieldActive)
+            if (shieldActive)
             {
                 StopShield();
             }
