@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UWE;
 using static CyclopsCameraDroneMod.droneInstance.CyclopsDroneInstance;
+using Logger = QModManager.Utility.Logger;
 
 namespace CyclopsCameraDroneMod.Main
 {
@@ -576,6 +577,7 @@ namespace CyclopsCameraDroneMod.Main
                         gameObject4.GetComponent<CollectShiny>().DropShinyTarget();
                     }
                 }
+
                 BreakableResource resource = gameObject4.GetComponent<BreakableResource>() ?? gameObject4.GetComponentInParent<BreakableResource>();
                 if (resource)
                 {
@@ -857,7 +859,7 @@ namespace CyclopsCameraDroneMod.Main
         [HarmonyPostfix]
         public static void DisplayCyclopsPower(uGUI_CameraDrone __instance)
         {
-            if (QMod.Config.energyUsageType == "None" && Player.main.currentSub != null && __instance.activeCamera.gameObject.GetComponent<CyclopsDroneInstance>())
+            if (QMod.Config.energyUsageType == "None" && Player.main.currentSub != null && __instance.activeCamera != null && __instance.activeCamera.gameObject.GetComponent<CyclopsDroneInstance>())
             {
                 __instance.textPower.text = Player.main.currentSub.powerRelay.GetPower().ToString();
             }

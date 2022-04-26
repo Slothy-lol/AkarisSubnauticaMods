@@ -54,7 +54,7 @@ namespace CyclopsCameraDroneMod.QMods
         [Keybind("Beacon Key", Tooltip = "When using the exploration/ultimate cyclops drone, press this key to spawn a beacon at the drones location. Uses a beacon from cyclops lockers first, then player inventory if there are no beacons found.")]
         public KeyCode beaconKey = KeyCode.B;
 
-        [Keybind("Interact Key", Tooltip = "When using the cyclops drone, press this key to pick up the object the drone is looking at.")]
+        [Keybind("Tractor Beam Key", Tooltip = "When using the cyclops drone, hold this key to activate the tractor beam to pick up items.")]
         public KeyCode interactKey = KeyCode.Q;
 
         [Keybind("Sonar Key", Tooltip = "When using the exploration/ultimate cyclops drone, press this key to activate sonar. Only fuctions if the cyclops sonar module is present.")]

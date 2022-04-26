@@ -1,0 +1,59 @@
+Change color of drone lasers
+
+sonar/auto sonar(any drone, needs cyclops sonar module)
+
+scan stuffs(exploration drone/ion drone)
+
+repair stuffs(exploration drone/ion drone, needs cyclops repair bay module)
+
+teleport(ion drone) can go through walls and has no cooldown if in creative, drains 5 energy per teleport
+
+drill(industrial drone/ion)
+
+tractor beam(industrial drone/ion)
+
+place beacon(exploration drone/ion) takes a beacon from the cyclops internal storage, or the player inventory if none are available from storage. Does not take a beacon if in creative
+
+shield(ion drone, needs cyclops shield modules)
+
+Second drone key - if both exploration and industrial drone are equipped, press this key to use the exploration drone
+
+Drone energy usage type - 
+		All: all energy usage comes from the drones battery. 
+		Some: only energy usage from movement comes from the drones battery, the rest drain the cyclops battery directly. 
+		None: Cyclops batteries constantly recharge the drone
+		
+Fuck Auto Stabilization - turns off the auto stabilization of all camera drones
+
+Has cyclops hud icons to show the time left for cooldown on using drone
+
+Cooldown is based off of damage taken while controlling drone. It takes the cyclops 100 seconds to fully repair a completely destroyed drone
+
+two configs for flying - 
+		can fly: allows use of the controls above water, drone is still affected by gravity though so you need you constantly move to keep it above water
+		hovers above water: (requires the can fly config to be true) the drone is no longer affected by gravity above water
+		
+drone teleports back inside cyclops storage when not used
+
+does not require drone in inventory to use, upgrade modules comes with one that is repaired
+
+After exiting the drone, the cyclops will slowly (1 energy per second) recharge the drone back to full. If drone has 50% energy left when you exit, cyclops will drain 50 power to recharge
+
+Drone is immune to stasis rifle 
+
+scanning and repairing create a small icon in the bottom left of the screen as you look at something that can be scanned/repaired	
+	these icons change color as you scan/repair the object. Scanning turhns red as you scan, repairing turns green as you repair
+	
+can collect databoxes by going up to them and hitting the scan key
+
+ion drone can go through precursor forcefields
+
+variable energy drain - increases power drain for movement based off of distance to cyclops, still affects drain even if infinite distance is on
+
+infinite distance - gives the cyclops drone infinite distance so it doesn't fade to gray after some time
+
+anything drilled/picked up by tracotr beam will now automatically be stored inside of the cyclops' downstairs internal lockers
+
+with "None" selected as the energy usage type, power display shows available cyclops battery power rather than drone battery power
+
+can not change cameras while controlling the cyclops drone
