@@ -32,7 +32,7 @@ namespace CyclopsCameraDroneMod.Main
         public static float defaultBeamWidth = 0.15f;
 
         public static bool sonarActive = false;
-        public static float energyAmount = 100;
+        public static float energyAmountPercent = 100;
 
         public static float timeLastDrill;
         public static float timeLastMineResource;
@@ -51,6 +51,7 @@ namespace CyclopsCameraDroneMod.Main
         public static LineRenderer lineRenderer;
         public static CyclopsDroneInstance droneInstance; // stores references to components on the camera itself and has most audio-related code
         public static bool tempCooldown = true; //used to make sure that spamming P does not allow you to create two cameras
+        public static bool hoverActive = false;
 
         [HarmonyPatch]
         public class Postfixes
@@ -97,10 +98,6 @@ namespace CyclopsCameraDroneMod.Main
                 yield return coroutineTask;
                 var prefab = coroutineTask.GetResult();
 
-                coroutineTask = CraftData.GetPrefabForTechTypeAsync(TechType.Battery, false);
-                yield return coroutineTask;
-                var batteryPrefab = coroutineTask.GetResult();
-
                 Vector3 position = GetSpawnPosition(__instance.transform.parent.gameObject);
                 MapRoomCamera cyclopsCameraDrone = GameObject.Instantiate(prefab, position, Player.main.transform.rotation).GetComponent<MapRoomCamera>();
                 cyclopsCameraDrone.gameObject.name = cameraObjectName;
@@ -128,15 +125,16 @@ namespace CyclopsCameraDroneMod.Main
                     {
                         droneInstance.droneType = CyclopsDroneInstance.CyclopsDroneType.Exploration;
                     }
-
                 }
-
+                coroutineTask = CraftData.GetPrefabForTechTypeAsync(droneInstance.droneType == CyclopsDroneType.Combo? TechType.PrecursorIonBattery : TechType.Battery, false);
+                yield return coroutineTask;
+                var batteryPrefab = coroutineTask.GetResult();
 
                 Battery battery = GameObject.Instantiate(batteryPrefab).GetComponent<Battery>();
                 cyclopsCameraDrone.energyMixin.battery = battery;
                 battery.gameObject.transform.parent = cyclopsCameraDrone.gameObject.transform;
-                cyclopsCameraDrone.energyMixin.ConsumeEnergy(100f - energyAmount);
-
+                cyclopsCameraDrone.energyMixin.ConsumeEnergy(cyclopsCameraDrone.energyMixin.capacity - ((energyAmountPercent / 100) * cyclopsCameraDrone.energyMixin.capacity));
+                
                 yield return new WaitUntil(() => cyclopsCameraDrone.inputStackDummy != null);
                 __instance.ExitCamera(); //happy Lee?
                 if (Player.main.currChair != null) { Player.main.ExitPilotingMode(); }
@@ -146,10 +144,6 @@ namespace CyclopsCameraDroneMod.Main
                 Player.main.EnterLockedMode(null);
 
                 originalGrav = cyclopsCameraDrone.gameObject.GetComponent<WorldForces>().aboveWaterGravity;
-                if (droneInstance.droneType == CyclopsDroneType.Combo && QMod.Config.canFly && QMod.Config.floatsAboveWater)
-                {
-                    cyclopsCameraDrone.gameObject.GetComponent<WorldForces>().aboveWaterGravity = 0;
-                }
             }
             static Vector3 GetSpawnPosition(GameObject cyclopsObject)
             {
@@ -204,8 +198,8 @@ namespace CyclopsCameraDroneMod.Main
                 {
                     float healthFraction = __instance.GetComponent<LiveMixin>().GetHealthFraction();
                     timeNextUseDrone = Time.time + (useDroneCooldownLength * (1f - healthFraction));
-                    energyAmount = __instance.energyMixin.charge;
-                    CoroutineHost.StartCoroutine(RefillEnergy());
+                    energyAmountPercent = 100 * (__instance.energyMixin.charge / __instance.energyMixin.capacity);
+                    CoroutineHost.StartCoroutine(RefillEnergy(__instance.energyMixin.capacity));
                     GameObject.Destroy(__instance.gameObject);
                     uGUI_ScannerIcon.main.icon.backgroundColorNormal = droneInstance.vanillaColor;
                 }
@@ -246,9 +240,18 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void FixDistance(MapRoomCamera __instance, ref float __result)
             {
-                if (__instance.name == cameraObjectName && !QMod.Config.infiniteDistance)
+                if (__instance.name == cameraObjectName)
                 {
-                    __result = (Player.main.transform.position - __instance.transform.position).magnitude;
+                    __result = QMod.Config.infiniteDistance ? 0 : (Player.main.transform.position - __instance.transform.position).magnitude;
+                }
+            }
+            [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.GetDistanceToCamera))]
+            [HarmonyPostfix]
+            public static void FixDistanceText(uGUI_CameraDrone __instance, ref int __result) 
+            {
+                if (__instance.activeCamera != null && __instance.activeCamera.name == cameraObjectName)
+                {
+                    __result = (int)(Player.main.transform.position - __instance.activeCamera.gameObject.transform.position).magnitude;
                 }
             }
 
@@ -281,6 +284,7 @@ namespace CyclopsCameraDroneMod.Main
             [HarmonyPostfix]
             public static void GetLookingTarget(MapRoomCamera __instance) //no longer just get's target, now also works keybinds
             {
+
                 CyclopsDroneInstance component = __instance.GetComponent<CyclopsDroneInstance>();
                 if (__instance.name != cameraObjectName || component == null) { return; }
 
@@ -390,18 +394,24 @@ namespace CyclopsCameraDroneMod.Main
                                 CoroutineHost.StartCoroutine(CloseDoorBehindDrone(doorway));
                             }
                         }
+                        if(Input.GetKeyDown(QMod.Config.hoverKey))
+                        {
+                            hoverActive = !hoverActive;
+                            __instance.gameObject.GetComponent<WorldForces>().aboveWaterGravity = hoverActive ? 0 : originalGrav;
+                        }
                     }
                 }
-                HandleSFX();
+                HandleSFX(__instance);
                 CheckTarget(__instance);//handles icon changes for scanning and repairing, can't think of better name
 
                 float magnitude = __instance.gameObject.GetComponent<Rigidbody>().velocity.magnitude;
                 if (QMod.Config.energyUsageType.Equals("None"))
                 {
-                    EnergyMixin mixin = __instance.GetComponent<EnergyMixin>();
-                    while (mixin.charge < mixin.maxEnergy - 1)
+                    EnergyMixin mixin = __instance.energyMixin;
+                    while (mixin.charge < mixin.capacity - 1)
                     {
                         if (Player.main.currentSub.powerRelay.GetPower() < Player.main.currentSub.powerRelay.GetMaxPower() / 10) break;
+                        if(mixin.capacity == 0) { break; }
 
                         Player.main.currentSub.powerRelay.ConsumeEnergy(1, out float amountGiven);
                         mixin.AddEnergy(amountGiven);
@@ -413,8 +423,9 @@ namespace CyclopsCameraDroneMod.Main
                 }
                 else if (QMod.Config.variableEnergyDrain && magnitude > 2f)
                 {
-                    __instance.GetComponent<EnergyMixin>().ConsumeEnergy((0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position)) * Time.deltaTime);
+                    __instance.energyMixin.ConsumeEnergy((0.002f * Vector3.Distance(__instance.transform.position, Player.main.currentSub.transform.position)) * Time.deltaTime);
                 }
+                if(hoverActive && __instance.gameObject.transform.position.y >= __instance.worldForces.waterDepth) HandleEnergyDrain(__instance, 2 * Time.deltaTime);
             }
         }
         public static IEnumerator CloseDoorBehindDrone(PrecursorDoorway doorway)
@@ -423,7 +434,7 @@ namespace CyclopsCameraDroneMod.Main
             //need to wait until animation finishes or door will be invisible
             doorway.EnableField();
         }
-        public static void HandleSFX()
+        public static void HandleSFX(MapRoomCamera camera)
         {
             if (Time.time > timeLastDrill + 0.5f && droneInstance.drillSoundPlaying) // stop the drilling sound when not drilling, but NOT immediately after releasing the key
             {
@@ -464,6 +475,15 @@ namespace CyclopsCameraDroneMod.Main
             else if (droneInstance.scanSoundPlaying)// otherwise, make sure it isn't playing
             {
                 droneInstance.StopScanSound();
+            }
+
+            if(camera.gameObject.transform.position.y >= camera.worldForces.waterDepth && hoverActive)
+            {
+                droneInstance.StartHoverSound();
+            }
+            else
+            {
+                droneInstance.StopHoverSound();
             }
         }
         public static void CheckTarget(MapRoomCamera __instance)
@@ -844,24 +864,24 @@ namespace CyclopsCameraDroneMod.Main
             return false;
         }
         // uGUI_CameraDrone.textPower.text = subRoot.powerRelay.GetPower().ToString();
-        public static IEnumerator RefillEnergy()
+        public static IEnumerator RefillEnergy(float max)
         {
             SubRoot currentSub = Player.main.currentSub;
-            while (energyAmount < 100 && currentSub != null)
+            while (energyAmountPercent < 100 && currentSub != null && currentSub.powerRelay.GetPower() > currentSub.powerRelay.GetMaxPower() / 10)
             {
-                energyAmount++;
+                energyAmountPercent += (1  / max) * 100;
                 currentSub.powerRelay.ConsumeEnergy(1f, out float _);
                 yield return new WaitForSeconds(1f);
             }
         }
 
-        [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.UpdateTexts))]
+        [HarmonyPatch(typeof(uGUI_CameraDrone), nameof(uGUI_CameraDrone.UpdateDistanceText))]
         [HarmonyPostfix]
         public static void DisplayCyclopsPower(uGUI_CameraDrone __instance)
         {
-            if (QMod.Config.energyUsageType == "None" && Player.main.currentSub != null && __instance.activeCamera != null && __instance.activeCamera.gameObject.GetComponent<CyclopsDroneInstance>())
+            if (QMod.Config.energyUsageType == "None" && Player.main != null && Player.main.currentSub != null && __instance.activeCamera != null && __instance.activeCamera.gameObject.GetComponent<CyclopsDroneInstance>() != null)
             {
-                __instance.textPower.text = Player.main.currentSub.powerRelay.GetPower().ToString();
+                __instance.textPower.text = ((int)Player.main.currentSub.powerRelay.GetPower()).ToString();
             }
         }
 

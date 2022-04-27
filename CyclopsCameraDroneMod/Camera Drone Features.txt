@@ -29,9 +29,7 @@ Has cyclops hud icons to show the time left for cooldown on using drone
 
 Cooldown is based off of damage taken while controlling drone. It takes the cyclops 100 seconds to fully repair a completely destroyed drone
 
-two configs for flying - 
-		can fly: allows use of the controls above water, drone is still affected by gravity though so you need you constantly move to keep it above water
-		hovers above water: (requires the can fly config to be true) the drone is no longer affected by gravity above water
+can fly config - allows use of the controls above water, press the hover key to swap to a hover that counteracts gravity but costs extra energy
 		
 drone teleports back inside cyclops storage when not used
 

@@ -19,6 +19,9 @@ namespace CyclopsCameraDroneMod.droneInstance
         private static readonly FMODAsset scanEndSound = Helpers.GetFmodAsset("event:/tools/scanner/scan_complete");
         private static readonly FMODAsset scanLoop = Helpers.GetFmodAsset("event:/tools/scanner/scan_loop");
 
+
+        private static readonly FMODAsset hoverSoundLoop = Helpers.GetFmodAsset("event:/sub/seamoth/seamoth_loop");//  event:/sub/exo/jets_loop event:/tools/constructor/bot_1_hover
+
         //read only because I was annoyed at the messages appearing telling me to. Shouldn't change anything, if it breaks blame Lee not me. Why Lee? Because
 
         public enum CyclopsDroneType
@@ -36,6 +39,7 @@ namespace CyclopsCameraDroneMod.droneInstance
         private FMOD_CustomLoopingEmitter repairEmitter;
         private FMOD_CustomLoopingEmitter scanEmitter;
 
+        private FMOD_CustomLoopingEmitter hoverEmitter;
 
         //shield shit
         private LiveMixin liveMixin;
@@ -63,6 +67,8 @@ namespace CyclopsCameraDroneMod.droneInstance
 
         private void Start()
         {
+            hoverEmitter = AddLoopingEmitter(hoverSoundLoop);
+
             drillEmitter = AddLoopingEmitter(drillLoopSound);
             mineEmitter = AddLoopingEmitter(mineEmitterLoopSound);
             tractorBeamEmitter = AddLoopingEmitter(tractorBeamLoopSound);
@@ -318,6 +324,14 @@ namespace CyclopsCameraDroneMod.droneInstance
             icon.Show();
             icon.SetAlpha(alpha);
             icon.icon.SetBackgroundColors(color, color, color);
+        }
+        public void StartHoverSound()
+        {
+            if(!hoverEmitter.playing) hoverEmitter.Play();
+        }
+        public void StopHoverSound()
+        {
+            if (hoverEmitter.playing) hoverEmitter.Stop();
         }
     }
 }

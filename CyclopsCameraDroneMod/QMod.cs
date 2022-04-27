@@ -105,6 +105,6 @@ namespace CyclopsCameraDroneMod.QMods
         public bool infiniteDistance = false;
         public bool variableEnergyDrain = true;
         public bool canFly = false;
-        public bool floatsAboveWater = false;
+        public KeyCode hoverKey = KeyCode.H;
     }
 }
