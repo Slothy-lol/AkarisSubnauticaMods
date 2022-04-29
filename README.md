@@ -1,4 +1,4 @@
-# AkarisSubnauticaMods
+#### AkarisSubnauticaMods
 
 A repository of all of my subnautica mods.
 
@@ -8,7 +8,7 @@ This *amazing* mod, created by akari and the beautiful Nagorrogan adds three new
 
 All keys are configurable in the menu, as well as a few other things. I probably forgot a *lot* of things here, but there is a small text file included in the zip file that explains everything the mod does, although it isn't formatted very well. 
 
-Requires smlhelper and more cyclops upgrades
+Requires smlhelper and [more cyclops upgrades](https://github.com/PrimeSonic/PrimeSonicSubnauticaMods/releases/tag/Aug5_2021)
 
 By Akari, the perfect Nagorrogan, and Lee23, with some other people's help thrown in in places. 
 
