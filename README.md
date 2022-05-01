@@ -2,25 +2,6 @@
 
 A repository of all of my subnautica mods.
 
-# Cyclops Camera Drone mod
-
-This *amazing* mod, created by akari and the beautiful Nagorrogan adds three new cyclops modules. Each one allows you to gain control of a camera drone that can move around. To use, simply enter the cyclops cameras and hit the drone button (default is P). The three modules each correlate to a unique drone, the first is an exploration drone. It can scan things, use sonar (only if the cyclops has sonar equipped), and repair objects(only if the cyclops has the cyclops vehicle repair bay equipped) it can also deploy beacons by taking beacons out of the cyclops lockers or the player's inventory. The second is an industrial drone, it uses mining lasers and tractor beams to collect items and automatically store them inside of the cyclops downstairs lockers. The final drone type is the ion drone, it uses ion technology to have an incredibly strong and efficient mining laser as well as having the abilities of both of the previous drones as well as allowing the use of a shield (only if the cyclops shield module is equipped) and teleportation for short distances. It also comes with an extended battery (ion battery rather than a simple normal battery), and can fly/hover when above water. 
-
-All keys are configurable in the menu, as well as a few other things. I probably forgot a *lot* of things here, but there is a small text file included in the zip file that explains everything the mod does, although it isn't formatted very well. 
-
-Requires smlhelper and [more cyclops upgrades](https://github.com/PrimeSonic/PrimeSonicSubnauticaMods/releases/tag/Aug5_2021)
-
-By Akari, the perfect Nagorrogan, and Lee23, with some other people's help thrown in in places. 
-
-[Download zip file](https://github.com/Slothy-lol/AkarisSubnauticaMods/files/8594616/CyclopsCameraDroneMod.zip)
-
-
-
-
-
-
-###### Now for the boring mods
-
 ## More Engine Efficiency Modules
 
 This mod adds a Mark 2 and Mark 3 Engine Efficiency Module for the Seamoth and PRAWN Suit.<br>
@@ -78,6 +59,8 @@ The drone comes in 3 versions: Exploration, Industrial, Ultimate.<br>
     Industrial: Equipped with a laser drill and tractor beam. ID: CyclopsCameraDroneIndustry
 
     Ultimate: Equipped with every feature, with ion power, allowing a stronger beam, teleportation, and use of a shield if the Cyclops is equipped with a Shield Module. ID: CyclopsCameraDroneUltimate
+    
+    Terribly formatted help file in mod directory that shows some stuff the drone can do idk if its very good nagorrogan made it
 
     Needs: QModManager, MoreCyclopUpgrades 5.2.
 
