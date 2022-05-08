@@ -11,31 +11,41 @@ namespace CyclopsCameraDroneMod.HUDIcon
 {
     internal class CyclopsCameraDroneHUDIcon : CyclopsStatusIcon
     {
+        private readonly UpgradeHandler droneUltimate;
+        private readonly UpgradeHandler droneIndustry;
+        private readonly UpgradeHandler droneExploration;
+    
         public CyclopsCameraDroneHUDIcon(SubRoot cyclops) : base(cyclops)
         {
             // We're no strangers to love
             // You know the rules
             // And so do I
+            droneUltimate = MCUServices.Find.CyclopsUpgradeHandler(cyclops, CyclopsCameraDroneUltimate.thisTechType);
+            droneIndustry = MCUServices.Find.CyclopsUpgradeHandler(cyclops, CyclopsCameraDroneIndustry.thisTechType);
+            droneExploration = MCUServices.Find.CyclopsUpgradeHandler(cyclops, CyclopsCameraDroneExploration.thisTechType);
         }
 
         public override bool ShowStatusIcon =>
-            (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneIndustry.thisTechType)
-            || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneExploration.thisTechType)
-            || MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneUltimate.thisTechType));
+            droneUltimate.HasUpgrade || 
+            droneIndustry.HasUpgrade || 
+            droneExploration.HasUpgrade;
 
-        readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+        internal static readonly string AssetsFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets");
+        internal static readonly Sprite DroneSprite0 = ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule0.png"));
+        internal static readonly Sprite DroneSprite1 = ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule1.png"));
+        internal static readonly Sprite DroneSprite2 = ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule2.png"));
 
         public override Sprite StatusSprite()
         {
-            if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneUltimate.thisTechType))
+            if (droneUltimate.HasUpgrade)
             {
-                return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule2.png"));
+                return DroneSprite2;
             }
-            else if (MCUServices.CrossMod.HasUpgradeInstalled(Player.main.currentSub, CyclopsCameraDroneIndustry.thisTechType))
+            else if (droneIndustry.HasUpgrade)
             {
-                return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule1.png"));
+                return DroneSprite1;
             }
-            return ImageUtils.LoadSpriteFromFile(Path.Combine(AssetsFolder, "CameraDroneModule0.png"));
+            return DroneStatus0;
         }
 
         public override string StatusText()
