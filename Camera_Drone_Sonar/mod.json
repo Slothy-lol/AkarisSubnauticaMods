@@ -1,0 +1,14 @@
+{
+  "Id": "CameraDroneSonarMod",
+  "DisplayName": "Camera Drone Sonar Mod",
+  "Author": "Akari The Sloth",
+  "Version": "1.0.0",
+  "Enable": true,
+  "AssemblyName": "Camera_Drone_Sonar.dll",
+  "VersionDependencies": {
+    "SMLHelper": "2.9.6",
+    "CameraDroneUpgrades": "1.0.0"
+  },
+  "Game": "Subnautica"
+}
+
